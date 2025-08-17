@@ -1,0 +1,133 @@
+@import "tailwindcss";
+
+@theme inline {
+	--color-study-50: #f0f9ff;
+	--color-study-100: #e0f2fe;
+	--color-study-200: #bae6fd;
+	--color-study-300: #7dd3fc;
+	--color-study-400: #38bdf8;
+	--color-study-500: #0ea5e9;
+	--color-study-600: #0284c7;
+	--color-study-700: #0369a1;
+	--color-study-800: #075985;
+	--color-study-900: #0c4a6e;
+	--color-success-50: #f0fdf4;
+	--color-success-100: #dcfce7;
+	--color-success-200: #bbf7d0;
+	--color-success-300: #86efac;
+	--color-success-400: #4ade80;
+	--color-success-500: #22c55e;
+	--color-success-600: #16a34a;
+	--color-success-700: #15803d;
+	--color-success-800: #166534;
+	--color-success-900: #14532d;
+	--color-warning-50: #fffbeb;
+	--color-warning-100: #fef3c7;
+	--color-warning-200: #fde68a;
+	--color-warning-300: #fcd34d;
+	--color-warning-400: #fbbf24;
+	--color-warning-500: #f59e0b;
+	--color-warning-600: #d97706;
+	--color-warning-700: #b45309;
+	--color-warning-800: #92400e;
+	--color-warning-900: #78350f;
+	--radius: 0.75rem;
+	/* Added border color definition */
+	--color-border: hsl(214.3 31.8% 91.4%);
+	--color-background: hsl(0 0% 100%);
+	--color-foreground: hsl(240 10% 3.9%);
+}
+
+:root {
+	--background: 0 0% 100%;
+	--foreground: 240 10% 3.9%;
+	--card: 0 0% 100%;
+	--card-foreground: 240 10% 3.9%;
+	--popover: 0 0% 100%;
+	--popover-foreground: 240 10% 3.9%;
+	--primary: 221 83% 53%;
+	--primary-foreground: 210 40% 98%;
+	--secondary: 210 40% 96%;
+	--secondary-foreground: 222.2 84% 4.9%;
+	--muted: 210 40% 96%;
+	--muted-foreground: 215.4 16.3% 46.9%;
+	--accent: 210 40% 96%;
+	--accent-foreground: 222.2 84% 4.9%;
+	--destructive: 0 84.2% 60.2%;
+	--destructive-foreground: 210 40% 98%;
+	--border: 214.3 31.8% 91.4%;
+	--input: 214.3 31.8% 91.4%;
+	--ring: 221 83% 53%;
+	--sidebar-background: 0 0% 98%;
+	--sidebar-foreground: 240 5.3% 26.1%;
+	--sidebar-primary: 221 83% 53%;
+	--sidebar-primary-foreground: 0 0% 98%;
+	--sidebar-accent: 210 40% 96%;
+	--sidebar-accent-foreground: 222.2 84% 4.9%;
+	--sidebar-border: 214.3 31.8% 91.4%;
+	--sidebar-ring: 221 83% 53%;
+}
+
+.dark {
+	--background: 222.2 84% 4.9%;
+	--foreground: 210 40% 98%;
+	--card: 222.2 84% 4.9%;
+	--card-foreground: 210 40% 98%;
+	--popover: 222.2 84% 4.9%;
+	--popover-foreground: 210 40% 98%;
+	--primary: 221 83% 53%;
+	--primary-foreground: 222.2 84% 4.9%;
+	--secondary: 217.2 32.6% 17.5%;
+	--secondary-foreground: 210 40% 98%;
+	--muted: 217.2 32.6% 17.5%;
+	--muted-foreground: 215 20.2% 65.1%;
+	--accent: 217.2 32.6% 17.5%;
+	--accent-foreground: 210 40% 98%;
+	--destructive: 0 62.8% 30.6%;
+	--destructive-foreground: 210 40% 98%;
+	--border: 217.2 32.6% 17.5%;
+	--input: 217.2 32.6% 17.5%;
+	--ring: 221 83% 53%;
+	--sidebar-background: 222.2 84% 4.9%;
+	--sidebar-foreground: 210 40% 98%;
+	--sidebar-primary: 221 83% 53%;
+	--sidebar-primary-foreground: 222.2 84% 4.9%;
+	--sidebar-accent: 217.2 32.6% 17.5%;
+	--sidebar-accent-foreground: 210 40% 98%;
+	--sidebar-border: 217.2 32.6% 17.5%;
+	--sidebar-ring: 221 83% 53%;
+}
+
+@layer base {
+	* {
+		/* Fixed border utility to use proper color reference */
+		border-color: hsl(var(--border));
+	}
+	body {
+		@apply bg-background text-foreground;
+	}
+}
+
+@layer utilities {
+	.text-balance {
+		text-wrap: balance;
+	}
+}
+
+@layer components {
+	.gradient-bg {
+		background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+	}
+
+	.study-card {
+		@apply bg-gradient-to-br from-study-50 to-study-100 border-study-200;
+	}
+
+	.success-card {
+		@apply bg-gradient-to-br from-success-50 to-success-100 border-success-200;
+	}
+
+	.warning-card {
+		@apply bg-gradient-to-br from-warning-50 to-warning-100 border-warning-200;
+	}
+}
