@@ -7,22 +7,27 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import {
 	Clock,
 	Target,
 	TrendingUp,
-	Calendar,
-	BookOpen,
 	Award,
 	BarChart3,
 	PieChart,
+	Calendar,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { StatisticCards } from "@/components/dashboard/statistic-card";
+import AverageCards from "@/components/dashboard/average-card";
+import { useState } from "react";
+import { Progress } from "@/components/ui/progress";
+import Link from "next/link";
 
 export default function Dashboard() {
+	const [timePeriod, setTimePeriod] = useState("week"); // 'week' or 'month'
+	const [selectedWeek, setSelectedWeek] = useState(0); // 0 = current week, -1 = last week, etc.
+	const [selectedMonth, setSelectedMonth] = useState(0); // 0 = current month, -1 = last month, etc.
 	const todayStats = {
 		studyTime: 4.5,
 		goal: 6,
@@ -30,10 +35,120 @@ export default function Dashboard() {
 		subjects: ["Toán", "Lý", "Hóa"],
 	};
 
-	const weeklyProgress = 75;
-	const monthlyProgress = 60;
+	const subjectData = [
+		{ subject: "Toán", hours: 8.5, color: "bg-blue-500" },
+		{ subject: "Lý", hours: 6.2, color: "bg-green-500" },
+		{ subject: "Hóa", hours: 5.8, color: "bg-purple-500" },
+		{ subject: "Sinh", hours: 4.3, color: "bg-orange-500" },
+		{ subject: "Anh", hours: 3.7, color: "bg-pink-500" },
+		{ subject: "Văn", hours: 1.8, color: "bg-indigo-500" },
+	];
 
-	// Data for charts
+	const maxSubjectHours = Math.max(...subjectData.map((s) => s.hours));
+	const subjectDataWithPercentage = subjectData.map((subject) => ({
+		...subject,
+		percentage: Math.round((subject.hours / maxSubjectHours) * 100),
+	}));
+
+	const getAverageStats = () => {
+		if (timePeriod === "week") {
+			const weekData = [
+				{
+					daily: 5.3,
+					weekly: 37.2,
+					monthly: 158.4,
+					lastComparison: +0.8,
+					monthComparison: +12.3,
+				},
+				{
+					daily: 4.5,
+					weekly: 31.5,
+					monthly: 142.1,
+					lastComparison: -0.8,
+					monthComparison: +8.7,
+				},
+				{
+					daily: 6.1,
+					weekly: 42.7,
+					monthly: 171.2,
+					lastComparison: +1.6,
+					monthComparison: +15.9,
+				},
+			];
+			return weekData[Math.abs(selectedWeek)] || weekData[0];
+		} else {
+			const monthData = [
+				{
+					daily: 5.3,
+					weekly: 37.2,
+					monthly: 158.4,
+					lastComparison: +12.3,
+					weekComparison: +2.1,
+				},
+				{
+					daily: 4.8,
+					weekly: 33.6,
+					monthly: 146.1,
+					lastComparison: -12.3,
+					weekComparison: -3.6,
+				},
+				{
+					daily: 5.9,
+					weekly: 41.3,
+					monthly: 177.8,
+					lastComparison: +31.7,
+					weekComparison: +7.7,
+				},
+			];
+			return monthData[Math.abs(selectedMonth)] || monthData[0];
+		}
+	};
+
+	const averageStats = getAverageStats();
+
+	const upcomingGoals = [
+		{
+			title: "Hoàn thành 45h học tuần này",
+			progress: 75,
+			deadline: "2 ngày",
+			type: "weekly",
+		},
+		{
+			title: "Ôn tập Toán cho kiểm tra",
+			progress: 60,
+			deadline: "5 ngày",
+			type: "exam",
+		},
+		{
+			title: "Đạt 180h học trong tháng",
+			progress: 40,
+			deadline: "15 ngày",
+			type: "monthly",
+		},
+	];
+
+	const upcomingSchedule = [
+		{
+			subject: "Toán",
+			time: "14:00 - 16:00",
+			date: "Hôm nay",
+			type: "study",
+		},
+		{
+			subject: "Lý",
+			time: "19:00 - 20:30",
+			date: "Hôm nay",
+			type: "review",
+		},
+		{ subject: "Hóa", time: "08:00 - 10:00", date: "Mai", type: "study" },
+		{
+			subject: "Kiểm tra Toán",
+			time: "07:30 - 09:00",
+			date: "T6",
+			type: "exam",
+		},
+	];
+
 	const weeklyData = [
 		{ day: "T2", hours: 5.5, goal: 6 },
 		{ day: "T3", hours: 6.2, goal: 6 },
@@ -43,23 +158,6 @@ export default function Dashboard() {
 		{ day: "T7", hours: 3.2, goal: 6 },
 		{ day: "CN", hours: 4.5, goal: 6 },
 	];
-
-	const subjectData = [
-		{ subject: "Toán", hours: 8.5, color: "bg-blue-500", percentage: 28 },
-		{ subject: "Lý", hours: 6.2, color: "bg-green-500", percentage: 21 },
-		{ subject: "Hóa", hours: 5.8, color: "bg-purple-500", percentage: 19 },
-		{ subject: "Sinh", hours: 4.3, color: "bg-orange-500", percentage: 14 },
-		{ subject: "Anh", hours: 3.7, color: "bg-pink-500", percentage: 12 },
-		{ subject: "Văn", hours: 1.8, color: "bg-indigo-500", percentage: 6 },
-	];
-
-	const averageStats = {
-		daily: 5.3,
-		weekly: 37.2,
-		monthly: 158.4,
-		lastWeekComparison: +0.8,
-		lastMonthComparison: +12.3,
-	};
 
 	const maxHours = Math.max(
 		...weeklyData.map((d) => Math.max(d.hours, d.goal))
@@ -80,141 +178,108 @@ export default function Dashboard() {
 			<StatisticCards />
 
 			{/* Average Study Time Stats */}
-			<Card className="bg-gradient-to-br from-indigo-50 to-blue-50 border-indigo-200">
-				<CardHeader>
-					<CardTitle className="flex items-center gap-2 text-indigo-800">
-						<BarChart3 className="h-5 w-5" />
-						Thống kê thời gian học trung bình
-					</CardTitle>
-					<CardDescription className="text-indigo-600">
-						Phân tích xu hướng học tập của bạn qua các khoảng thời
-						gian
-					</CardDescription>
-				</CardHeader>
-				<CardContent>
-					<div className="grid gap-6 md:grid-cols-3">
-						<div className="text-center p-4 bg-white/60 rounded-lg border border-indigo-200">
-							<div className="text-3xl font-bold text-indigo-900 mb-1">
-								{averageStats.daily}h
-							</div>
-							<div className="text-sm font-medium text-indigo-700 mb-2">
-								Trung bình/ngày
-							</div>
-							<div className="text-xs text-indigo-600 flex items-center justify-center gap-1">
-								<TrendingUp className="h-3 w-3" />+
-								{averageStats.lastWeekComparison}h tuần trước
-							</div>
-						</div>
-
-						<div className="text-center p-4 bg-white/60 rounded-lg border border-indigo-200">
-							<div className="text-3xl font-bold text-indigo-900 mb-1">
-								{averageStats.weekly}h
-							</div>
-							<div className="text-sm font-medium text-indigo-700 mb-2">
-								Trung bình/tuần
-							</div>
-							<div className="text-xs text-indigo-600">
-								Mục tiêu: 42h/tuần
-							</div>
-						</div>
-
-						<div className="text-center p-4 bg-white/60 rounded-lg border border-indigo-200">
-							<div className="text-3xl font-bold text-indigo-900 mb-1">
-								{averageStats.monthly}h
-							</div>
-							<div className="text-sm font-medium text-indigo-700 mb-2">
-								Trung bình/tháng
-							</div>
-							<div className="text-xs text-indigo-600 flex items-center justify-center gap-1">
-								<TrendingUp className="h-3 w-3" />+
-								{averageStats.lastMonthComparison}h tháng trước
-							</div>
-						</div>
-					</div>
-				</CardContent>
-			</Card>
+			<AverageCards
+				timePeriod={timePeriod}
+				setTimePeriod={setTimePeriod}
+				selectedWeek={selectedWeek}
+				setSelectedWeek={selectedWeek}
+				selectedMonth={selectedMonth}
+				setSelectedMonth={setSelectedMonth}
+			/>
 
 			<div className="grid gap-6 lg:grid-cols-2">
-				{/* Weekly Study Chart */}
-				<Card className="bg-gradient-to-br from-slate-50 to-gray-50 border-gray-200">
+				{/* Upcoming Goals */}
+				<Card className="bg-gradient-to-br from-cyan-50 to-blue-50 border-cyan-200">
 					<CardHeader>
-						<CardTitle className="flex items-center gap-2 text-gray-800">
-							<BarChart3 className="h-5 w-5" />
-							Biểu đồ học tập tuần này
+						<CardTitle className="flex items-center gap-2 text-cyan-800">
+							<Target className="h-5 w-5" />
+							Mục tiêu sắp tới
 						</CardTitle>
-						<CardDescription className="text-gray-600">
-							So sánh thời gian học thực tế với mục tiêu hàng ngày
+						<CardDescription className="text-cyan-600">
+							Theo dõi tiến độ các mục tiêu đã đặt
 						</CardDescription>
 					</CardHeader>
-					<CardContent>
-						<div className="space-y-4">
-							{weeklyData.map((day, index) => (
-								<div key={index} className="space-y-2">
-									<div className="flex justify-between text-sm font-medium">
-										<span className="text-gray-700">
-											{day.day}
-										</span>
-										<span className="text-gray-600">
-											{day.hours}h / {day.goal}h
-										</span>
-									</div>
-									<div className="relative">
-										{/* Background bar for goal */}
-										<div className="w-full h-6 bg-gray-200 rounded-full overflow-hidden">
-											{/* Actual hours bar */}
-											<div
-												className={`h-full rounded-full transition-all duration-500 ${
-													day.hours >= day.goal
-														? "bg-gradient-to-r from-green-400 to-green-500"
-														: day.hours >=
-														  day.goal * 0.8
-														? "bg-gradient-to-r from-blue-400 to-blue-500"
-														: "bg-gradient-to-r from-orange-400 to-orange-500"
-												}`}
-												style={{
-													width: `${Math.min(
-														(day.hours / maxHours) *
-															100,
-														100
-													)}%`,
-												}}
-											/>
-											{/* Goal line */}
-											<div
-												className="absolute top-0 w-0.5 h-full bg-red-500"
-												style={{
-													left: `${
-														(day.goal / maxHours) *
-														100
-													}%`,
-												}}
-											/>
-										</div>
-									</div>
+					<CardContent className="space-y-4">
+						{upcomingGoals.map((goal, index) => (
+							<div
+								key={index}
+								className="p-3 bg-white/60 rounded-lg border border-cyan-200"
+							>
+								<div className="flex justify-between items-start mb-2">
+									<h4 className="font-medium text-cyan-800 text-sm">
+										{goal.title}
+									</h4>
+									<Badge
+										variant="outline"
+										className="text-xs border-cyan-300 text-cyan-700"
+									>
+										{goal.deadline}
+									</Badge>
 								</div>
-							))}
-						</div>
-						<div className="mt-4 flex items-center gap-4 text-xs text-gray-600">
-							<div className="flex items-center gap-2">
-								<div className="w-3 h-3 bg-gradient-to-r from-green-400 to-green-500 rounded"></div>
-								<span>Đạt mục tiêu</span>
+								<div className="space-y-2">
+									<div className="flex justify-between text-xs text-cyan-600">
+										<span>Tiến độ</span>
+										<span>{goal.progress}%</span>
+									</div>
+									<Progress
+										value={goal.progress}
+										className="h-2"
+									/>
+								</div>
 							</div>
-							<div className="flex items-center gap-2">
-								<div className="w-3 h-3 bg-gradient-to-r from-blue-400 to-blue-500 rounded"></div>
-								<span>Gần đạt (80%+)</span>
-							</div>
-							<div className="flex items-center gap-2">
-								<div className="w-3 h-3 bg-gradient-to-r from-orange-400 to-orange-500 rounded"></div>
-								<span>Chưa đạt</span>
-							</div>
-							<div className="flex items-center gap-2">
-								<div className="w-0.5 h-3 bg-red-500"></div>
-								<span>Mục tiêu</span>
-							</div>
-						</div>
+						))}
 					</CardContent>
 				</Card>
 
+				{/* Upcoming Schedule */}
+				<Card className="bg-gradient-to-br from-teal-50 to-green-50 border-teal-200">
+					<CardHeader>
+						<CardTitle className="flex items-center gap-2 text-teal-800">
+							<Calendar className="h-5 w-5" />
+							Lịch học sắp tới
+						</CardTitle>
+						<CardDescription className="text-teal-600">
+							Các buổi học và kiểm tra trong tuần
+						</CardDescription>
+					</CardHeader>
+					<CardContent className="space-y-3">
+						{upcomingSchedule.map((item, index) => (
+							<div
+								key={index}
+								className="flex items-center justify-between p-3 bg-white/60 rounded-lg border border-teal-200"
+							>
+								<div className="flex items-center gap-3">
+									<div
+										className={`w-3 h-3 rounded-full ${
+											item.type === "exam"
+												? "bg-red-500"
+												: item.type === "review"
+												? "bg-orange-500"
+												: "bg-teal-500"
+										}`}
+									/>
+									<div>
+										<p className="font-medium text-teal-800 text-sm">
+											{item.subject}
+										</p>
+										<p className="text-xs text-teal-600">
+											{item.time}
+										</p>
+									</div>
+								</div>
+								<Badge
+									variant="secondary"
+									className="bg-teal-100 text-teal-800 text-xs"
+								>
+									{item.date}
+								</Badge>
+							</div>
+						))}
+					</CardContent>
+				</Card>
+			</div>
+
+			<div className="grid gap-6 md:grid-cols-2">
 				{/* Subject Distribution Chart */}
 				<Card className="bg-gradient-to-br from-rose-50 to-pink-50 border-rose-200">
 					<CardHeader>
@@ -223,12 +288,12 @@ export default function Dashboard() {
 							Phân bố thời gian theo môn học
 						</CardTitle>
 						<CardDescription className="text-rose-600">
-							Tổng thời gian học trong tuần qua
+							Tỷ lệ thời gian học các môn
 						</CardDescription>
 					</CardHeader>
 					<CardContent>
 						<div className="space-y-3">
-							{subjectData.map((subject, index) => (
+							{subjectDataWithPercentage.map((subject, index) => (
 								<div key={index} className="space-y-2">
 									<div className="flex justify-between items-center">
 										<div className="flex items-center gap-2">
@@ -242,9 +307,6 @@ export default function Dashboard() {
 										<div className="text-right">
 											<span className="text-sm font-medium text-gray-900">
 												{subject.hours}h
-											</span>
-											<span className="text-xs text-gray-500 ml-2">
-												({subject.percentage}%)
 											</span>
 										</div>
 									</div>
@@ -264,7 +326,7 @@ export default function Dashboard() {
 						<div className="mt-6 p-4 bg-white/60 rounded-lg border border-rose-200">
 							<div className="text-center">
 								<div className="text-2xl font-bold text-rose-900">
-									{subjectData.reduce(
+									{subjectDataWithPercentage.reduce(
 										(sum, subject) => sum + subject.hours,
 										0
 									)}
@@ -277,9 +339,7 @@ export default function Dashboard() {
 						</div>
 					</CardContent>
 				</Card>
-			</div>
 
-			<div className="grid gap-6 md:grid-cols-2">
 				{/* Today's Activity */}
 				<Card className="bg-gradient-to-br from-emerald-50 to-green-50 border-emerald-200">
 					<CardHeader>
@@ -312,53 +372,6 @@ export default function Dashboard() {
 						))}
 					</CardContent>
 				</Card>
-
-				{/* Recent Achievements */}
-				<Card className="bg-gradient-to-br from-amber-50 to-yellow-50 border-amber-200">
-					<CardHeader>
-						<CardTitle className="text-amber-800">
-							Thành tích gần đây
-						</CardTitle>
-						<CardDescription className="text-amber-600">
-							Những cột mốc bạn đã đạt được
-						</CardDescription>
-					</CardHeader>
-					<CardContent className="space-y-4">
-						<div className="flex items-center gap-3 p-3 bg-white/60 rounded-lg border border-amber-200">
-							<Award className="h-8 w-8 text-yellow-500" />
-							<div>
-								<p className="font-medium text-amber-800">
-									Học 7 ngày liên tiếp
-								</p>
-								<p className="text-sm text-amber-600">
-									2 ngày trước
-								</p>
-							</div>
-						</div>
-						<div className="flex items-center gap-3 p-3 bg-white/60 rounded-lg border border-amber-200">
-							<Target className="h-8 w-8 text-green-500" />
-							<div>
-								<p className="font-medium text-amber-800">
-									Hoàn thành mục tiêu tuần
-								</p>
-								<p className="text-sm text-amber-600">
-									1 tuần trước
-								</p>
-							</div>
-						</div>
-						<div className="flex items-center gap-3 p-3 bg-white/60 rounded-lg border border-amber-200">
-							<Clock className="h-8 w-8 text-blue-500" />
-							<div>
-								<p className="font-medium text-amber-800">
-									Học 50 giờ trong tháng
-								</p>
-								<p className="text-sm text-amber-600">
-									2 tuần trước
-								</p>
-							</div>
-						</div>
-					</CardContent>
-				</Card>
 			</div>
 
 			{/* Quick Actions */}
@@ -374,22 +387,31 @@ export default function Dashboard() {
 				<CardContent>
 					<div className="flex gap-4 flex-wrap">
 						<Button className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600">
-							<Clock className="mr-2 h-4 w-4" />
-							Bắt đầu học
+							<Link
+								className="flex flex-row gap-1 items-center"
+								href="/study"
+							>
+								<Clock className="mr-2 h-4 w-4" />
+								Bắt đầu học
+							</Link>
 						</Button>
-						<Button
-							variant="outline"
-							className="border-violet-300 text-violet-700 hover:bg-violet-50 bg-transparent"
-						>
-							<Target className="mr-2 h-4 w-4" />
-							Đặt mục tiêu mới
+						<Button className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600">
+							<Link
+								className="flex flex-row gap-1 items-center"
+								href="/goals"
+							>
+								<Target className="mr-2 h-4 w-4" />
+								Đặt mục tiêu mới
+							</Link>
 						</Button>
-						<Button
-							variant="outline"
-							className="border-violet-300 text-violet-700 hover:bg-violet-50 bg-transparent"
-						>
-							<TrendingUp className="mr-2 h-4 w-4" />
-							Xem tiến độ
+						<Button className="bg-gradient-to-r from-pink-500 to-red-500 hover:from-pink-600 hover:to-red-600">
+							<Link
+								className="flex flex-row gap-1 items-center"
+								href="/progress"
+							>
+								<TrendingUp className="mr-2 h-4 w-4" />
+								Xem tiến độ
+							</Link>
 						</Button>
 					</div>
 				</CardContent>

@@ -30,6 +30,7 @@ import {
 } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { cn } from "@/lib/utils";
 
 const menuItems = [
 	{
@@ -50,29 +51,29 @@ const menuItems = [
 		title: "Lịch sử & Tiến bộ",
 		url: "/progress",
 		icon: TrendingUp,
-		color: "text-purple-600",
-		bgColor: "bg-purple-50",
+		color: "text-cyan-600",
+		bgColor: "bg-cyan-50",
 	},
 	{
 		title: "Mục tiêu",
 		url: "/goals",
 		icon: Target,
-		color: "text-orange-600",
-		bgColor: "bg-orange-50",
+		color: "text-amber-600",
+		bgColor: "bg-amber-50",
 	},
 	{
 		title: "Thông báo",
 		url: "/notifications",
 		icon: Bell,
-		color: "text-pink-600",
-		bgColor: "bg-pink-50",
+		color: "text-red-600",
+		bgColor: "bg-red-50",
 	},
 	{
 		title: "Lịch học",
 		url: "/calendar",
 		icon: Calendar,
-		color: "text-indigo-600",
-		bgColor: "bg-indigo-50",
+		color: "text-purple-600",
+		bgColor: "bg-purple-50",
 	},
 	{
 		title: "Cài đặt",
@@ -93,7 +94,7 @@ export function AppSidebar() {
 			className={`border-r-0 shadow-lg transition-all duration-200`}
 		>
 			<SidebarHeader className="border-b border-gray-100 bg-gradient-to-r from-blue-50 to-purple-50">
-				<div className="flex items-center gap-3 px-2.5 py-4">
+				<div className="flex items-center gap-3 px-2.5 py-1.5">
 					<div className="relative">
 						<div className="absolute inset-0 bg-gradient-to-r from-indigo-500 to-cyan-500 rounded-xl blur-sm opacity-75" />
 						<div className="relative bg-gradient-to-r from-indigo-500 to-cyan-500 p-2 rounded-xl">
@@ -110,7 +111,7 @@ export function AppSidebar() {
 				</div>
 			</SidebarHeader>
 
-			<SidebarContent className="bg-gradient-to-b from-white to-gray-50/50 ">
+			<SidebarContent className="bg-gradient-to-b from-white to-gray-100">
 				<SidebarGroup>
 					<SidebarGroupLabel className="text-base my-1 text-gray-600 font-semibold">
 						Menu chính
@@ -128,19 +129,23 @@ export function AppSidebar() {
 										<SidebarMenuButton
 											asChild
 											isActive={isActive}
-											className={`
-												w-full transition-all duration-100 hover:scale-105 h-11 ${
-													!open && "justify-center"
-												}
-												${
-													isActive
-														? `${item.bgColor} ${item.color} shadow-md border border-gray-200`
-														: "hover:bg-gray-200 text-gray-700"
-												}
-											`}
+											className={cn(
+												"w-full transition-all duration-100 hover:scale-105 h-11 p-0",
+												!open && "justify-center",
+												isActive
+													? `shadow-md border border-gray-200`
+													: "hover:bg-gray-200 text-gray-700"
+											)}
 										>
 											<Link href={item.url}>
-												<div className="flex items-center justify-center gap-3 rounded-lg text-base font-medium">
+												<div
+													className={cn(
+														"flex px-3 h-full items-center justify-left gap-3  text-base font-medium",
+														open && "w-full",
+														isActive &&
+															`${item.color} ${item.bgColor}`
+													)}
+												>
 													<item.icon className="h-6 w-6" />
 													{open && item.title}
 												</div>

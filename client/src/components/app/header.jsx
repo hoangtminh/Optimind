@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 
 export function Header() {
 	return (
-		<header className="flex sticky top-0 h-16 items-center gap-4 border-b border-gray-100 bg-white/80 backdrop-blur-lg px-6 shadow-sm">
+		<header className="flex sticky w-full top-0 h-16 z-1 items-center gap-4 border-b border-gray-100 bg-white backdrop-blur-md px-6">
 			<SidebarTrigger className="hover:bg-blue-50 hover:text-blue-600 transition-colors" />
 
 			<div className="flex-1 flex items-center gap-4">
