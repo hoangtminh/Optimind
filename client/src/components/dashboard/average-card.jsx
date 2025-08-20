@@ -272,6 +272,35 @@ const AverageCards = ({
 									/>
 								</ComposedChart>
 							</ChartContainer>
+							<div className="my-2 flex flex-wrap justify-around gap-4 text-sm">
+								<div className="flex items-center gap-2">
+									<div
+										className="h-3 w-3 rounded"
+										style={{
+											backgroundColor: getBarColor(100),
+										}}
+									></div>
+									<span>Hoàn thành</span>
+								</div>
+								<div className="flex items-center gap-2">
+									<div
+										className="h-3 w-3 rounded"
+										style={{
+											backgroundColor: getBarColor(80),
+										}}
+									></div>
+									<span>Gần đạt (80%+)</span>
+								</div>
+								<div className="flex items-center gap-2">
+									<div
+										className="h-3 w-3 rounded"
+										style={{
+											backgroundColor: getBarColor(50),
+										}}
+									></div>
+									<span>Chưa đạt (&lt;80%)</span>
+								</div>
+							</div>
 						</CardContent>
 					</Card>
 

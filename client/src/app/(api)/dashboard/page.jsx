@@ -23,6 +23,7 @@ import AverageCards from "@/components/dashboard/average-card";
 import { useState } from "react";
 import { Progress } from "@/components/ui/progress";
 import Link from "next/link";
+import DistributionChart from "@/components/dashboard/distribution-chart";
 
 export default function Dashboard() {
 	const [timePeriod, setTimePeriod] = useState("week"); // 'week' or 'month'
@@ -34,21 +35,6 @@ export default function Dashboard() {
 		sessions: 3,
 		subjects: ["Toán", "Lý", "Hóa"],
 	};
-
-	const subjectData = [
-		{ subject: "Toán", hours: 8.5, color: "bg-blue-500" },
-		{ subject: "Lý", hours: 6.2, color: "bg-green-500" },
-		{ subject: "Hóa", hours: 5.8, color: "bg-purple-500" },
-		{ subject: "Sinh", hours: 4.3, color: "bg-orange-500" },
-		{ subject: "Anh", hours: 3.7, color: "bg-pink-500" },
-		{ subject: "Văn", hours: 1.8, color: "bg-indigo-500" },
-	];
-
-	const maxSubjectHours = Math.max(...subjectData.map((s) => s.hours));
-	const subjectDataWithPercentage = subjectData.map((subject) => ({
-		...subject,
-		percentage: Math.round((subject.hours / maxSubjectHours) * 100),
-	}));
 
 	const getAverageStats = () => {
 		if (timePeriod === "week") {
@@ -281,64 +267,7 @@ export default function Dashboard() {
 
 			<div className="grid gap-6 md:grid-cols-2">
 				{/* Subject Distribution Chart */}
-				<Card className="bg-gradient-to-br from-rose-50 to-pink-50 border-rose-200">
-					<CardHeader>
-						<CardTitle className="flex items-center gap-2 text-rose-800">
-							<PieChart className="h-5 w-5" />
-							Phân bố thời gian theo môn học
-						</CardTitle>
-						<CardDescription className="text-rose-600">
-							Tỷ lệ thời gian học các môn
-						</CardDescription>
-					</CardHeader>
-					<CardContent>
-						<div className="space-y-3">
-							{subjectDataWithPercentage.map((subject, index) => (
-								<div key={index} className="space-y-2">
-									<div className="flex justify-between items-center">
-										<div className="flex items-center gap-2">
-											<div
-												className={`w-3 h-3 rounded-full ${subject.color}`}
-											></div>
-											<span className="font-medium text-gray-700">
-												{subject.subject}
-											</span>
-										</div>
-										<div className="text-right">
-											<span className="text-sm font-medium text-gray-900">
-												{subject.hours}h
-											</span>
-										</div>
-									</div>
-									<div className="w-full bg-gray-200 rounded-full h-2">
-										<div
-											className={`h-2 rounded-full ${subject.color} transition-all duration-500`}
-											style={{
-												width: `${subject.percentage}%`,
-											}}
-										></div>
-									</div>
-								</div>
-							))}
-						</div>
-
-						{/* Summary */}
-						<div className="mt-6 p-4 bg-white/60 rounded-lg border border-rose-200">
-							<div className="text-center">
-								<div className="text-2xl font-bold text-rose-900">
-									{subjectDataWithPercentage.reduce(
-										(sum, subject) => sum + subject.hours,
-										0
-									)}
-									h
-								</div>
-								<div className="text-sm text-rose-700">
-									Tổng thời gian học tuần
-								</div>
-							</div>
-						</div>
-					</CardContent>
-				</Card>
+				<DistributionChart />
 
 				{/* Today's Activity */}
 				<Card className="bg-gradient-to-br from-emerald-50 to-green-50 border-emerald-200">
