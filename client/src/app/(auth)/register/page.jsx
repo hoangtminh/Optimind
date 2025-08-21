@@ -1,25 +1,19 @@
 "use client";
 
 import { useState } from "react";
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import {
-	BookOpen,
+	Brain,
 	Eye,
 	EyeOff,
-	Sparkles,
-	GraduationCap,
 	User,
 	Mail,
 	Lock,
+	Shield,
+	BookOpen,
+	Users,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -35,45 +29,117 @@ export default function RegisterPage() {
 
 	const handleRegister = (e) => {
 		e.preventDefault();
-		// Handle register logic here
 		console.log("Register attempt:", formData);
 	};
 
 	return (
-		<div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 via-blue-50 to-purple-50 p-4 relative overflow-hidden">
-			{/* Background decorations */}
-			<div className="absolute inset-0 overflow-hidden">
-				<div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-green-400/20 to-blue-400/20 rounded-full blur-3xl" />
-				<div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-br from-purple-400/20 to-pink-400/20 rounded-full blur-3xl" />
-				<div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-br from-yellow-400/10 to-green-400/10 rounded-full blur-3xl" />
-			</div>
+		<div className="min-h-screen flex">
+			{/* Left decorative side */}
+			<div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-emerald-600 via-teal-600 to-cyan-600 relative overflow-hidden">
+				{/* Animated blur objects */}
+				<div className="absolute inset-0">
+					<div className="absolute top-16 left-24 w-28 h-28 bg-white/10 rounded-full blur-xl animate-pulse" />
+					<div
+						className="absolute top-32 right-28 w-20 h-20 bg-emerald-300/20 rounded-full blur-lg animate-bounce"
+						style={{ animationDuration: "2.5s" }}
+					/>
+					<div
+						className="absolute bottom-28 left-20 w-44 h-44 bg-teal-300/15 rounded-full blur-2xl animate-pulse"
+						style={{ animationDelay: "1.5s" }}
+					/>
+					<div
+						className="absolute bottom-16 right-16 w-32 h-32 bg-cyan-300/20 rounded-full blur-xl animate-bounce"
+						style={{
+							animationDuration: "3.5s",
+							animationDelay: "1s",
+						}}
+					/>
+					<div
+						className="absolute top-1/3 left-1/4 w-40 h-40 bg-white/5 rounded-full blur-3xl animate-pulse"
+						style={{ animationDelay: "0.8s" }}
+					/>
+				</div>
 
-			<div className="relative z-10 w-full max-w-md">
-				<Card className="shadow-2xl border-0 bg-white/80 backdrop-blur-lg">
-					<CardHeader className="text-center pb-8">
-						<div className="flex justify-center mb-6">
-							<div className="relative">
-								<div className="absolute inset-0 bg-gradient-to-r from-green-500 to-blue-500 rounded-2xl blur-lg opacity-75" />
-								<div className="relative bg-gradient-to-r from-green-500 to-blue-500 p-4 rounded-2xl">
-									<BookOpen className="h-12 w-12 text-white" />
-								</div>
+				{/* Content */}
+				<div className="relative z-10 flex flex-col justify-center items-center text-white p-12 text-center">
+					{/* Logo */}
+					<div className="mb-8">
+						<div className="relative">
+							<div className="absolute inset-0 bg-white/20 rounded-3xl blur-lg" />
+							<div className="relative bg-white/10 backdrop-blur-sm p-6 rounded-3xl border border-white/20">
+								<Brain className="h-16 w-16 text-white" />
 							</div>
 						</div>
-						<CardTitle className="text-3xl font-bold bg-gradient-to-r from-green-600 via-blue-600 to-purple-600 bg-clip-text text-transparent">
-							Tạo tài khoản
-						</CardTitle>
-						<CardDescription className="text-lg text-gray-600 mt-2">
-							Bắt đầu hành trình học tập của bạn
-						</CardDescription>
-						<div className="flex items-center justify-center gap-2 mt-4">
-							<Sparkles className="h-4 w-4 text-yellow-500" />
-							<span className="text-sm text-gray-500">
-								Miễn phí và dễ sử dụng
-							</span>
-							<GraduationCap className="h-4 w-4 text-green-500" />
+					</div>
+
+					{/* System name */}
+					<h1 className="text-5xl font-bold mb-4 bg-gradient-to-r from-white to-emerald-200 bg-clip-text text-transparent">
+						Optimind
+					</h1>
+					<p className="text-xl text-white/80 mb-12 max-w-md">
+						Bắt đầu hành trình học tập thông minh cùng chúng tôi
+					</p>
+
+					{/* 3 advantages for register */}
+					<div className="space-y-6 max-w-sm">
+						<div className="flex items-center space-x-4 bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
+							<div className="bg-white/20 p-2 rounded-lg">
+								<BookOpen className="h-6 w-6 text-white" />
+							</div>
+							<div className="text-left">
+								<h3 className="font-semibold text-white">
+									Học tập cá nhân hóa
+								</h3>
+								<p className="text-sm text-white/70">
+									Lộ trình học tập phù hợp với bạn
+								</p>
+							</div>
 						</div>
-					</CardHeader>
-					<CardContent className="space-y-6">
+
+						<div className="flex items-center space-x-4 bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
+							<div className="bg-white/20 p-2 rounded-lg">
+								<Users className="h-6 w-6 text-white" />
+							</div>
+							<div className="text-left">
+								<h3 className="font-semibold text-white">
+									Cộng đồng học tập
+								</h3>
+								<p className="text-sm text-white/70">
+									Kết nối với người học khác
+								</p>
+							</div>
+						</div>
+
+						<div className="flex items-center space-x-4 bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
+							<div className="bg-white/20 p-2 rounded-lg">
+								<Shield className="h-6 w-6 text-white" />
+							</div>
+							<div className="text-left">
+								<h3 className="font-semibold text-white">
+									Hoàn toàn miễn phí
+								</h3>
+								<p className="text-sm text-white/70">
+									Không phí ẩn, trải nghiệm đầy đủ
+								</p>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			{/* Right form side */}
+			<div className="w-full lg:w-1/2 flex items-center justify-center p-8 bg-gray-50">
+				<div className="w-full max-w-md">
+					<div className="bg-white rounded-2xl shadow-xl p-8">
+						<div className="text-center mb-8">
+							<h2 className="text-3xl font-bold text-gray-900 mb-2">
+								Tạo tài khoản
+							</h2>
+							<p className="text-gray-600">
+								Bắt đầu hành trình học tập của bạn
+							</p>
+						</div>
+
 						<form onSubmit={handleRegister} className="space-y-6">
 							<div className="space-y-2">
 								<Label
@@ -95,7 +161,7 @@ export default function RegisterPage() {
 										})
 									}
 									required
-									className="h-12 border-gray-200 focus:border-green-500 focus:ring-green-500/20 bg-white/50"
+									className="h-12 border-gray-300 focus:border-emerald-500 focus:ring-emerald-500/20"
 								/>
 							</div>
 
@@ -119,7 +185,7 @@ export default function RegisterPage() {
 										})
 									}
 									required
-									className="h-12 border-gray-200 focus:border-green-500 focus:ring-green-500/20 bg-white/50"
+									className="h-12 border-gray-300 focus:border-emerald-500 focus:ring-emerald-500/20"
 								/>
 							</div>
 
@@ -146,7 +212,7 @@ export default function RegisterPage() {
 											})
 										}
 										required
-										className="h-12 border-gray-200 focus:border-green-500 focus:ring-green-500/20 bg-white/50 pr-12"
+										className="h-12 border-gray-300 focus:border-emerald-500 focus:ring-emerald-500/20 pr-12"
 									/>
 									<Button
 										type="button"
@@ -190,7 +256,7 @@ export default function RegisterPage() {
 											})
 										}
 										required
-										className="h-12 border-gray-200 focus:border-green-500 focus:ring-green-500/20 bg-white/50 pr-12"
+										className="h-12 border-gray-300 focus:border-emerald-500 focus:ring-emerald-500/20 pr-12"
 									/>
 									<Button
 										type="button"
@@ -216,7 +282,7 @@ export default function RegisterPage() {
 								<input
 									type="checkbox"
 									id="terms"
-									className="rounded border-gray-300 text-green-600 focus:ring-green-500 mt-1"
+									className="rounded border-gray-300 text-emerald-600 focus:ring-emerald-500 mt-1"
 									required
 								/>
 								<Label
@@ -226,14 +292,14 @@ export default function RegisterPage() {
 									Tôi đồng ý với{" "}
 									<Link
 										href="/terms"
-										className="text-green-600 hover:text-green-700 hover:underline font-medium"
+										className="text-emerald-600 hover:text-emerald-700 hover:underline font-medium"
 									>
 										Điều khoản sử dụng
 									</Link>{" "}
 									và{" "}
 									<Link
 										href="/privacy"
-										className="text-green-600 hover:text-green-700 hover:underline font-medium"
+										className="text-emerald-600 hover:text-emerald-700 hover:underline font-medium"
 									>
 										Chính sách bảo mật
 									</Link>
@@ -242,13 +308,13 @@ export default function RegisterPage() {
 
 							<Button
 								type="submit"
-								className="w-full h-12 bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-white font-medium shadow-lg hover:shadow-xl transition-all duration-300"
+								className="w-full h-12 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-medium shadow-lg hover:shadow-xl transition-all duration-300"
 							>
 								Tạo tài khoản
 							</Button>
 						</form>
 
-						<div className="relative">
+						<div className="relative my-6">
 							<div className="absolute inset-0 flex items-center">
 								<span className="w-full border-t border-gray-200" />
 							</div>
@@ -261,7 +327,7 @@ export default function RegisterPage() {
 
 						<Button
 							variant="outline"
-							className="w-full h-12 border-gray-200 hover:bg-gray-50 transition-all duration-300"
+							className="w-full h-12 border-gray-300 hover:bg-gray-50 transition-all duration-300 bg-transparent"
 						>
 							<svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
 								<path
@@ -284,19 +350,19 @@ export default function RegisterPage() {
 							Đăng ký với Google
 						</Button>
 
-						<div className="text-center">
+						<div className="text-center mt-6">
 							<p className="text-sm text-gray-600">
 								Đã có tài khoản?{" "}
 								<Link
 									href="/login"
-									className="text-green-600 hover:text-green-700 font-medium hover:underline"
+									className="text-emerald-600 hover:text-emerald-700 font-medium hover:underline"
 								>
 									Đăng nhập ngay
 								</Link>
 							</p>
 						</div>
-					</CardContent>
-				</Card>
+					</div>
+				</div>
 			</div>
 		</div>
 	);

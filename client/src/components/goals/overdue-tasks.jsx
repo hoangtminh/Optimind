@@ -1,0 +1,101 @@
+"use client";
+
+import React, { useState } from "react";
+
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "../ui/card";
+import { AlertTriangle, ChevronLeft, ChevronRight, Trash2 } from "lucide-react";
+import { Badge } from "../ui/badge";
+import { Button } from "../ui/button";
+import { Progress } from "../ui/progress";
+import { useTasks } from "@/hooks/use-task";
+import ProgressPattern from "../pattern/progress-pattern";
+
+const OverdueTasks = () => {
+	const { overdueLongTermTasks } = useTasks();
+	const [overdueTasksPage, setOverdueTasksPage] = useState(0); // Added pagination for overdue tasks
+
+	const overdueTasksPerPage = 4;
+	const totalOverduePages = Math.ceil(
+		overdueLongTermTasks.length / overdueTasksPerPage
+	);
+	const paginatedOverdueTasks = overdueLongTermTasks.slice(
+		overdueTasksPage * overdueTasksPerPage,
+		(overdueTasksPage + 1) * overdueTasksPerPage
+	);
+
+	return (
+		<Card className="bg-gradient-to-br from-red-50 to-rose-50 border-red-200">
+			<CardHeader className={"flex flex-row justify-between"}>
+				<div>
+					<CardTitle className="flex items-center gap-2 text-red-800">
+						<AlertTriangle className="h-5 w-5" />
+						Tasks quá hạn ({overdueLongTermTasks.length})
+					</CardTitle>
+					<CardDescription className="text-red-600">
+						Chỉ hiển thị tasks dài hạn cần ưu tiên xử lý
+					</CardDescription>
+				</div>
+				{totalOverduePages > 1 && (
+					<div className="flex gap-2 justify-between items-center border-red-200">
+						<Button
+							variant="ghost"
+							size="sm"
+							onClick={() =>
+								setOverdueTasksPage(
+									Math.max(0, overdueTasksPage - 1)
+								)
+							}
+							disabled={overdueTasksPage === 0}
+							className="text-red-600 hover:bg-red-100"
+						>
+							<ChevronLeft className="h-4 w-4 mr-1" />
+							Trước
+						</Button>
+						<span className="text-sm text-red-600">
+							Trang {overdueTasksPage + 1} / {totalOverduePages}
+						</span>
+						<Button
+							variant="ghost"
+							size="sm"
+							onClick={() =>
+								setOverdueTasksPage(
+									Math.min(
+										totalOverduePages - 1,
+										overdueTasksPage + 1
+									)
+								)
+							}
+							disabled={
+								overdueTasksPage === totalOverduePages - 1
+							}
+							className="text-red-600 hover:bg-red-100"
+						>
+							Sau
+							<ChevronRight className="h-4 w-4 ml-1" />
+						</Button>
+					</div>
+				)}
+			</CardHeader>
+			<CardContent className="space-y-4">
+				<div className="grid gap-4 lg:grid-cols-2 grid-cols-1">
+					{paginatedOverdueTasks.map((task) => (
+						<ProgressPattern
+							task={task}
+							color={"red"}
+							type={"overdue"}
+							key={task.id}
+						/>
+					))}
+				</div>
+			</CardContent>
+		</Card>
+	);
+};
+
+export default OverdueTasks;

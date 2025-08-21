@@ -13,7 +13,7 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "../ui/select";
-import { subjects } from "@/lib/study-data";
+import { subjects } from "@/data/study-data";
 import { Button } from "../ui/button";
 import { Checkbox } from "../ui/checkbox";
 import { Badge } from "../ui/badge";

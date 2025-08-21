@@ -1,24 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import {
-	BookOpen,
-	Eye,
-	EyeOff,
-	Sparkles,
-	GraduationCap,
-	Clock,
-} from "lucide-react";
+import { Brain, Eye, EyeOff, Target, Zap, TrendingUp } from "lucide-react";
 import Link from "next/link";
 
 export default function LoginPage() {
@@ -28,45 +14,118 @@ export default function LoginPage() {
 
 	const handleLogin = (e) => {
 		e.preventDefault();
-		// Handle login logic here
 		console.log("Login attempt:", { email, password });
 	};
 
 	return (
-		<div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-4 relative overflow-hidden">
-			{/* Background decorations */}
-			<div className="absolute inset-0 overflow-hidden">
-				<div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-blue-400/20 to-purple-400/20 rounded-full blur-3xl" />
-				<div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-br from-pink-400/20 to-orange-400/20 rounded-full blur-3xl" />
-				<div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-br from-green-400/10 to-blue-400/10 rounded-full blur-3xl" />
-			</div>
+		<div className="min-h-screen flex">
+			{/* Left decorative side */}
+			<div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-indigo-600 via-purple-600 to-cyan-600 relative overflow-hidden">
+				{/* Animated blur objects */}
+				<div className="absolute inset-0">
+					<div className="absolute top-20 left-20 w-32 h-32 bg-white/10 rounded-full blur-xl animate-pulse" />
+					<div
+						className="absolute top-40 right-32 w-24 h-24 bg-cyan-300/20 rounded-full blur-lg animate-bounce"
+						style={{ animationDuration: "3s" }}
+					/>
+					<div
+						className="absolute bottom-32 left-16 w-40 h-40 bg-purple-300/15 rounded-full blur-2xl animate-pulse"
+						style={{ animationDelay: "1s" }}
+					/>
+					<div
+						className="absolute bottom-20 right-20 w-28 h-28 bg-indigo-300/20 rounded-full blur-xl animate-bounce"
+						style={{
+							animationDuration: "4s",
+							animationDelay: "2s",
+						}}
+					/>
+					<div
+						className="absolute top-1/2 left-1/3 w-36 h-36 bg-white/5 rounded-full blur-3xl animate-pulse"
+						style={{ animationDelay: "0.5s" }}
+					/>
+				</div>
 
-			<div className="relative z-10 w-full max-w-md">
-				<Card className="shadow-2xl border-0 bg-white/80 backdrop-blur-lg">
-					<CardHeader className="text-center pb-8">
-						<div className="flex justify-center mb-6">
-							<div className="relative">
-								<div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-500 rounded-2xl blur-lg opacity-75" />
-								<div className="relative bg-gradient-to-r from-blue-500 to-purple-500 p-4 rounded-2xl">
-									<BookOpen className="h-12 w-12 text-white" />
-								</div>
+				{/* Content */}
+				<div className="relative z-10 flex flex-col justify-center items-center text-white p-12 text-center">
+					{/* Logo */}
+					<div className="mb-8">
+						<div className="relative">
+							<div className="absolute inset-0 bg-white/20 rounded-3xl blur-lg" />
+							<div className="relative bg-white/10 backdrop-blur-sm p-6 rounded-3xl border border-white/20">
+								<Brain className="h-16 w-16 text-white" />
 							</div>
 						</div>
-						<CardTitle className="text-3xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
-							Study Tracker
-						</CardTitle>
-						<CardDescription className="text-lg text-gray-600 mt-2">
-							Đăng nhập để bắt đầu hành trình học tập
-						</CardDescription>
-						<div className="flex items-center justify-center gap-2 mt-4">
-							<Sparkles className="h-4 w-4 text-yellow-500" />
-							<span className="text-sm text-gray-500">
-								Theo dõi tiến độ một cách thông minh
-							</span>
-							<GraduationCap className="h-4 w-4 text-blue-500" />
+					</div>
+
+					{/* System name */}
+					<h1 className="text-5xl font-bold mb-4 bg-gradient-to-r from-white to-cyan-200 bg-clip-text text-transparent">
+						Optimind
+					</h1>
+					<p className="text-xl text-white/80 mb-12 max-w-md">
+						Nền tảng học tập thông minh giúp bạn đạt được tiềm năng
+						tối đa
+					</p>
+
+					{/* 3 advantages for login */}
+					<div className="space-y-6 max-w-sm">
+						<div className="flex items-center space-x-4 bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
+							<div className="bg-white/20 p-2 rounded-lg">
+								<Target className="h-6 w-6 text-white" />
+							</div>
+							<div className="text-left">
+								<h3 className="font-semibold text-white">
+									Theo dõi tiến độ
+								</h3>
+								<p className="text-sm text-white/70">
+									Quản lý mục tiêu học tập hiệu quả
+								</p>
+							</div>
 						</div>
-					</CardHeader>
-					<CardContent className="space-y-6">
+
+						<div className="flex items-center space-x-4 bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
+							<div className="bg-white/20 p-2 rounded-lg">
+								<Zap className="h-6 w-6 text-white" />
+							</div>
+							<div className="text-left">
+								<h3 className="font-semibold text-white">
+									Tăng tập trung
+								</h3>
+								<p className="text-sm text-white/70">
+									Cải thiện khả năng tập trung học tập
+								</p>
+							</div>
+						</div>
+
+						<div className="flex items-center space-x-4 bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
+							<div className="bg-white/20 p-2 rounded-lg">
+								<TrendingUp className="h-6 w-6 text-white" />
+							</div>
+							<div className="text-left">
+								<h3 className="font-semibold text-white">
+									Phân tích thông minh
+								</h3>
+								<p className="text-sm text-white/70">
+									Báo cáo chi tiết về hiệu suất
+								</p>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			{/* Right form side */}
+			<div className="w-full lg:w-1/2 flex items-center justify-center p-8 bg-gray-50">
+				<div className="w-full max-w-md">
+					<div className="bg-white rounded-2xl shadow-xl p-8">
+						<div className="text-center mb-8">
+							<h2 className="text-3xl font-bold text-gray-900 mb-2">
+								Chào mừng trở lại
+							</h2>
+							<p className="text-gray-600">
+								Đăng nhập để tiếp tục học tập
+							</p>
+						</div>
+
 						<form onSubmit={handleLogin} className="space-y-6">
 							<div className="space-y-2">
 								<Label
@@ -82,7 +141,7 @@ export default function LoginPage() {
 									value={email}
 									onChange={(e) => setEmail(e.target.value)}
 									required
-									className="h-12 border-gray-200 focus:border-blue-500 focus:ring-blue-500/20 bg-white/50"
+									className="h-12 border-gray-300 focus:border-indigo-500 focus:ring-indigo-500/20"
 								/>
 							</div>
 
@@ -105,7 +164,7 @@ export default function LoginPage() {
 											setPassword(e.target.value)
 										}
 										required
-										className="h-12 border-gray-200 focus:border-blue-500 focus:ring-blue-500/20 bg-white/50 pr-12"
+										className="h-12 border-gray-300 focus:border-indigo-500 focus:ring-indigo-500/20 pr-12"
 									/>
 									<Button
 										type="button"
@@ -130,7 +189,7 @@ export default function LoginPage() {
 									<input
 										type="checkbox"
 										id="remember"
-										className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+										className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
 									/>
 									<Label
 										htmlFor="remember"
@@ -141,7 +200,7 @@ export default function LoginPage() {
 								</div>
 								<Link
 									href="/forgot-password"
-									className="text-sm text-blue-600 hover:text-blue-700 hover:underline font-medium"
+									className="text-sm text-indigo-600 hover:text-indigo-700 hover:underline font-medium"
 								>
 									Quên mật khẩu?
 								</Link>
@@ -149,13 +208,13 @@ export default function LoginPage() {
 
 							<Button
 								type="submit"
-								className="w-full h-12 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white font-medium shadow-lg hover:shadow-xl transition-all duration-300"
+								className="w-full h-12 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-medium shadow-lg hover:shadow-xl transition-all duration-300"
 							>
 								Đăng nhập
 							</Button>
 						</form>
 
-						<div className="relative">
+						<div className="relative my-6">
 							<div className="absolute inset-0 flex items-center">
 								<span className="w-full border-t border-gray-200" />
 							</div>
@@ -168,7 +227,7 @@ export default function LoginPage() {
 
 						<Button
 							variant="outline"
-							className="w-full h-12 border-gray-200 hover:bg-gray-50 transition-all duration-300"
+							className="w-full h-12 border-gray-300 hover:bg-gray-50 transition-all duration-300 bg-transparent"
 						>
 							<svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
 								<path
@@ -191,39 +250,17 @@ export default function LoginPage() {
 							Đăng nhập với Google
 						</Button>
 
-						<div className="text-center">
+						<div className="text-center mt-6">
 							<p className="text-sm text-gray-600">
 								Chưa có tài khoản?{" "}
 								<Link
 									href="/register"
-									className="text-blue-600 hover:text-blue-700 font-medium hover:underline"
+									className="text-indigo-600 hover:text-indigo-700 font-medium hover:underline"
 								>
 									Đăng ký ngay
 								</Link>
 							</p>
 						</div>
-					</CardContent>
-				</Card>
-
-				{/* Features showcase */}
-				<div className="mt-8 grid grid-cols-3 gap-4 text-center">
-					<div className="bg-white/60 backdrop-blur-sm rounded-lg p-4 shadow-lg">
-						<Clock className="h-6 w-6 text-blue-500 mx-auto mb-2" />
-						<p className="text-xs text-gray-600 font-medium">
-							Theo dõi thời gian
-						</p>
-					</div>
-					<div className="bg-white/60 backdrop-blur-sm rounded-lg p-4 shadow-lg">
-						<GraduationCap className="h-6 w-6 text-purple-500 mx-auto mb-2" />
-						<p className="text-xs text-gray-600 font-medium">
-							Quản lý mục tiêu
-						</p>
-					</div>
-					<div className="bg-white/60 backdrop-blur-sm rounded-lg p-4 shadow-lg">
-						<Sparkles className="h-6 w-6 text-pink-500 mx-auto mb-2" />
-						<p className="text-xs text-gray-600 font-medium">
-							Thành tích
-						</p>
 					</div>
 				</div>
 			</div>
