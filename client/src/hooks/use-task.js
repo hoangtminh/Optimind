@@ -92,8 +92,6 @@ export function TasksProvider({ children }) {
 							status:
 								roundedValue >= task.target
 									? "completed"
-									: getDaysLeft(task.deadline) < 0
-									? "overdue"
 									: "active",
 					  }
 					: task
@@ -111,10 +109,7 @@ export function TasksProvider({ children }) {
 
 	const overdueLongTermTasks = tasks.filter(
 		// Only show long-term overdue tasks
-		(task) =>
-			task.taskType === "long-term" &&
-			(task.status === "overdue" ||
-				(task.status === "active" && getDaysLeft(task.deadline) < 0))
+		(task) => task.taskType === "long-term" && task.status === "overdue"
 	);
 
 	const contextValue = {

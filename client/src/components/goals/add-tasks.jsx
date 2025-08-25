@@ -32,12 +32,6 @@ const AddTask = () => {
 
 	return (
 		<Dialog open={addTaskDialogOpen} onOpenChange={setAddTaskDialogOpen}>
-			<DialogTrigger asChild>
-				<Button className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-500">
-					<Plus className="h-4 w-4 mr-2" />
-					Thêm task mới
-				</Button>
-			</DialogTrigger>
 			<DialogContent className="max-w-2xl">
 				<DialogHeader>
 					<DialogTitle>Tạo task mới</DialogTitle>
@@ -62,42 +56,6 @@ const AddTask = () => {
 					</div>
 					<div className="grid grid-cols-2 gap-4">
 						<div>
-							<Label htmlFor="subject">Môn học</Label>
-							<Select
-								value={newTask.subject}
-								onValueChange={(value) =>
-									setNewTask({
-										...newTask,
-										subject: value,
-									})
-								}
-							>
-								<SelectTrigger>
-									<SelectValue placeholder="Chọn môn học" />
-								</SelectTrigger>
-								<SelectContent>
-									<SelectItem value="Toán học">
-										Toán học
-									</SelectItem>
-									<SelectItem value="Vật lý">
-										Vật lý
-									</SelectItem>
-									<SelectItem value="Hóa học">
-										Hóa học
-									</SelectItem>
-									<SelectItem value="Sinh học">
-										Sinh học
-									</SelectItem>
-									<SelectItem value="Văn học">
-										Văn học
-									</SelectItem>
-									<SelectItem value="Tiếng Anh">
-										Tiếng Anh
-									</SelectItem>
-								</SelectContent>
-							</Select>
-						</div>
-						<div>
 							<Label htmlFor="taskType">Loại nhiệm vụ</Label>
 							<Select
 								value={newTask.taskType}
@@ -121,6 +79,54 @@ const AddTask = () => {
 								</SelectContent>
 							</Select>
 						</div>
+						<div className="grid grid-cols-2 gap-4">
+							{newTask.taskType === "daily" ? (
+								<div>
+									<Label htmlFor="repeatFrequency">
+										Tần suất lặp lại
+									</Label>
+									<Select
+										value={newTask.repeatFrequency}
+										onValueChange={(value) =>
+											setNewTask({
+												...newTask,
+												repeatFrequency: value,
+											})
+										}
+									>
+										<SelectTrigger>
+											<SelectValue />
+										</SelectTrigger>
+										<SelectContent>
+											<SelectItem value="daily">
+												Hàng ngày
+											</SelectItem>
+											<SelectItem value="weekly">
+												Hàng tuần
+											</SelectItem>
+											<SelectItem value="weekdays">
+												Thứ 2-6
+											</SelectItem>
+										</SelectContent>
+									</Select>
+								</div>
+							) : (
+								<div>
+									<Label htmlFor="deadline">Hạn</Label>
+									<Input
+										id="deadline"
+										type="date"
+										value={newTask.deadline}
+										onChange={(e) =>
+											setNewTask({
+												...newTask,
+												deadline: e.target.value,
+											})
+										}
+									/>
+								</div>
+							)}
+						</div>
 					</div>
 					<div className="grid grid-cols-2 gap-4">
 						<div>
@@ -140,12 +146,6 @@ const AddTask = () => {
 								<SelectContent>
 									<SelectItem value="study">
 										Thời gian học
-									</SelectItem>
-									<SelectItem value="score">
-										Điểm số
-									</SelectItem>
-									<SelectItem value="quantity">
-										Số lượng
 									</SelectItem>
 									<SelectItem value="task">
 										Nhiệm vụ
@@ -169,104 +169,6 @@ const AddTask = () => {
 								step="0.1"
 							/>
 						</div>
-					</div>
-					<div className="grid grid-cols-2 gap-4">
-						<div>
-							<Label htmlFor="unit">Đơn vị</Label>
-							<Select
-								value={newTask.unit}
-								onValueChange={(value) =>
-									setNewTask({
-										...newTask,
-										unit: value,
-									})
-								}
-							>
-								<SelectTrigger>
-									<SelectValue />
-								</SelectTrigger>
-								<SelectContent>
-									<SelectItem value="hours">Giờ</SelectItem>
-									<SelectItem value="points">Điểm</SelectItem>
-									<SelectItem value="words">Từ</SelectItem>
-									<SelectItem value="exercises">
-										Bài tập
-									</SelectItem>
-									<SelectItem value="chapters">
-										Chương
-									</SelectItem>
-								</SelectContent>
-							</Select>
-						</div>
-						{newTask.taskType === "daily" ? (
-							<div>
-								<Label htmlFor="repeatFrequency">
-									Tần suất lặp lại
-								</Label>
-								<Select
-									value={newTask.repeatFrequency}
-									onValueChange={(value) =>
-										setNewTask({
-											...newTask,
-											repeatFrequency: value,
-										})
-									}
-								>
-									<SelectTrigger>
-										<SelectValue />
-									</SelectTrigger>
-									<SelectContent>
-										<SelectItem value="daily">
-											Hàng ngày
-										</SelectItem>
-										<SelectItem value="weekly">
-											Hàng tuần
-										</SelectItem>
-										<SelectItem value="weekdays">
-											Thứ 2-6
-										</SelectItem>
-									</SelectContent>
-								</Select>
-							</div>
-						) : (
-							<div>
-								<Label htmlFor="deadline">Hạn chót</Label>
-								<Input
-									id="deadline"
-									type="date"
-									value={newTask.deadline}
-									onChange={(e) =>
-										setNewTask({
-											...newTask,
-											deadline: e.target.value,
-										})
-									}
-								/>
-							</div>
-						)}
-					</div>
-					<div>
-						<Label htmlFor="priority">Độ ưu tiên</Label>
-						<Select
-							value={newTask.priority}
-							onValueChange={(value) =>
-								setNewTask({
-									...newTask,
-									priority: value,
-								})
-							}
-						>
-							<SelectTrigger>
-								<SelectValue />
-							</SelectTrigger>
-							<SelectContent>
-								<SelectItem value="high">Cao</SelectItem>
-								<SelectItem value="medium">
-									Trung bình
-								</SelectItem>
-								<SelectItem value="low">Thấp</SelectItem>
-							</SelectContent>
-						</Select>
 					</div>
 					<div>
 						<Label htmlFor="notes">Ghi chú</Label>

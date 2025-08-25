@@ -6,16 +6,16 @@ export const tasksData = [
 		type: "study",
 		taskType: "long-term",
 		target: 20,
-		current: 15.5, // Added decimal values for time precision
+		current: 15.5,
 		unit: "hours",
 		deadline: "2024-02-15",
 		priority: "high",
 		status: "active",
-		notes: "Tập trung vào các bài tập khó", // Added notes field
+		notes: "Tập trung vào các bài tập khó",
 	},
 	{
 		id: 2,
-		title: "Đạt 8.5 điểm kiểm tra Vật lý",
+		title: "Hoàn thành bài tập Vật lý",
 		subject: "Vật lý",
 		type: "score",
 		taskType: "long-term",

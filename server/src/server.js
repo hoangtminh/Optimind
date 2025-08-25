@@ -2,6 +2,7 @@ import express, { Router } from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import apiRouter from "./routes/api-router";
+import { verifyToken } from "./middlewares/verifyToken";
 
 const router = Router();
 

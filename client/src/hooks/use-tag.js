@@ -1,26 +1,19 @@
 "use client";
+const { createContext, useState, useContext } = require("react");
 
-import { incompleteGoals } from "@/data/study-data";
+const TagContext = createContext();
 
-const { createContext, useContext, useState } = require("react");
-
-const StudyContext = createContext();
-
-export function useStudy() {
-	return useContext(StudyContext);
+export function useTag() {
+	return useContext(TagContext);
 }
 
-export function StudyProvider({ children }) {
-	// Session state
-	const [isRunning, setIsRunning] = useState(false);
-
-	// Goals state
-	const [currentGoalPage, setCurrentGoalPage] = useState(0);
-	const [goalSortBy, setGoalSortBy] = useState("progress");
-
+export function TagProvider({ children }) {
 	// Tag management
-	const [tagPage, setTagPage] = useState(0);
 	const [editingTag, setEditingTag] = useState(null);
+
+	// Dialog states for tag management
+	const [isAddTagDialogOpen, setIsAddTagDialogOpen] = useState(false);
+	const [isEditTagDialogOpen, setIsEditTagDialogOpen] = useState(false);
 
 	// Sample data
 	const [availableTags, setAvailableTags] = useState([
@@ -30,6 +23,11 @@ export function StudyProvider({ children }) {
 		{ id: 4, name: "Nghiên cứu", color: "#4169E1" },
 		{ id: 5, name: "Thực hành", color: "#FF7F50" },
 	]);
+
+	const [newTagData, setNewTagData] = useState({
+		name: "",
+		color: "#228B22",
+	});
 
 	const addTag = (newTagData) => {
 		if (newTagData.name.trim()) {
@@ -55,35 +53,23 @@ export function StudyProvider({ children }) {
 		setAvailableTags(availableTags.filter((tag) => tag.id !== id));
 	};
 
-	const sortedGoals = [...incompleteGoals].sort((a, b) => {
-		if (goalSortBy === "progress") {
-			return a.progress - b.progress;
-		} else {
-			return new Date(a.deadline) - new Date(b.deadline);
-		}
-	});
-
-	const paginatedGoals = sortedGoals.slice(
-		currentGoalPage * 5,
-		(currentGoalPage + 1) * 5
-	);
-
 	const contextValue = {
-		isRunning,
-		setIsRunning,
 		availableTags,
+		isAddTagDialogOpen,
+		isEditTagDialogOpen,
+		setIsAddTagDialogOpen,
+		setIsEditTagDialogOpen,
+		editingTag,
+		setEditingTag,
 		addTag,
 		updateTag,
 		deleteTag,
-		tagPage,
-		setTagPage,
-		paginatedGoals,
-		editingTag,
-		setEditingTag,
+		newTagData,
+		setNewTagData,
 	};
 	return (
-		<StudyContext.Provider value={contextValue}>
+		<TagContext.Provider value={contextValue}>
 			{children}
-		</StudyContext.Provider>
+		</TagContext.Provider>
 	);
 }

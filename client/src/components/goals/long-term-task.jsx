@@ -6,16 +6,13 @@ import {
 	CardHeader,
 	CardTitle,
 } from "../ui/card";
-import { Edit, Trash2, TrendingUp } from "lucide-react";
-import { Button } from "../ui/button";
-import { Progress } from "../ui/progress";
-import { Input } from "../ui/input";
+import { TrendingUp } from "lucide-react";
+
 import { useTasks } from "@/hooks/use-task";
-import { Badge } from "../ui/badge";
-import ProgressPattern from "../pattern/progress-pattern";
+import ProgressPattern from "./pattern/progress-pattern";
 
 const LongtermTask = () => {
-	const { tasks, updateProgress } = useTasks();
+	const { tasks } = useTasks();
 	const activeLongTermTasks = tasks.filter(
 		(task) => task.status === "active" && task.taskType === "long-term"
 	);

@@ -1,9 +1,9 @@
 import React from "react";
 
-import { Badge } from "../ui/badge";
-import { Button } from "../ui/button";
-import { Progress } from "../ui/progress";
-import { Input } from "../ui/input";
+import { Badge } from "../../ui/badge";
+import { Button } from "../../ui/button";
+import { Progress } from "../../ui/progress";
+import { Input } from "../../ui/input";
 import { Edit, Trash2 } from "lucide-react";
 import { useTasks } from "@/hooks/use-task";
 
@@ -19,23 +19,25 @@ const ProgressPattern = ({ task, color, type }) => {
 		>
 			<div className="flex items-start justify-between mb-2">
 				<div className="flex-1">
-					<h4 className="font-medium text-cyan-800 text-sm">
+					<div className={`font-medium text-${color}-800 text-sm`}>
 						{task.title}
-					</h4>
+					</div>
 					<div
 						className={`flex items-center gap-2 text-xs text-${color}-600`}
 					>
 						<span>{task.subject}</span>
-						<Badge variant="outline" className="text-xs">
-							{type === "daily"
-								? task.repeatFrequency === "daily"
-									? "Hàng ngày"
-									: task.repeatFrequency === "weekly"
-									? "Hàng tuần"
-									: "Thứ 2-6"
-								: ""}
-							{type === "long-term" && "Dài hạn"}
-						</Badge>
+						{type !== "overdue" && (
+							<Badge variant="outline" className="text-xs">
+								{type === "daily"
+									? task.repeatFrequency === "daily"
+										? "Hàng ngày"
+										: task.repeatFrequency === "weekly"
+										? "Hàng tuần"
+										: "Thứ 2-6"
+									: ""}
+								{type === "long-term" && "Dài hạn"}
+							</Badge>
+						)}
 					</div>
 					{task.notes && (
 						<p className={`text-xs text-${color}-600 mt-1 italic`}>
@@ -66,7 +68,7 @@ const ProgressPattern = ({ task, color, type }) => {
 			</div>
 			<div className="space-y-2">
 				<div
-					className={`flex gap-2 items-center justify-between text-xs text-${color}-600`}
+					className={`flex w-auto gap-2 items-center justify-between text-xs text-${color}-600`}
 				>
 					<Progress
 						value={(task.current / task.target) * 100}

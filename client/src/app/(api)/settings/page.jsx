@@ -134,13 +134,13 @@ export default function SettingsPage() {
 			<div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 				{/* Profile Settings */}
 				<div className="lg:col-span-2 space-y-6">
-					<Card>
+					<Card className="bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-200">
 						<CardHeader>
-							<CardTitle className="flex items-center gap-2">
+							<CardTitle className="flex items-center gap-2 text-blue-800">
 								<User className="h-5 w-5" />
 								Thông tin cá nhân
 							</CardTitle>
-							<CardDescription>
+							<CardDescription className="text-blue-600">
 								Cập nhật thông tin hồ sơ của bạn
 							</CardDescription>
 						</CardHeader>
@@ -264,13 +264,13 @@ export default function SettingsPage() {
 					</Card>
 
 					{/* Study Goals */}
-					<Card>
+					<Card className="bg-gradient-to-br from-green-50 to-emerald-50 border-green-200">
 						<CardHeader>
-							<CardTitle className="flex items-center gap-2">
+							<CardTitle className="flex items-center gap-2 text-green-800">
 								<Target className="h-5 w-5" />
 								Mục tiêu học tập
 							</CardTitle>
-							<CardDescription>
+							<CardDescription className="text-green-600">
 								Thiết lập mục tiêu và thời gian học
 							</CardDescription>
 						</CardHeader>
@@ -374,13 +374,13 @@ export default function SettingsPage() {
 					</Card>
 
 					{/* Preferences */}
-					<Card>
+					<Card className="bg-gradient-to-br from-purple-50 to-violet-50 border-purple-200">
 						<CardHeader>
-							<CardTitle className="flex items-center gap-2">
+							<CardTitle className="flex items-center gap-2 text-purple-800">
 								<Settings className="h-5 w-5" />
 								Tùy chỉnh giao diện
 							</CardTitle>
-							<CardDescription>
+							<CardDescription className="text-purple-600">
 								Cài đặt giao diện và ngôn ngữ
 							</CardDescription>
 						</CardHeader>
@@ -542,13 +542,13 @@ export default function SettingsPage() {
 				{/* Side Panel */}
 				<div className="space-y-6">
 					{/* Privacy Settings */}
-					<Card>
+					<Card className="bg-gradient-to-br from-red-50 to-rose-50 border-red-200">
 						<CardHeader>
-							<CardTitle className="flex items-center gap-2">
+							<CardTitle className="flex items-center gap-2 text-red-800">
 								<Shield className="h-5 w-5" />
 								Quyền riêng tư
 							</CardTitle>
-							<CardDescription>
+							<CardDescription className="text-red-600">
 								Kiểm soát dữ liệu cá nhân
 							</CardDescription>
 						</CardHeader>
@@ -643,17 +643,19 @@ export default function SettingsPage() {
 					</Card>
 
 					{/* Data Management */}
-					<Card>
+					<Card className="bg-gradient-to-br from-orange-50 to-amber-50 border-orange-200">
 						<CardHeader>
-							<CardTitle>Quản lý dữ liệu</CardTitle>
-							<CardDescription>
+							<CardTitle className="text-orange-800">
+								Quản lý dữ liệu
+							</CardTitle>
+							<CardDescription className="text-orange-600">
 								Sao lưu và khôi phục dữ liệu
 							</CardDescription>
 						</CardHeader>
 						<CardContent className="space-y-3">
 							<Button
 								variant="outline"
-								className="w-full bg-transparent"
+								className="w-full bg-white/60 border-orange-300 text-orange-700 hover:bg-orange-100"
 								onClick={exportData}
 							>
 								<Download className="h-4 w-4 mr-2" />
@@ -661,7 +663,7 @@ export default function SettingsPage() {
 							</Button>
 							<Button
 								variant="outline"
-								className="w-full bg-transparent"
+								className="w-full bg-white/60 border-orange-300 text-orange-700 hover:bg-orange-100"
 								onClick={importData}
 							>
 								<Upload className="h-4 w-4 mr-2" />
@@ -680,28 +682,45 @@ export default function SettingsPage() {
 					</Card>
 
 					{/* Account Status */}
-					<Card>
+					<Card className="bg-gradient-to-br from-indigo-50 to-purple-50 border-indigo-200">
 						<CardHeader>
-							<CardTitle>Trạng thái tài khoản</CardTitle>
+							<CardTitle className="text-indigo-800">
+								Trạng thái tài khoản
+							</CardTitle>
 						</CardHeader>
 						<CardContent className="space-y-3">
 							<div className="flex justify-between items-center">
-								<span className="text-sm">Loại tài khoản</span>
-								<Badge variant="secondary">Miễn phí</Badge>
+								<span className="text-sm text-indigo-700">
+									Loại tài khoản
+								</span>
+								<Badge
+									variant="secondary"
+									className="bg-indigo-100 text-indigo-800"
+								>
+									Miễn phí
+								</Badge>
 							</div>
 							<div className="flex justify-between items-center">
-								<span className="text-sm">Ngày tham gia</span>
-								<span className="text-sm text-gray-500">
+								<span className="text-sm text-indigo-700">
+									Ngày tham gia
+								</span>
+								<span className="text-sm text-indigo-600">
 									15/01/2024
 								</span>
 							</div>
 							<div className="flex justify-between items-center">
-								<span className="text-sm">
+								<span className="text-sm text-indigo-700">
 									Dung lượng đã sử dụng
 								</span>
-								<span className="text-sm text-gray-500">
+								<span className="text-sm text-indigo-600">
 									2.3 MB / 100 MB
 								</span>
+							</div>
+							<div className="w-full bg-indigo-200 rounded-full h-2">
+								<div
+									className="bg-gradient-to-r from-indigo-500 to-purple-500 h-2 rounded-full"
+									style={{ width: "2.3%" }}
+								></div>
 							</div>
 						</CardContent>
 					</Card>

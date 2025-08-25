@@ -171,46 +171,46 @@ export default function NotificationsPage() {
 
 			{/* Quick Stats */}
 			<div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-				<Card className="bg-gradient-to-br from-blue-50 to-cyan-50 border-blue-200">
+				<Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
 					<CardContent className="p-4">
 						<div className="flex items-center justify-between">
 							<div>
-								<p className="text-sm text-blue-600 font-medium">
+								<p className="text-sm text-blue-800 font-medium">
 									Tổng thông báo
 								</p>
-								<p className="text-2xl font-bold text-blue-700">
+								<p className="text-2xl font-bold text-blue-900">
 									{notifications.length}
 								</p>
 							</div>
-							<Bell className="h-8 w-8 text-blue-500" />
+							<Bell className="h-8 w-8 text-blue-600" />
 						</div>
 					</CardContent>
 				</Card>
 
-				<Card className="bg-gradient-to-br from-orange-50 to-amber-50 border-orange-200">
+				<Card className="bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200">
 					<CardContent className="p-4">
 						<div className="flex items-center justify-between">
 							<div>
-								<p className="text-sm text-orange-600 font-medium">
+								<p className="text-sm text-orange-800 font-medium">
 									Chưa đọc
 								</p>
-								<p className="text-2xl font-bold text-orange-700">
+								<p className="text-2xl font-bold text-orange-900">
 									{unreadCount}
 								</p>
 							</div>
-							<AlertTriangle className="h-8 w-8 text-orange-500" />
+							<AlertTriangle className="h-8 w-8 text-orange-600" />
 						</div>
 					</CardContent>
 				</Card>
 
-				<Card className="bg-gradient-to-br from-green-50 to-emerald-50 border-green-200">
+				<Card className="bg-gradient-to-br from-green-50 to-green-100 border-green-200">
 					<CardContent className="p-4">
 						<div className="flex items-center justify-between">
 							<div>
-								<p className="text-sm text-green-600 font-medium">
+								<p className="text-sm text-green-800 font-medium">
 									Thành tựu
 								</p>
-								<p className="text-2xl font-bold text-green-700">
+								<p className="text-2xl font-bold text-green-900">
 									{
 										notifications.filter(
 											(n) => n.type === "achievement"
@@ -218,19 +218,19 @@ export default function NotificationsPage() {
 									}
 								</p>
 							</div>
-							<Award className="h-8 w-8 text-green-500" />
+							<Award className="h-8 w-8 text-green-600" />
 						</div>
 					</CardContent>
 				</Card>
 
-				<Card className="bg-gradient-to-br from-purple-50 to-pink-50 border-purple-200">
+				<Card className="bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200">
 					<CardContent className="p-4">
 						<div className="flex items-center justify-between">
 							<div>
-								<p className="text-sm text-purple-600 font-medium">
+								<p className="text-sm text-purple-800 font-medium">
 									Nhắc nhở
 								</p>
-								<p className="text-2xl font-bold text-purple-700">
+								<p className="text-2xl font-bold text-purple-900">
 									{
 										notifications.filter(
 											(n) => n.type === "reminder"
@@ -238,7 +238,7 @@ export default function NotificationsPage() {
 									}
 								</p>
 							</div>
-							<Clock className="h-8 w-8 text-purple-500" />
+							<Clock className="h-8 w-8 text-purple-600" />
 						</div>
 					</CardContent>
 				</Card>
@@ -247,10 +247,12 @@ export default function NotificationsPage() {
 			<div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 				{/* Notifications List */}
 				<div className="lg:col-span-2">
-					<Card>
+					<Card className="bg-gradient-to-br from-slate-50 to-gray-50 border-slate-200">
 						<CardHeader>
-							<CardTitle>Thông báo gần đây</CardTitle>
-							<CardDescription>
+							<CardTitle className="text-slate-800">
+								Thông báo gần đây
+							</CardTitle>
+							<CardDescription className="text-slate-600">
 								Danh sách các thông báo mới nhất
 							</CardDescription>
 						</CardHeader>
@@ -259,7 +261,7 @@ export default function NotificationsPage() {
 								{notifications.map((notification) => (
 									<div
 										key={notification.id}
-										className={`border-l-4 p-4 rounded-r-lg transition-all hover:shadow-sm ${getPriorityColor(
+										className={`border-l-4 p-4 rounded-r-lg transition-all hover:shadow-sm bg-white/60 ${getPriorityColor(
 											notification.priority
 										)} ${
 											notification.read
@@ -325,13 +327,13 @@ export default function NotificationsPage() {
 
 				{/* Notification Settings */}
 				<div>
-					<Card>
+					<Card className="bg-gradient-to-br from-indigo-50 to-purple-50 border-indigo-200">
 						<CardHeader>
-							<CardTitle className="flex items-center gap-2">
+							<CardTitle className="flex items-center gap-2 text-indigo-800">
 								<Settings className="h-5 w-5" />
 								Cài đặt thông báo
 							</CardTitle>
-							<CardDescription>
+							<CardDescription className="text-indigo-600">
 								Tùy chỉnh các loại thông báo bạn muốn nhận
 							</CardDescription>
 						</CardHeader>

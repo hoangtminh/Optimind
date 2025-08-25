@@ -5,12 +5,12 @@ import StudyTracking from "@/components/study/study-tracking";
 import PrepareTracking from "@/components/study/prepare-tracking";
 import TodaySession from "@/components/study/today-session";
 import DailyTasks from "@/components/goals/daily-tasks";
-import TagManagement from "@/components/study/tag-management";
-import { useStudy } from "@/hooks/use-study";
+import TagManagement from "@/components/study/tag-subject-manage";
+import { useStudy } from "@/hooks/use-study-session";
 import LongtermTask from "@/components/goals/long-term-task";
 
 export default function TrackingPage() {
-	const { isRunning } = useStudy();
+	const { isSessionActive } = useStudy();
 
 	return (
 		<div className="space-y-6">
@@ -30,7 +30,7 @@ export default function TrackingPage() {
 					<ProgressCard />
 
 					{/* Session Setup Card */}
-					{isRunning ? <StudyTracking /> : <PrepareTracking />}
+					{isSessionActive ? <StudyTracking /> : <PrepareTracking />}
 
 					{/* Today's Sessions */}
 					<TodaySession />

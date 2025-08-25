@@ -14,7 +14,7 @@ import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
 import { Progress } from "../ui/progress";
 import { useTasks } from "@/hooks/use-task";
-import ProgressPattern from "../pattern/progress-pattern";
+import ProgressPattern from "./pattern/progress-pattern";
 
 const OverdueTasks = () => {
 	const { overdueLongTermTasks } = useTasks();

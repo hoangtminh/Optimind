@@ -11,6 +11,15 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
+	Sheet,
+	SheetContent,
+	SheetDescription,
+	SheetHeader,
+	SheetTitle,
+	SheetTrigger,
+} from "@/components/ui/sheet";
+import { useRouter } from "next/navigation";
+import {
 	LineChart,
 	Line,
 	BarChart,
@@ -25,6 +34,15 @@ import {
 	Pie,
 	Cell,
 } from "recharts";
+import {
+	flexRender,
+	getCoreRowModel,
+	getFilteredRowModel,
+	getPaginationRowModel,
+	getSortedRowModel,
+	useReactTable,
+} from "@tanstack/react-table";
+import { ArrowUpDown, Eye } from "lucide-react";
 
 // Sample data for charts
 const dailyData = [
@@ -157,9 +175,253 @@ const detailedProgressData = [
 
 export default function ProgressPage() {
 	const [timeFrame, setTimeFrame] = useState("daily");
-	const [sortBy, setSortBy] = useState("date");
-	const [sortOrder, setSortOrder] = useState("desc");
-	const [filterSubject, setFilterSubject] = useState("all");
+	const [sorting, setSorting] = useState([]);
+	const [columnFilters, setColumnFilters] = useState([]);
+	const [columnVisibility, setColumnVisibility] = useState({});
+	const [rowSelection, setRowSelection] = useState({});
+	const [selectedSession, setSelectedSession] = useState(null);
+	const router = useRouter();
+
+	const columns = [
+		{
+			accessorKey: "date",
+			header: ({ column }) => {
+				return (
+					<Button
+						variant="ghost"
+						onClick={() =>
+							column.toggleSorting(column.getIsSorted() === "asc")
+						}
+					>
+						Ngày
+						<ArrowUpDown className="ml-2 h-4 w-4" />
+					</Button>
+				);
+			},
+			cell: ({ row }) => (
+				<div>
+					{new Date(row.getValue("date")).toLocaleDateString("vi-VN")}
+				</div>
+			),
+		},
+		{
+			accessorKey: "subject",
+			header: "Môn học",
+			cell: ({ row }) => (
+				<Badge variant="outline" className="bg-white dark:bg-gray-800">
+					{row.getValue("subject")}
+				</Badge>
+			),
+		},
+		{
+			accessorKey: "topics",
+			header: "Chủ đề",
+			cell: ({ row }) => (
+				<div className="text-sm text-gray-600 dark:text-gray-300">
+					{row.getValue("topics")}
+				</div>
+			),
+		},
+		{
+			accessorKey: "studyTime",
+			header: ({ column }) => {
+				return (
+					<Button
+						variant="ghost"
+						onClick={() =>
+							column.toggleSorting(column.getIsSorted() === "asc")
+						}
+					>
+						Thời gian học
+						<ArrowUpDown className="ml-2 h-4 w-4" />
+					</Button>
+				);
+			},
+			cell: ({ row }) => (
+				<div className="text-center">
+					<span className="font-semibold text-blue-600 dark:text-blue-400">
+						{row.getValue("studyTime")}h
+					</span>
+				</div>
+			),
+		},
+
+		{
+			accessorKey: "rateScore",
+			header: ({ column }) => {
+				return (
+					<Button
+						variant="ghost"
+						onClick={() =>
+							column.toggleSorting(column.getIsSorted() === "asc")
+						}
+					>
+						Điểm đánh giá
+						<ArrowUpDown className="ml-2 h-4 w-4" />
+					</Button>
+				);
+			},
+			cell: ({ row }) => {
+				const score = row.getValue("rateScore");
+				const getRateScoreColor = (score) => {
+					if (score >= 9) return "text-green-600 font-bold";
+					if (score >= 8) return "text-blue-600 font-semibold";
+					if (score >= 7) return "text-yellow-600 font-medium";
+					return "text-red-600 font-medium";
+				};
+				return (
+					<div className="text-center">
+						<span className={getRateScoreColor(score)}>
+							{score}/10
+						</span>
+					</div>
+				);
+			},
+		},
+		{
+			accessorKey: "efficiency",
+			header: "Hiệu quả",
+			cell: ({ row }) => {
+				const efficiency = row.getValue("efficiency");
+				const getEfficiencyColor = (efficiency) => {
+					switch (efficiency) {
+						case "Rất cao":
+							return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200";
+						case "Cao":
+							return "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200";
+						case "Trung bình":
+							return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200";
+						case "Thấp":
+							return "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200";
+						default:
+							return "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200";
+					}
+				};
+				return (
+					<div className="text-center">
+						<Badge className={getEfficiencyColor(efficiency)}>
+							{efficiency}
+						</Badge>
+					</div>
+				);
+			},
+		},
+		{
+			id: "actions",
+			header: "Thao tác",
+			cell: ({ row }) => {
+				const session = row.original;
+				return (
+					<div className="flex gap-2 justify-center">
+						<Sheet>
+							<SheetTrigger asChild>
+								<Button
+									variant="outline"
+									size="sm"
+									onClick={() => setSelectedSession(session)}
+								>
+									Lịch sử
+								</Button>
+							</SheetTrigger>
+							<SheetContent>
+								<SheetHeader>
+									<SheetTitle>Chi tiết phiên học</SheetTitle>
+									<SheetDescription>
+										{session.subject} -{" "}
+										{new Date(
+											session.date
+										).toLocaleDateString("vi-VN")}
+									</SheetDescription>
+								</SheetHeader>
+								<div className="mt-6 space-y-4">
+									<div className="grid grid-cols-2 gap-4">
+										<div>
+											<label className="text-sm font-medium text-gray-600">
+												Thời gian học
+											</label>
+											<div className="text-lg font-semibold text-blue-600">
+												{session.studyTime}h
+											</div>
+										</div>
+										<div>
+											<label className="text-sm font-medium text-gray-600">
+												Mục tiêu
+											</label>
+											<div className="text-lg font-semibold">
+												{session.targetTime}h
+											</div>
+										</div>
+										<div>
+											<label className="text-sm font-medium text-gray-600">
+												Tỷ lệ hoàn thành
+											</label>
+											<div className="text-lg font-semibold text-green-600">
+												{session.completionRate}%
+											</div>
+										</div>
+										<div>
+											<label className="text-sm font-medium text-gray-600">
+												Điểm đánh giá
+											</label>
+											<div className="text-lg font-semibold text-purple-600">
+												{session.rateScore}/10
+											</div>
+										</div>
+									</div>
+									<div>
+										<label className="text-sm font-medium text-gray-600">
+											Chủ đề học
+										</label>
+										<div className="text-sm text-gray-800 mt-1">
+											{session.topics}
+										</div>
+									</div>
+									<div>
+										<label className="text-sm font-medium text-gray-600">
+											Hiệu quả
+										</label>
+										<Badge className="mt-1">
+											{session.efficiency}
+										</Badge>
+									</div>
+									<Button
+										className="w-full mt-4"
+										onClick={() =>
+											router.push(
+												`/progress/session/${session.id}`
+											)
+										}
+									>
+										<Eye className="h-4 w-4 mr-2" />
+										Xem chi tiết
+									</Button>
+								</div>
+							</SheetContent>
+						</Sheet>
+					</div>
+				);
+			},
+		},
+	];
+
+	const table = useReactTable({
+		data: detailedProgressData,
+		columns,
+		onSortingChange: setSorting,
+		onColumnFiltersChange: setColumnFilters,
+		getCoreRowModel: getCoreRowModel(),
+		getPaginationRowModel: getPaginationRowModel(),
+		getSortedRowModel: getSortedRowModel(),
+		getFilteredRowModel: getFilteredRowModel(),
+		onColumnVisibilityChange: setColumnVisibility,
+		onRowSelectionChange: setRowSelection,
+		state: {
+			sorting,
+			columnFilters,
+			columnVisibility,
+			rowSelection,
+		},
+	});
 
 	const getCurrentData = () => {
 		switch (timeFrame) {
@@ -187,59 +449,6 @@ export default function ProgressPage() {
 		).length;
 		return Math.round((completedDays / data.length) * 100);
 	};
-
-	const getEfficiencyColor = (efficiency) => {
-		switch (efficiency) {
-			case "Rất cao":
-				return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200";
-			case "Cao":
-				return "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200";
-			case "Trung bình":
-				return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200";
-			case "Thấp":
-				return "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200";
-			default:
-				return "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200";
-		}
-	};
-
-	const getRateScoreColor = (score) => {
-		if (score >= 9) return "text-green-600 font-bold";
-		if (score >= 8) return "text-blue-600 font-semibold";
-		if (score >= 7) return "text-yellow-600 font-medium";
-		return "text-red-600 font-medium";
-	};
-
-	const getCompletionRateColor = (rate) => {
-		if (rate >= 100) return "text-green-600 font-bold";
-		if (rate >= 80) return "text-blue-600 font-semibold";
-		if (rate >= 60) return "text-yellow-600 font-medium";
-		return "text-red-600 font-medium";
-	};
-
-	const sortedAndFilteredData = detailedProgressData
-		.filter(
-			(item) => filterSubject === "all" || item.subject === filterSubject
-		)
-		.sort((a, b) => {
-			let aValue = a[sortBy];
-			let bValue = b[sortBy];
-
-			if (sortBy === "date") {
-				aValue = new Date(aValue);
-				bValue = new Date(bValue);
-			}
-
-			if (sortOrder === "asc") {
-				return aValue > bValue ? 1 : -1;
-			} else {
-				return aValue < bValue ? 1 : -1;
-			}
-		});
-
-	const uniqueSubjects = [
-		...new Set(detailedProgressData.map((item) => item.subject)),
-	];
 
 	return (
 		<div className="space-y-6">
@@ -287,9 +496,9 @@ export default function ProgressPage() {
 						</CardTitle>
 					</CardHeader>
 					<CardContent>
-						<h2 className="text-3xl font-bold text-blue-900 dark:text-blue-100">
+						<div className="text-2xl font-bold text-blue-900 dark:text-blue-100">
 							{getAverageTime()}h
-						</h2>
+						</div>
 						<p className="text-xs text-blue-600 dark:text-blue-400">
 							{timeFrame === "daily"
 								? "mỗi ngày"
@@ -508,160 +717,98 @@ export default function ProgressPage() {
 					<CardDescription>
 						Bảng thống kê chi tiết thời gian học và điểm đánh giá
 					</CardDescription>
-
-					{/* Table Controls */}
-					<div className="flex flex-wrap gap-4 mt-4">
-						<div className="flex items-center gap-2">
-							<label className="text-sm font-medium">
-								Sắp xếp theo:
-							</label>
-							<select
-								value={sortBy}
-								onChange={(e) => setSortBy(e.target.value)}
-								className="px-3 py-1 border rounded-md text-sm bg-white dark:bg-gray-800"
-							>
-								<option value="date">Ngày</option>
-								<option value="subject">Môn học</option>
-								<option value="studyTime">Thời gian học</option>
-								<option value="rateScore">Điểm đánh giá</option>
-								<option value="completionRate">
-									Tỷ lệ hoàn thành
-								</option>
-							</select>
-						</div>
-
-						<div className="flex items-center gap-2">
-							<label className="text-sm font-medium">
-								Thứ tự:
-							</label>
-							<select
-								value={sortOrder}
-								onChange={(e) => setSortOrder(e.target.value)}
-								className="px-3 py-1 border rounded-md text-sm bg-white dark:bg-gray-800"
-							>
-								<option value="desc">Giảm dần</option>
-								<option value="asc">Tăng dần</option>
-							</select>
-						</div>
-
-						<div className="flex items-center gap-2">
-							<label className="text-sm font-medium">
-								Lọc môn học:
-							</label>
-							<select
-								value={filterSubject}
-								onChange={(e) =>
-									setFilterSubject(e.target.value)
-								}
-								className="px-3 py-1 border rounded-md text-sm bg-white dark:bg-gray-800"
-							>
-								<option value="all">Tất cả</option>
-								{uniqueSubjects.map((subject) => (
-									<option key={subject} value={subject}>
-										{subject}
-									</option>
-								))}
-							</select>
-						</div>
-					</div>
 				</CardHeader>
-
 				<CardContent>
-					<div className="overflow-x-auto">
-						<table className="w-full border-collapse">
+					<div className="rounded-md border">
+						<table className="w-full">
 							<thead>
-								<tr className="border-b-2 border-indigo-200 dark:border-indigo-700">
-									<th className="text-left p-3 font-semibold text-indigo-800 dark:text-indigo-200">
-										Ngày
-									</th>
-									<th className="text-left p-3 font-semibold text-indigo-800 dark:text-indigo-200">
-										Môn học
-									</th>
-									<th className="text-left p-3 font-semibold text-indigo-800 dark:text-indigo-200">
-										Chủ đề
-									</th>
-									<th className="text-center p-3 font-semibold text-indigo-800 dark:text-indigo-200">
-										Thời gian học
-									</th>
-									<th className="text-center p-3 font-semibold text-indigo-800 dark:text-indigo-200">
-										Mục tiêu
-									</th>
-									<th className="text-center p-3 font-semibold text-indigo-800 dark:text-indigo-200">
-										Tỷ lệ hoàn thành
-									</th>
-									<th className="text-center p-3 font-semibold text-indigo-800 dark:text-indigo-200">
-										Điểm đánh giá
-									</th>
-									<th className="text-center p-3 font-semibold text-indigo-800 dark:text-indigo-200">
-										Hiệu quả
-									</th>
-								</tr>
-							</thead>
-							<tbody>
-								{sortedAndFilteredData.map((item, index) => (
+								{table.getHeaderGroups().map((headerGroup) => (
 									<tr
-										key={item.id}
-										className={`border-b border-indigo-100 dark:border-indigo-800 hover:bg-indigo-50 dark:hover:bg-indigo-900 transition-colors ${
-											index % 2 === 0
-												? "bg-white dark:bg-gray-900"
-												: "bg-indigo-50 dark:bg-indigo-950"
-										}`}
+										key={headerGroup.id}
+										className="border-b bg-muted/50"
 									>
-										<td className="p-3 text-sm">
-											{new Date(
-												item.date
-											).toLocaleDateString("vi-VN")}
-										</td>
-										<td className="p-3">
-											<Badge
-												variant="outline"
-												className="bg-white dark:bg-gray-800"
+										{headerGroup.headers.map((header) => (
+											<th
+												key={header.id}
+												className="h-12 px-2 text-left align-middle font-medium text-muted-foreground"
 											>
-												{item.subject}
-											</Badge>
-										</td>
-										<td className="p-3 text-sm text-gray-600 dark:text-gray-300">
-											{item.topics}
-										</td>
-										<td className="p-3 text-center">
-											<span className="font-semibold text-blue-600 dark:text-blue-400">
-												{item.studyTime}h
-											</span>
-										</td>
-										<td className="p-3 text-center text-gray-500 dark:text-gray-400">
-											{item.targetTime}h
-										</td>
-										<td className="p-3 text-center">
-											<span
-												className={getCompletionRateColor(
-													item.completionRate
-												)}
-											>
-												{item.completionRate}%
-											</span>
-										</td>
-										<td className="p-3 text-center">
-											<span
-												className={getRateScoreColor(
-													item.rateScore
-												)}
-											>
-												{item.rateScore}/10
-											</span>
-										</td>
-										<td className="p-3 text-center">
-											<Badge
-												className={getEfficiencyColor(
-													item.efficiency
-												)}
-											>
-												{item.efficiency}
-											</Badge>
-										</td>
+												{header.isPlaceholder
+													? null
+													: flexRender(
+															header.column
+																.columnDef
+																.header,
+															header.getContext()
+													  )}
+											</th>
+										))}
 									</tr>
 								))}
+							</thead>
+							<tbody>
+								{table.getRowModel().rows?.length ? (
+									table.getRowModel().rows.map((row) => (
+										<tr
+											key={row.id}
+											className="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted"
+											data-state={
+												row.getIsSelected() &&
+												"selected"
+											}
+										>
+											{row
+												.getVisibleCells()
+												.map((cell) => (
+													<td
+														key={cell.id}
+														className="p-4 align-middle"
+													>
+														{flexRender(
+															cell.column
+																.columnDef.cell,
+															cell.getContext()
+														)}
+													</td>
+												))}
+										</tr>
+									))
+								) : (
+									<tr>
+										<td
+											colSpan={columns.length}
+											className="h-24 text-center"
+										>
+											Không có dữ liệu.
+										</td>
+									</tr>
+								)}
 							</tbody>
 						</table>
+					</div>
+					<div className="flex items-center justify-end space-x-2 py-4">
+						<div className="flex-1 text-sm text-muted-foreground">
+							{table.getFilteredSelectedRowModel().rows.length} of{" "}
+							{table.getFilteredRowModel().rows.length} hàng được
+							chọn.
+						</div>
+						<div className="space-x-2">
+							<Button
+								variant="outline"
+								size="sm"
+								onClick={() => table.previousPage()}
+								disabled={!table.getCanPreviousPage()}
+							>
+								Trước
+							</Button>
+							<Button
+								variant="outline"
+								size="sm"
+								onClick={() => table.nextPage()}
+								disabled={!table.getCanNextPage()}
+							>
+								Sau
+							</Button>
+						</div>
 					</div>
 
 					{/* Table Summary */}
@@ -669,7 +816,7 @@ export default function ProgressPage() {
 						<div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
 							<div>
 								<div className="text-2xl font-bold text-indigo-800 dark:text-indigo-200">
-									{sortedAndFilteredData.length}
+									{detailedProgressData.length}
 								</div>
 								<div className="text-sm text-indigo-600 dark:text-indigo-300">
 									Phiên học
@@ -677,7 +824,7 @@ export default function ProgressPage() {
 							</div>
 							<div>
 								<div className="text-2xl font-bold text-indigo-800 dark:text-indigo-200">
-									{sortedAndFilteredData
+									{detailedProgressData
 										.reduce(
 											(sum, item) => sum + item.studyTime,
 											0
@@ -692,10 +839,10 @@ export default function ProgressPage() {
 							<div>
 								<div className="text-2xl font-bold text-indigo-800 dark:text-indigo-200">
 									{(
-										sortedAndFilteredData.reduce(
+										detailedProgressData.reduce(
 											(sum, item) => sum + item.rateScore,
 											0
-										) / sortedAndFilteredData.length
+										) / detailedProgressData.length
 									).toFixed(1)}
 								</div>
 								<div className="text-sm text-indigo-600 dark:text-indigo-300">
@@ -705,11 +852,11 @@ export default function ProgressPage() {
 							<div>
 								<div className="text-2xl font-bold text-indigo-800 dark:text-indigo-200">
 									{Math.round(
-										sortedAndFilteredData.reduce(
+										detailedProgressData.reduce(
 											(sum, item) =>
 												sum + item.completionRate,
 											0
-										) / sortedAndFilteredData.length
+										) / detailedProgressData.length
 									)}
 									%
 								</div>

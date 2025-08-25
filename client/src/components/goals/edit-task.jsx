@@ -20,7 +20,7 @@ import { Button } from "../ui/button";
 import { useTasks } from "@/hooks/use-task";
 
 const EditTask = () => {
-	const { editingTask, setEditingTask } = useTasks();
+	const { editingTask, setEditingTask, updateTask } = useTasks();
 
 	return (
 		<Dialog open={!!editingTask} onOpenChange={() => setEditingTask(null)}>

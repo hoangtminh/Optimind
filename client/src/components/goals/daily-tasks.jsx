@@ -10,7 +10,7 @@ import {
 } from "../ui/card";
 import { Calendar } from "lucide-react";
 
-import ProgressPattern from "../pattern/progress-pattern";
+import ProgressPattern from "./pattern/progress-pattern";
 
 const DailyTasks = () => {
 	const { tasks } = useTasks();

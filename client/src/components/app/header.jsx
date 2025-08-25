@@ -17,9 +17,9 @@ import { SidebarTrigger } from "../ui/sidebar";
 
 export function Header() {
 	return (
-		<header className="flex sticky w-full top-0 h-16 z-1 items-center justify-between gap-4 border-b border-gray-100 bg-white backdrop-blur-md px-6">
+		<header className="flex sticky w-full top-0 h-16 z-1 items-center justify-between gap-4 bg-blue-400  border-b border-gray-100 backdrop-blur-md px-6">
 			<div className="flex flex-row gap-5 items-center">
-				<SidebarTrigger className="hover:bg-blue-50 hover:text-blue-600 transition-colors" />
+				<SidebarTrigger className="text-white hover:bg-blue-50 hover:text-blue-600 transition-colors" />
 				{/* Search */}
 				<div className="flex items-center gap-4 flex-1 w-md">
 					<div className="relative flex-1">
@@ -35,7 +35,7 @@ export function Header() {
 			<div className="flex items-center gap-5">
 				{/* Notifications */}
 				<Button variant="ghost" size="sm" className="relative">
-					<Bell className="h-4 w-4" />
+					<Bell className="text-white h-5 w-5" />
 					<Badge className="absolute -top-1 -right-1 h-5 w-5 p-0 text-xs bg-red-500 hover:bg-red-500">
 						3
 					</Badge>
@@ -43,7 +43,7 @@ export function Header() {
 
 				{/* Settings */}
 				<Button variant="ghost" size="sm">
-					<Settings className="h-4 w-4" />
+					<Settings className="text-white h-5 w-5" />
 				</Button>
 
 				{/* User Menu */}

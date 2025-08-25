@@ -1,7 +1,7 @@
 "use client";
 
 import { Card, CardContent } from "@/components/ui/card";
-import { Award, AlertTriangle, Calendar, TrendingUp } from "lucide-react";
+import { Award, AlertTriangle, Calendar, TrendingUp, Plus } from "lucide-react";
 
 import DailyTaskChart from "@/components/goals/daily-task-chart";
 import AddTask from "@/components/goals/add-tasks";
@@ -11,8 +11,12 @@ import DailyTasks from "@/components/goals/daily-tasks";
 import OverdueTasks from "@/components/goals/overdue-tasks";
 import CompletedTasks from "@/components/goals/completed-task";
 import OverviewTasks from "@/components/goals/overview-tasks";
+import { Button } from "@/components/ui/button";
+import { useTasks } from "@/hooks/use-task";
 
 export default function TasksPage() {
+	const { setAddTaskDialogOpen } = useTasks();
+
 	return (
 		<div className="space-y-6">
 			<div className="flex justify-between items-center">
@@ -24,6 +28,13 @@ export default function TasksPage() {
 						Đặt và theo dõi các nhiệm vụ học tập của bạn
 					</p>
 				</div>
+				<Button
+					onClick={() => setAddTaskDialogOpen(true)}
+					className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-500"
+				>
+					<Plus className="h-4 w-4 mr-2" />
+					Thêm task mới
+				</Button>
 				{/* Add tasks */}
 				<AddTask />
 				<EditTask />

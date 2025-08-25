@@ -11,6 +11,7 @@ import {
 	LogOut,
 	User,
 	Brain,
+	Bluetooth,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -39,6 +40,13 @@ const menuItems = [
 		icon: Home,
 		color: "text-blue-600",
 		bgColor: "bg-blue-50",
+	},
+	{
+		title: "Thiết bị",
+		url: "/device",
+		icon: Bluetooth,
+		color: "text-indigo-600",
+		bgColor: "bg-indigo-50",
 	},
 	{
 		title: "Theo dõi học tập",
@@ -93,7 +101,7 @@ export function AppSidebar() {
 			collapsible="icon"
 			className={`border-r-0 shadow-lg transition-all duration-200`}
 		>
-			<SidebarHeader className="border-b border-gray-100 bg-gradient-to-r from-blue-50 to-purple-50">
+			<SidebarHeader className="border-gray-100 bg-gradient-to-r from-blue-50 to-purple-50">
 				<div className="flex items-center gap-3 px-2.5 py-1.5">
 					<div className="relative">
 						<div className="absolute inset-0 bg-gradient-to-r from-indigo-500 to-cyan-500 rounded-xl blur-sm opacity-75" />
@@ -111,9 +119,9 @@ export function AppSidebar() {
 				</div>
 			</SidebarHeader>
 
-			<SidebarContent className="bg-gradient-to-b from-white to-gray-100">
+			<SidebarContent className="bg-gradient-to-b from-blue-400 from-90% to-indigo-300">
 				<SidebarGroup>
-					<SidebarGroupLabel className="text-base my-1 text-gray-600 font-semibold">
+					<SidebarGroupLabel className="text-white text-lg my-1 font-semibold">
 						Menu chính
 					</SidebarGroupLabel>
 					<SidebarGroupContent>
@@ -140,10 +148,11 @@ export function AppSidebar() {
 											<Link href={item.url}>
 												<div
 													className={cn(
-														"flex px-3 h-full items-center justify-left gap-3  text-base font-medium",
+														"flex px-3 h-full items-center justify-left gap-3 text-white text-base font-medium ",
 														open && "w-full",
-														isActive &&
-															`${item.color} ${item.bgColor}`
+														isActive
+															? `${item.color} ${item.bgColor}`
+															: "hover:text-gray-700"
 													)}
 												>
 													<item.icon className="h-6 w-6" />
@@ -159,7 +168,7 @@ export function AppSidebar() {
 				</SidebarGroup>
 			</SidebarContent>
 
-			<SidebarFooter className="border-t border-gray-100 bg-gradient-to-r from-gray-50 to-blue-50/30">
+			<SidebarFooter className="bg-indigo-300">
 				<div
 					className={`flex items-center gap-3 py-3 px-2 rounded-lg bg-white/60 backdrop-blur-sm shadow-sm`}
 				>
