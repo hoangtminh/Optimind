@@ -1,8 +1,11 @@
-import express, { Router } from "express";
+import express, { json, Router, urlencoded } from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
-import apiRouter from "./routes/api-router";
-import { verifyToken } from "./middlewares/verifyToken";
+import apiRouter from "./routes/route.js";
+import verifyToken from "./middlewares/verifyToken.js";
+import "dotenv/config";
+import mongoose from "mongoose";
+import { handleApiError } from "./utils/api-error.js";
 
 const router = Router();
 
@@ -12,22 +15,25 @@ const app = express();
 app.use(
 	cors({
 		credentials: true,
-		origin: `http://${process.env.APP_HOST}:${process.env.APP_PORT}}`,
-		cross,
+		origin: process.env.CLIENT_ORIGIN,
 	})
 );
-app.use(express.json());
+app.use(json());
 app.use(cookieParser());
-app.use(express.urlencoded({ extended: true }));
-
-app.use(apiRouter(router));
+app.use(urlencoded({ extended: true }));
+app.use("/", apiRouter());
 
 app.use("/api", verifyToken, (req, res) => {
 	res.json({ message: "You are authorized", user: req.user });
 });
 
 // Start server
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.APP_PORT;
 app.listen(PORT, () => {
 	console.log(`Server listening on port ${PORT}`);
 });
+
+mongoose
+	.connect(process.env.MONGODB_URI)
+	.then(() => console.log("Connected to DB"))
+	.catch((err) => console.log(err));

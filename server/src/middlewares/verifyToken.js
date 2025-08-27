@@ -29,3 +29,5 @@ const verifyToken = (req, res, next) => {
 			.json({ message: "Verify token failed" });
 	}
 };
+
+export default verifyToken;
