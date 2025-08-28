@@ -1,21 +1,26 @@
 import React, { useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
+import {
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogHeader,
+	DialogTitle,
+} from "../ui/dialog";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { useTag } from "@/hooks/use-tag";
 
 const AddTag = () => {
-	const {
-		newTagData,
-		isAddTagDialogOpen,
-		setIsAddTagDialogOpen,
-		setEditingTag,
-		setNewTagData,
-		addTag,
-	} = useTag();
+	const { createTag, isAddTagDialogOpen, setIsAddTagDialogOpen } = useTag();
+
+	const [newTagData, setNewTagData] = useState({
+		name: "",
+		color: "#228B22",
+	});
 
 	const handleAddTag = () => {
-		addTag(newTagData);
+		createTag(newTagData);
+		setIsAddTagDialogOpen(false);
 		setNewTagData({
 			name: "",
 			color: "#228B22",
@@ -26,7 +31,10 @@ const AddTag = () => {
 		<Dialog open={isAddTagDialogOpen} onOpenChange={setIsAddTagDialogOpen}>
 			<DialogContent>
 				<DialogHeader>
-					<DialogTitle>Chỉnh sửa tag</DialogTitle>
+					<DialogTitle>Tạo tag mới</DialogTitle>
+					<DialogDescription>
+						Tag mới quản lý việc học
+					</DialogDescription>
 				</DialogHeader>
 				<div className="space-y-4">
 					<div className="flex flex-row gap-3">
@@ -78,7 +86,6 @@ const AddTag = () => {
 							variant="outline"
 							onClick={() => {
 								setIsAddTagDialogOpen(false);
-								setEditingTag(null);
 							}}
 						>
 							Cancel

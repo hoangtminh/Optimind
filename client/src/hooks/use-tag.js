@@ -1,71 +1,127 @@
 "use client";
-const { createContext, useState, useContext } = require("react");
+
+import { tagApi } from "@/actions/tag-action";
+import { toast } from "sonner";
+
+const {
+	createContext,
+	useState,
+	useContext,
+	useMemo,
+	useEffect,
+} = require("react");
 
 const TagContext = createContext();
-
 export function useTag() {
 	return useContext(TagContext);
 }
 
+// 		{ id: 1, name: "Ôn tập", color: "#228B22" },
+// 		{ id: 2, name: "Bài tập", color: "#FF7F50" },
+// 		{ id: 3, name: "Đọc sách", color: "#228B22" },
+// 		{ id: 4, name: "Nghiên cứu", color: "#4169E1" },
+// 		{ id: 5, name: "Thực hành", color: "#FF7F50" },
+
 export function TagProvider({ children }) {
-	// Tag management
-	const [editingTag, setEditingTag] = useState(null);
+	const [tags, setTags] = useState([]);
+	const [editingTag, setEditingTag] = useState({
+		_id: "",
+		name: "",
+		color: "",
+	});
+	const [tagLoading, setTagLoading] = useState(false);
 
 	// Dialog states for tag management
 	const [isAddTagDialogOpen, setIsAddTagDialogOpen] = useState(false);
 	const [isEditTagDialogOpen, setIsEditTagDialogOpen] = useState(false);
 
-	// Sample data
-	const [availableTags, setAvailableTags] = useState([
-		{ id: 1, name: "Ôn tập", color: "#228B22" },
-		{ id: 2, name: "Bài tập", color: "#FF7F50" },
-		{ id: 3, name: "Đọc sách", color: "#228B22" },
-		{ id: 4, name: "Nghiên cứu", color: "#4169E1" },
-		{ id: 5, name: "Thực hành", color: "#FF7F50" },
-	]);
+	useEffect(() => {
+		getTag();
+	}, []);
 
-	const [newTagData, setNewTagData] = useState({
-		name: "",
-		color: "#228B22",
-	});
+	const getTag = async () => {
+		if (tagLoading) return;
+		setTagLoading(() => true);
+		try {
+			const res = await tagApi.getUserTag();
 
-	const addTag = (newTagData) => {
-		if (newTagData.name.trim()) {
-			const newTag = {
-				id: Date.now(),
-				name: newTagData.name,
-				color: newTagData.color,
-			};
-			setAvailableTags([...availableTags, newTag]);
+			if (res.success) {
+				setTags(() => res.data);
+			}
+		} catch (error) {
+			toast.error(error.message);
+		} finally {
+			setTagLoading(false);
 		}
 	};
 
-	const updateTag = (id, name, color) => {
-		setAvailableTags(
-			availableTags.map((tag) =>
-				tag.id === id ? { ...tag, name, color } : tag
-			)
-		);
-		setEditingTag(null);
+	const createTag = async (newTagData) => {
+		if (tagLoading) return;
+		setTagLoading(() => true);
+		try {
+			if (newTagData.name.trim()) {
+				const res = await tagApi.createTag({
+					name: newTagData.name.trim(),
+					color: newTagData.color.toLowerCase().trim(),
+				});
+				if (res.success) {
+					getTag();
+					toast.success("New tag created");
+				}
+			}
+		} catch (error) {
+			toast.error(error.message);
+		}
 	};
 
-	const deleteTag = (id) => {
-		setAvailableTags(availableTags.filter((tag) => tag.id !== id));
+	const updateTag = async (tagId, newTagData) => {
+		if (tagLoading) return;
+		try {
+			setTagLoading(true);
+			const res = await tagApi.updateTag({
+				_id: tagId,
+				name: newTagData.name.trim(),
+				color: newTagData.color.toLowerCase().trim(),
+			});
+			if (res.success) {
+				getTag();
+				toast.success("Update tag successfully");
+			}
+		} catch (error) {
+			toast.error(error.message);
+		}
+	};
+
+	const deleteTag = async (tagId) => {
+		if (tagLoading) return;
+		try {
+			setTagLoading(true);
+			const res = await tagApi.deleteTag({
+				_id: tagId,
+			});
+			if (res.success) {
+				getTag();
+				toast.success("Delete tag successfully");
+			}
+		} catch (error) {
+			toast.error(error.message);
+		}
 	};
 
 	const contextValue = {
-		availableTags,
+		tags,
+		editingTag,
+		setEditingTag,
+
 		isAddTagDialogOpen,
 		isEditTagDialogOpen,
 		setIsAddTagDialogOpen,
 		setIsEditTagDialogOpen,
-		editingTag,
-		setEditingTag,
-		addTag,
+
+		getTag,
+		createTag,
 		updateTag,
 		deleteTag,
-		newTagData,
-		setNewTagData,
 	};
 	return (
 		<TagContext.Provider value={contextValue}>

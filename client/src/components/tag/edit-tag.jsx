@@ -1,22 +1,42 @@
-import React from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
+import React, { useEffect, useState } from "react";
+import {
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogHeader,
+	DialogTitle,
+} from "../ui/dialog";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { useTag } from "@/hooks/use-tag";
 
 const EditTag = () => {
 	const {
-		newTagData,
+		editingTag,
 		isEditTagDialogOpen,
 		setIsEditTagDialogOpen,
-		setNewTagData,
+		updateTag,
+		deleteTag,
 	} = useTag();
 
+	const [newTagData, setNewTagData] = useState({
+		name: editingTag.name,
+		color: editingTag.color,
+	});
+
+	useEffect(() => {
+		setNewTagData({ name: editingTag.name, color: editingTag.color });
+	}, [editingTag]);
+
 	const handleUpdateTag = () => {
+		updateTag(editingTag._id, newTagData);
 		setIsEditTagDialogOpen(false);
+		setNewTagData({ name: "", color: "" });
 	};
 	const handleDeleteTag = () => {
+		deleteTag(editingTag._id);
 		setIsEditTagDialogOpen(false);
+		setNewTagData({ name: "", color: "" });
 	};
 
 	return (
@@ -27,6 +47,9 @@ const EditTag = () => {
 			<DialogContent>
 				<DialogHeader>
 					<DialogTitle>Chỉnh sửa tag</DialogTitle>
+					<DialogDescription>
+						Cập nhật tag phù hợp việc học
+					</DialogDescription>
 				</DialogHeader>
 				<div className="space-y-4">
 					<div className="flex flex-row gap-3">
@@ -73,14 +96,7 @@ const EditTag = () => {
 						>
 							Update
 						</Button>
-						<Button
-							variant="destructive"
-							onClick={() => {
-								handleDeleteTag();
-								setIsEditTagDialogOpen(false);
-								setEditingTag(null);
-							}}
-						>
+						<Button variant="destructive" onClick={handleDeleteTag}>
 							Delete
 						</Button>
 						<Button

@@ -14,17 +14,11 @@ import { Button } from "../ui/button";
 import { ChevronLeft, ChevronRight, Edit2, Trash2 } from "lucide-react";
 
 const TagTable = ({ tagSearch }) => {
-	const {
-		availableTags,
-		setIsEditTagDialogOpen,
-		setEditingTag,
-		setNewTagData,
-		deleteTag,
-	} = useTag();
+	const { tags, setIsEditTagDialogOpen, deleteTag, setEditingTag } = useTag();
 
 	const [tagPage, setTagPage] = useState(0);
 
-	const filteredTags = availableTags.filter((tag) =>
+	const filteredTags = tags.filter((tag) =>
 		tag.name.toLowerCase().includes(tagSearch.toLowerCase())
 	);
 	const paginatedTags = filteredTags.slice(tagPage * 5, (tagPage + 1) * 5);
@@ -43,7 +37,7 @@ const TagTable = ({ tagSearch }) => {
 					<TableBody className={"bg-orange-100"}>
 						{paginatedTags.map((tag) => (
 							<TableRow
-								key={tag.id}
+								key={tag._id}
 								className={"hover:bg-orange-200"}
 							>
 								<TableCell>
@@ -66,11 +60,7 @@ const TagTable = ({ tagSearch }) => {
 												setIsEditTagDialogOpen(
 													() => true
 												);
-												setEditingTag(tag.id);
-												setNewTagData({
-													name: tag.name,
-													color: tag.color,
-												});
+												setEditingTag(tag);
 											}}
 											className="h-8 w-8 p-0 hover:bg-orange-300"
 										>
@@ -79,7 +69,7 @@ const TagTable = ({ tagSearch }) => {
 										<Button
 											variant="ghost"
 											size="sm"
-											onClick={() => deleteTag(tag.id)}
+											onClick={() => deleteTag(tag._id)}
 											className="h-8 w-8 p-0 text-red-500 hover:text-red-700 hover:bg-orange-300"
 										>
 											<Trash2 className="h-3 w-3" />

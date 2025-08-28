@@ -15,8 +15,8 @@ import SubjectTable from "../subject/subject-table";
 import { useSubject } from "@/hooks/use-subject";
 
 const TagManagement = () => {
-	const { setIsAddTagDialogOpen } = useTag();
-	const { setIsAddSubjectDialogOpen } = useSubject();
+	const { setIsAddTagDialogOpen, tags } = useTag();
+	const { setIsAddSubjectDialogOpen, subjects } = useSubject();
 
 	const [search, setSearch] = useState("");
 	const [activeTab, setActiveTab] = useState("tag");
@@ -76,7 +76,13 @@ const TagManagement = () => {
 					<TabsContent value="tag">
 						<div>
 							{/* Tags Table */}
-							<TagTable tagSearch={search} />
+							{tags.length > 0 ? (
+								<TagTable tagSearch={search} />
+							) : (
+								<div className="w-full p-3 rounded-lg text-center text-orange-800 bg-orange-300">
+									Let's create new Tag
+								</div>
+							)}
 
 							{/* Add and edit tag dialog */}
 							<AddTag />
@@ -86,7 +92,13 @@ const TagManagement = () => {
 					<TabsContent value="subject">
 						<div>
 							{/* Tags Table */}
-							<SubjectTable subjectSearch={search} />
+							{subjects.length > 0 ? (
+								<SubjectTable subjectSearch={search} />
+							) : (
+								<div className="w-full p-3 rounded-lg text-center text-orange-800 bg-orange-300">
+									Let's create new Subject
+								</div>
+							)}
 
 							{/* Add and edit tag dialog */}
 							<AddSubject />

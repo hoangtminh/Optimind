@@ -1,21 +1,27 @@
 import React, { useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
+import {
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogHeader,
+	DialogTitle,
+} from "../ui/dialog";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { useSubject } from "@/hooks/use-subject";
 
 const AddSubject = () => {
-	const {
-		newSubjectData,
-		isAddSubjectDialogOpen,
-		setIsAddSubjectDialogOpen,
-		setEditingSubject,
-		setNewSubjectData,
-		addSubject,
-	} = useSubject();
+	const { isAddSubjectDialogOpen, setIsAddSubjectDialogOpen, createSubject } =
+		useSubject();
+
+	const [newSubjectData, setNewSubjectData] = useState({
+		name: "",
+		color: "#228B22",
+	});
 
 	const handleAddSubject = () => {
-		addSubject(newSubjectData);
+		createSubject(newSubjectData);
+		setIsAddSubjectDialogOpen(false);
 		setNewSubjectData({
 			name: "",
 			color: "#228B22",
@@ -29,7 +35,8 @@ const AddSubject = () => {
 		>
 			<DialogContent>
 				<DialogHeader>
-					<DialogTitle>Chỉnh sửa Subject</DialogTitle>
+					<DialogTitle>Tạo Subject mới</DialogTitle>
+					<DialogDescription>Thêm môn học của bạn</DialogDescription>
 				</DialogHeader>
 				<div className="space-y-4">
 					<div className="flex flex-row gap-3">
@@ -81,7 +88,6 @@ const AddSubject = () => {
 							variant="outline"
 							onClick={() => {
 								setIsAddSubjectDialogOpen(false);
-								setEditingSubject(null);
 							}}
 						>
 							Cancel

@@ -1,22 +1,47 @@
-import React from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
+import React, { useEffect, useState } from "react";
+import {
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogHeader,
+	DialogTitle,
+} from "../ui/dialog";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { useSubject } from "@/hooks/use-subject";
 
 const EditSubject = () => {
 	const {
-		newSubjectData,
+		editingSubject,
 		isEditSubjectDialogOpen,
 		setIsEditSubjectDialogOpen,
-		setNewSubjectData,
+
+		deleteSubject,
+		updateSubject,
 	} = useSubject();
 
+	const [newSubjectData, setNewSubjectData] = useState({
+		name: editingSubject.name,
+		color: editingSubject.color,
+	});
+
+	useEffect(() => {
+		setNewSubjectData({
+			name: editingSubject.name,
+			color: editingSubject.color,
+		});
+	}, [editingSubject]);
+
 	const handleUpdateSubject = () => {
+		updateSubject(editingSubject._id, newSubjectData);
 		setIsEditSubjectDialogOpen(false);
+		setNewSubjectData({ name: "", color: "" });
 	};
+
 	const handleDeleteSubject = () => {
+		deleteSubject(editingTag._id);
 		setIsEditSubjectDialogOpen(false);
+		setNewSubjectData({ name: "", color: "" });
 	};
 
 	return (
@@ -27,6 +52,9 @@ const EditSubject = () => {
 			<DialogContent>
 				<DialogHeader>
 					<DialogTitle>Chỉnh sửa Subject</DialogTitle>
+					<DialogDescription>
+						Chỉnh sửa môn học phù hợp
+					</DialogDescription>
 				</DialogHeader>
 				<div className="space-y-4">
 					<div className="flex flex-row gap-3">
@@ -75,11 +103,7 @@ const EditSubject = () => {
 						</Button>
 						<Button
 							variant="destructive"
-							onClick={() => {
-								handleDeleteSubject();
-								setIsEditSubjectDialogOpen(false);
-								setEditingSubject(null);
-							}}
+							onClick={handleDeleteSubject}
 						>
 							Delete
 						</Button>

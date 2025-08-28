@@ -6,19 +6,18 @@ import React from "react";
 
 const SubjectAndTags = () => {
 	const { sessionData } = useStudy();
-	const { availableTags } = useTag();
-	const { availableSubjects } = useSubject();
+	const { tags } = useTag();
+	const { subjects } = useSubject();
 
-	const tags = availableTags.filter((tag) =>
+	const sessionTags = tags.filter((tag) =>
 		sessionData.tags.some((sessionTag) => sessionTag.id === tag.id)
 	);
 
-	const subjects = availableSubjects.filter((subject) =>
+	const sessionSubjects = subjects.filter((subject) =>
 		sessionData.subjects.some(
 			(sessionSubject) => sessionSubject.id === subject.id
 		)
 	);
-	console.log(tags, subjects);
 
 	return (
 		<div className="flex flex-col gap-4">
@@ -26,27 +25,31 @@ const SubjectAndTags = () => {
 				<span className="text-nowrap font-medium text-gray-700">
 					Môn học:
 				</span>
-				<span className="flex flex-row flex-wrap gap-2 text-lg font-semibold">
-					{subjects?.map((subject) => (
-						<Badge
-							key={subject.id}
-							style={{
-								backgroundColor: subject.color,
-								color: "white",
-							}}
-						>
-							{subject.name}
-						</Badge>
-					))}
-				</span>
+				{sessionSubjects.length > 0 ? (
+					<div className="flex flex-row flex-wrap gap-2 text-lg font-semibold">
+						{sessionSubjects?.map((subject) => (
+							<Badge
+								key={subject._id}
+								style={{
+									backgroundColor: subject.color,
+									color: "white",
+								}}
+							>
+								{subject.name}
+							</Badge>
+						))}
+					</div>
+				) : (
+					"No subject"
+				)}
 			</div>
 			<div className="flex items-center gap-2">
 				<span className="font-medium text-gray-700">Tags:</span>
-				{tags.length > 0 ? (
+				{sessionTags.length > 0 ? (
 					<div className="flex flex-wrap gap-2">
 						{sessionData.tags.map((tag) => (
 							<Badge
-								key={tag.id}
+								key={tag._id}
 								style={{
 									backgroundColor: tag.color,
 									color: "white",

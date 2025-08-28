@@ -1,9 +1,9 @@
-import bcrypt from "bcryptjs";
+import { sanitizeUser } from "../utils/sanitize-user.js";
+import { ApiError } from "../utils/api-error.js";
 import { StatusCodes } from "http-status-codes";
 import User from "../models/user-model.js";
-import { ApiError } from "../utils/api-error.js";
 import jwt from "jsonwebtoken";
-import { sanitizeUser } from "../utils/sanitize-user.js";
+import bcrypt from "bcryptjs";
 
 const registerService = async (req) => {
 	try {
@@ -42,8 +42,7 @@ const loginService = async (req) => {
 		if (!user) {
 			throw new ApiError(StatusCodes.NOT_FOUND, "Email doesn't exist");
 		}
-
-		const checkPassword = bcrypt.compare(password, user.password);
+		const checkPassword = await bcrypt.compare(password, user.password);
 		if (!checkPassword) {
 			throw new ApiError(StatusCodes.BAD_REQUEST, "Wrong password");
 		}
@@ -122,7 +121,7 @@ const getSession = async (req) => {
 
 const refreshSession = async (req) => {
 	try {
-		const refresh_token = req.cookie?.refresh_token;
+		const refresh_token = req.cookies?.refresh_token;
 		if (!refresh_token) {
 			throw new ApiError(StatusCodes.UNAUTHORIZED, "Login to continue");
 		}

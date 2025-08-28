@@ -39,10 +39,10 @@ export function AuthProvider({ children }) {
 			try {
 				await authApi.refreshSession();
 			} catch (error) {
-				console.error("Auto refresh failed:", error);
-				logout();
+				toast.warning("Login to continue");
+				router.push("/login");
 			}
-		}, 5 * 60 * 1000); // Check every 5 minutes
+		}, 15 * 60 * 1000); // Check every 5 minutes
 
 		return () => clearInterval(interval);
 	}, [state.isAuthenticated]);
@@ -54,17 +54,18 @@ export function AuthProvider({ children }) {
 				...loginData,
 				remember,
 			});
-			getSession();
-			router.push("/dashboard");
-			toast.success("Login successful");
+			const session = getSession();
+			if (session) {
+				router.push("/dashboard");
+				toast.success("Login successful");
+			}
 			return res;
 		} catch (error) {
 			dispatch({
 				type: "LOGIN_ERROR",
 				payload: error.message,
 			});
-
-			throw error;
+			toast.error(error.message);
 		}
 	};
 
@@ -72,7 +73,7 @@ export function AuthProvider({ children }) {
 		dispatch({ type: "REGISTER_START" });
 		try {
 			if (registerData.password != registerData.confirmPassword) {
-				return toast("Confirm password incorrect");
+				return toast.error("Confirm password incorrect");
 			}
 
 			const res = await authApi.register({
@@ -81,13 +82,11 @@ export function AuthProvider({ children }) {
 				username: registerData.username,
 			});
 			if (res.success) {
-				console.log("Attemping");
-				toast("Register successful");
+				toast.success("Register successful");
 				router.push("/auth.login");
 			}
 		} catch (error) {
-			console.log(error.message);
-			toast(error.message);
+			toast.error(error.message);
 		} finally {
 			dispatch({ type: "SET_LOADING", payload: false });
 		}
@@ -102,7 +101,7 @@ export function AuthProvider({ children }) {
 			router.push("/auth/login");
 			toast.success("Logout successful");
 		} catch (error) {
-			toast(error.message);
+			toast.error(error.message);
 		}
 	};
 
@@ -122,7 +121,7 @@ export function AuthProvider({ children }) {
 					return refresh.data;
 				}
 			} catch (error) {
-				toast(error.message);
+				toast.warning(error.message);
 				return null;
 			} finally {
 				dispatch({ type: "SET_LOADING", payload: false });

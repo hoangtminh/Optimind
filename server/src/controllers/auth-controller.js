@@ -12,7 +12,7 @@ const loginUser = async (req, res, next) => {
 			maxAge: 15 * 60 * 1000,
 		});
 
-		if (req.remember) {
+		if (req.body.remember) {
 			res.cookie("refresh_token", response.data.refresh_token, {
 				httpOnly: true,
 				secure: false,
@@ -24,7 +24,6 @@ const loginUser = async (req, res, next) => {
 		return res.status(StatusCodes.OK).json({
 			success: true,
 			data: response.data.user,
-			message: "Login successful",
 		});
 	} catch (err) {
 		handleApiError(err, res);
@@ -37,7 +36,6 @@ const registerUser = async (req, res, next) => {
 		return res.status(StatusCodes.CREATED).json({
 			success: true,
 			data: response.data,
-			message: "Register successed",
 		});
 	} catch (err) {
 		handleApiError(err, res);
@@ -52,7 +50,6 @@ const logoutUser = async (req, res) => {
 
 		return res.status(StatusCodes.OK).json({
 			success: true,
-			message: "Logout successful",
 			data: null,
 		});
 	} catch (err) {
@@ -66,7 +63,6 @@ const getSession = async (req, res) => {
 		if (response.success) {
 			return res.status(StatusCodes.OK).json({
 				success: true,
-				message: "Get session succeed",
 				data: response.data,
 			});
 		}
@@ -78,10 +74,11 @@ const getSession = async (req, res) => {
 const refreshSession = async (req, res) => {
 	try {
 		const response = await authService.refreshSession(req);
-		if (re)
-			return {
-				su,
-			};
+		if (response.success)
+			return res.status(StatusCodes.OK).json({
+				success: true,
+				data: response.data,
+			});
 	} catch (err) {
 		handleApiError(err, res);
 	}

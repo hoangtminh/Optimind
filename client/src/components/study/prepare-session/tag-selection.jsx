@@ -6,11 +6,11 @@ import { useTag } from "@/hooks/use-tag";
 import React from "react";
 
 const TagSelection = () => {
-	const { availableTags } = useTag();
+	const { tags } = useTag();
 	const { selectedTags, setSelectedTags } = useStudy();
 
 	const isTagSelected = (id) => {
-		return selectedTags.some((selectedTag) => selectedTag.id === id);
+		return selectedTags.some((selectedTag) => selectedTag._id === id);
 	};
 
 	return (
@@ -19,23 +19,23 @@ const TagSelection = () => {
 				Tags cho phiên học
 			</Label>
 			<div className="flex flex-wrap gap-2">
-				{availableTags.map((tag) => (
+				{tags.map((tag) => (
 					<Badge
-						key={tag.id}
-						variant={isTagSelected(tag.id) ? "default" : "outline"}
+						key={tag._id}
+						variant={isTagSelected(tag._id) ? "default" : "outline"}
 						className="cursor-pointer"
 						style={{
-							backgroundColor: isTagSelected(tag.id)
+							backgroundColor: isTagSelected(tag._id)
 								? tag.color
 								: "white",
 							borderColor: tag.color,
-							color: isTagSelected(tag.id) ? "white" : tag.color,
+							color: isTagSelected(tag._id) ? "white" : tag.color,
 						}}
 						onClick={() => {
 							setSelectedTags((prev) =>
-								isTagSelected(tag.id)
+								isTagSelected(tag._id)
 									? prev.filter(
-											(prevTag) => prevTag.id !== tag.id
+											(prevTag) => prevTag._id !== tag._id
 									  )
 									: [...prev, tag]
 							);

@@ -8,7 +8,7 @@ const verifyToken = (req, res, next) => {
 		if (!access_token) {
 			return res
 				.status(StatusCodes.UNAUTHORIZED)
-				.json({ message: "No token found" });
+				.json({ message: "Session timeout" });
 		}
 
 		const verified = jwt.verify(
@@ -18,7 +18,7 @@ const verifyToken = (req, res, next) => {
 		if (!verified) {
 			return res
 				.status(StatusCodes.UNAUTHORIZED)
-				.json({ message: "Invalid token" });
+				.json({ message: "Invalid session" });
 		}
 
 		req.user = verified;

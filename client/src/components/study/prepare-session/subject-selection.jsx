@@ -3,15 +3,15 @@ import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
 import { useStudy } from "@/hooks/use-study-session";
 import { useSubject } from "@/hooks/use-subject";
-import React, { useState } from "react";
+import React from "react";
 
 const SubjectSelection = () => {
-	const { availableSubjects } = useSubject();
+	const { subjects } = useSubject();
 	const { selectedSubjects, setSelectedSubjects } = useStudy();
 
 	const isSubjectSeleted = (id) => {
 		return selectedSubjects.some(
-			(selectedSubject) => selectedSubject.id === id
+			(selectedSubject) => selectedSubject._id === id
 		);
 	};
 
@@ -21,28 +21,30 @@ const SubjectSelection = () => {
 				Môn học (tùy chọn)
 			</Label>
 			<div className="flex flex-wrap gap-1.5">
-				{availableSubjects.map((subject) => (
+				{subjects.map((subject) => (
 					<Badge
-						key={subject.id}
+						key={subject._id}
 						variant={
-							isSubjectSeleted(subject.id) ? "default" : "outline"
+							isSubjectSeleted(subject._id)
+								? "default"
+								: "outline"
 						}
 						className="cursor-pointer"
 						style={{
-							backgroundColor: isSubjectSeleted(subject.id)
+							backgroundColor: isSubjectSeleted(subject._id)
 								? subject.color
 								: "white",
 							borderColor: subject.color,
-							color: isSubjectSeleted(subject.id)
+							color: isSubjectSeleted(subject._id)
 								? "white"
 								: subject.color,
 						}}
 						onClick={() => {
 							setSelectedSubjects((prev) =>
-								isSubjectSeleted(subject.id)
+								isSubjectSeleted(subject._id)
 									? prev.filter(
 											(prevSubject) =>
-												prevSubject.id !== subject.id
+												prevSubject._id !== subject._id
 									  )
 									: [...prev, subject]
 							);

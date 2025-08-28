@@ -15,19 +15,16 @@ import { ChevronLeft, ChevronRight, Edit2, Trash2 } from "lucide-react";
 
 const SubjectTable = ({ subjectSearch }) => {
 	const {
-		availableSubjects,
+		subjects,
 		setIsEditSubjectDialogOpen,
 		setEditingSubject,
-		setNewSubjectData,
 		deleteSubject,
 	} = useSubject();
 
 	const [subjectPage, setSubjectPage] = useState(0);
 
-	const filteredSubjects = availableSubjects.filter(
-		(subject) =>
-			// subject.name.toLowerCase().includes(subjectSearch.toLowerCase())
-			true
+	const filteredSubjects = subjects.filter((subject) =>
+		subject.name.toLowerCase().includes(subjectSearch.toLowerCase())
 	);
 	const paginatedSubjects = filteredSubjects.slice(
 		subjectPage * 5,
@@ -48,7 +45,7 @@ const SubjectTable = ({ subjectSearch }) => {
 					<TableBody className={"bg-orange-100"}>
 						{paginatedSubjects.map((subject) => (
 							<TableRow
-								key={subject.id}
+								key={subject._id}
 								className={"hover:bg-orange-200"}
 							>
 								<TableCell>
@@ -71,13 +68,9 @@ const SubjectTable = ({ subjectSearch }) => {
 											size="sm"
 											onClick={() => {
 												setIsEditSubjectDialogOpen(
-													() => true
+													true
 												);
-												setEditingSubject(subject.id);
-												setNewSubjectData({
-													name: subject.name,
-													color: subject.color,
-												});
+												setEditingSubject(subject._id);
 											}}
 											className="h-8 w-8 p-0 hover:bg-orange-300"
 										>
