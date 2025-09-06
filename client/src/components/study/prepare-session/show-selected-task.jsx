@@ -3,7 +3,8 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import React from "react";
 
 const ShowSelectedTask = ({ selectedTasks }) => {
-	const getColor = (task) => (task.taskType === "daily" ? "cyan" : "purple");
+	const getColor = (task) =>
+		task.frequencyType === "daily" ? "cyan" : "purple";
 
 	return (
 		<div className="mt-3 px-4 py-2 bg-white  shadow-md rounded-lg border border-green-300">
@@ -14,7 +15,7 @@ const ShowSelectedTask = ({ selectedTasks }) => {
 						const color = getColor(task);
 						return (
 							<div
-								key={task.id}
+								key={task._id}
 								className={`flex p-3 justify-between bg-${color}-50 border-2 border-${color}-300 rounded-md`}
 							>
 								<div>
@@ -27,9 +28,9 @@ const ShowSelectedTask = ({ selectedTasks }) => {
 										className={`text-xs font-medium text-${color}-700`}
 									>
 										Hạn:{" "}
-										{task.taskType === "long-term"
-											? `${task.deadline}`
-											: "Hôm nay"}
+										{task.frequencyType === "daily"
+											? "Hôm nay"
+											: `${task.deadline.slice(0, 10)}`}
 									</div>
 								</div>
 								<div className="flex h-fit gap-1">

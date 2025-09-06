@@ -12,6 +12,8 @@ import SubjectSelection from "./prepare-session/subject-selection";
 import TagSelection from "./prepare-session/tag-selection";
 import TaskPlanning from "./prepare-session/task-planning";
 import SetNameDescription from "./prepare-session/set-name-description.jsx.jsx";
+import Camera from "./camera";
+import FocusChart from "./focus-chart";
 
 const PrepareTracking = () => {
 	const { startSession } = useStudy();
@@ -38,21 +40,30 @@ const PrepareTracking = () => {
 					Chuẩn bị phiên học
 				</CardTitle>
 			</CardHeader>
-			<CardContent className="space-y-4">
-				{/* Name and Desciption */}
-				<SetNameDescription />
-
+			<CardContent className="w-full space-y-4 ">
 				{/* Study Methods Tabs */}
-				<StudyMethod />
+				<div className="flex flex-col w-full items-center">
+					<StudyMethod />
+					{/* Name and Desciption */}
+					<SetNameDescription />
+				</div>
 
-				{/* Subject Selection */}
-				<SubjectSelection />
+				<div className="grid grid-cols-2 gap-4">
+					{/* Subject Selection */}
+					<SubjectSelection />
 
-				{/* Session Tags */}
-				<TagSelection />
+					{/* Session Tags */}
+					<TagSelection />
+				</div>
 
 				{/* Task Planning */}
 				<TaskPlanning addTask={addTask} removeTask={removeTask} />
+
+				<div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+					{/* Camera Section */}
+					<Camera />
+					<FocusChart />
+				</div>
 
 				{/* Control Buttons */}
 				<Button

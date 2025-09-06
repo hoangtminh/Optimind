@@ -6,7 +6,7 @@ import React from "react";
 const SetNameDescription = () => {
 	const { sessionData, setSessionData } = useStudy();
 	return (
-		<div className="flex flex-col gap-4">
+		<div className="flex flex-col gap-4 w-[60%]">
 			<div>
 				<Label className="text-base font-medium mb-3 block">
 					Tên phiên học (Ngày, buổi học)
@@ -20,6 +20,7 @@ const SetNameDescription = () => {
 						})
 					}
 					value={sessionData.name}
+					required
 				/>
 			</div>
 			<div>

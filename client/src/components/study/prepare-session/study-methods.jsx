@@ -22,7 +22,7 @@ const StudyMethod = () => {
 	// Session state
 
 	return (
-		<div>
+		<div className="w-[70%]">
 			<Label className="text-base font-medium mb-3 block">
 				Phương pháp học
 			</Label>

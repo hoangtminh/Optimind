@@ -7,7 +7,7 @@ import TodaySession from "@/components/study/today-session";
 import DailyTasks from "@/components/goals/daily-tasks";
 import TagManagement from "@/components/study/tag-subject-manage";
 import { useStudy } from "@/hooks/use-study-session";
-import LongtermTask from "@/components/goals/long-term-task";
+import LongtermTask from "@/components/goals/deadline-task";
 
 export default function TrackingPage() {
 	const { isSessionActive } = useStudy();
@@ -22,28 +22,23 @@ export default function TrackingPage() {
 					Hãy bắt đầu phiên học của bạn
 				</p>
 			</div>
+			<div>
+				{/* Progress Section */}
+				<ProgressCard />
+			</div>
+			{/* Session Setup Card */}
+			{isSessionActive ? <StudyTracking /> : <PrepareTracking />}
 
 			<div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
 				{/* Left Column - Session Setup */}
 				<div className="lg:col-span-3 space-y-6">
-					{/* Progress Section */}
-					<ProgressCard />
-
-					{/* Session Setup Card */}
-					{isSessionActive ? <StudyTracking /> : <PrepareTracking />}
-
-					{/* Today's Sessions */}
 					<TodaySession />
+					<LongtermTask />
 				</div>
 
 				{/* Right Column - Goals and Tag Management */}
 				<div className="space-y-6 col-span-2">
-					{/* Current Goals */}
 					<DailyTasks />
-
-					<LongtermTask />
-
-					{/* Tag Management */}
 					<TagManagement />
 				</div>
 			</div>

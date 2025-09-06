@@ -17,11 +17,9 @@ const TaskList = () => {
 
 	return (
 		<div>
-			{selectedTasks.length > 0 && (
-				<div>
-					<h4 className="font-medium text-gray-700 mb-3">
-						Nhiệm vụ:
-					</h4>
+			<div>
+				<h4 className="font-medium text-gray-700 mb-3">Nhiệm vụ:</h4>
+				{selectedTasks.length > 0 ? (
 					<div className="space-y-2">
 						{selectedTasks.map((task) => (
 							<div
@@ -50,8 +48,10 @@ const TaskList = () => {
 							</div>
 						))}
 					</div>
-				</div>
-			)}
+				) : (
+					"Khong co nhiem vu"
+				)}
+			</div>
 		</div>
 	);
 };

@@ -8,12 +8,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Progress } from "../ui/progress";
 
 import { useStudy } from "@/hooks/use-study-session";
-import FocusChart from "./study-tracking/focus-chart";
+import FocusChart from "./focus-chart";
 import SubjectAndTags from "./study-tracking/subjects-and-tags";
 import TimeAndProgress from "./study-tracking/time-and-progress";
 import { Label } from "../ui/label";
 import NameAndDescription from "./study-tracking/name-and-description";
 import TaskList from "./study-tracking/task-list";
+import Camera from "./camera";
 
 const StudyTracking = () => {
 	const {
@@ -120,9 +121,11 @@ const StudyTracking = () => {
 						{/* Tasks */}
 						<TaskList />
 
-						{/* Focus Chart */}
-						<FocusChart />
-
+						<div className="grid grid-cols-1 lg:grid-cols-2">
+							{/* Focus Chart */}
+							<Camera />
+							<FocusChart />
+						</div>
 						<div className="flex gap-2 items-center justify-center">
 							<Button
 								onClick={pauseSession}

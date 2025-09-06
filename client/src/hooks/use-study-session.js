@@ -1,6 +1,7 @@
 "use client";
 
 import { todaySessions } from "@/data/study-data";
+import { useCamera } from "./use-camera";
 
 const { createContext, useContext, useState } = require("react");
 
@@ -33,9 +34,10 @@ export function StudyProvider({ children }) {
 
 	const [selectedSubjects, setSelectedSubjects] = useState([]);
 	const [selectedTags, setSelectedTags] = useState([]);
-
-	const [newTask, setNewTask] = useState({ name: "", complete: false });
 	const [selectedTasks, setSelectedTasks] = useState([]);
+	const [selectedProgress, setSelectedProgress] = useState([]);
+	const { startCamera, startRecording, stopRecording, cameraStream } =
+		useCamera();
 
 	const [sessionData, setSessionData] = useState({
 		name: "",
@@ -47,9 +49,9 @@ export function StudyProvider({ children }) {
 		subjects: [],
 		tags: [],
 		tasks: [],
+		progress: [],
 		currentCycle: 1,
 		totalTime: 0,
-		startedAt: null,
 		finished: false,
 		concentrateScore: [],
 	});
@@ -57,8 +59,6 @@ export function StudyProvider({ children }) {
 	const startSession = () => {
 		let duration = 0;
 		let method = activeTab;
-		const now = new Date();
-		const startedAt = `${now.getHours()}:${now.getMinutes()} ${now.getDate()}/${now.getMonth()}/${now.getFullYear()}`;
 		setSelectedTasks((prev) =>
 			prev.map((task) => {
 				return { ...task, completed: false };
@@ -81,9 +81,9 @@ export function StudyProvider({ children }) {
 				subjects: selectedSubjects,
 				tags: selectedTags,
 				tasks: selectedTasks,
+				progress: selectedProgress,
 				currentCycle: 1,
 				totalTime: 0,
-				startedAt: startedAt,
 				concentrateScore: [],
 			};
 		});
@@ -93,12 +93,19 @@ export function StudyProvider({ children }) {
 		setIsSessionActive(true);
 		setIsPaused(false);
 		setFocusData([]);
+		if (cameraStream) {
+			startCamera();
+			startRecording();
+		}
 	};
 
 	const endSession = () => {
 		setIsPaused(false);
 		setIsBreakTime(false);
-
+		if (cameraStream) {
+			stopRecording();
+			startCamera();
+		}
 		const isFinish =
 			currentCycle == sessionData.cycles && timeRemaining == 0;
 
@@ -128,7 +135,6 @@ export function StudyProvider({ children }) {
 			tasks: [],
 			currentCycle: 1,
 			totalTime: 0,
-			startedAt: null,
 			finished: false,
 			concentrateScore: [],
 		});
@@ -178,6 +184,8 @@ export function StudyProvider({ children }) {
 		// Tasks
 		selectedTasks,
 		setSelectedTasks,
+		selectedProgress,
+		setSelectedProgress,
 	};
 	return (
 		<StudyContext.Provider value={contextValue}>

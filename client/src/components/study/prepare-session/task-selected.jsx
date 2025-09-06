@@ -7,16 +7,18 @@ const TasksSelected = ({
 	toggleTaskSelection,
 	selectedTasks,
 }) => {
-	const getColor = (task) => (task.taskType === "daily" ? "cyan" : "purple");
-
+	const getColor = (task) =>
+		task.frequencyType === "daily" ? "cyan" : "purple";
 	return (
 		<div className="p-2 space-y-2">
 			{getFilteredTasks().map((task) => {
-				const isSelected = selectedTasks.find((t) => t.id === task.id);
+				const isSelected = selectedTasks.find(
+					(t) => t._id === task._id
+				);
 				const color = getColor(task);
 				return (
 					<div
-						key={task.id}
+						key={task._id}
 						onClick={() => toggleTaskSelection(task)}
 						className={`flex items-center justify-between border-2 rounded-md cursor-pointer ${
 							isSelected && "bg-blue-100 border border-blue-300"
@@ -45,9 +47,9 @@ const TasksSelected = ({
 										className={`text-xs font-medium text-${color}-700`}
 									>
 										Hạn:{" "}
-										{task.taskType === "long-term"
-											? `${task.deadline}`
-											: "Hôm nay"}
+										{task.frequencyType === "daily"
+											? "Hôm nay"
+											: `${task.deadline.slice(0, 10)}`}
 									</div>
 								</div>
 								<div className="flex h-fit gap-1">

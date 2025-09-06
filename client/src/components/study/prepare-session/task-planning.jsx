@@ -23,13 +23,14 @@ const TaskPlanning = () => {
 	const { tasks, setAddTaskDialogOpen } = useTasks();
 	const { selectedTasks, setSelectedTasks } = useStudy();
 
-	const filteredTasks = tasks.filter((task) => task.status === "active");
+	const filteredTasks = tasks.filter((task) => !task.complete);
 
 	const toggleTaskSelection = (task) => {
+		console.log(task);
 		setSelectedTasks((prev) => {
-			const isSelected = prev.find((t) => t.id === task.id);
+			const isSelected = prev.find((t) => t._id === task._id);
 			if (isSelected) {
-				return prev.filter((t) => t.id !== task.id);
+				return prev.filter((t) => t._id !== task._id);
 			} else {
 				return [...prev, task];
 			}
@@ -92,7 +93,7 @@ const TaskPlanning = () => {
 			</div>
 			<div className="space-y-4">
 				<div className="flex flex-row p-2 gap-3 bg-white shadow-md rounded-lg border border-green-300">
-					<ScrollArea className="h-[95%] max-h-45 px-1 w-full rounded-md overflow-y-auto ">
+					<ScrollArea className="h-[100%] max-h-60	 px-1 w-full rounded-md overflow-y-auto ">
 						<TasksSelected
 							toggleTaskSelection={toggleTaskSelection}
 							getFilteredTasks={getFilteredTasks}
