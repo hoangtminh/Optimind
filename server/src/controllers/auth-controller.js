@@ -75,10 +75,16 @@ const refreshSession = async (req, res) => {
 	try {
 		const response = await authService.refreshSession(req);
 		if (response.success)
-			return res.status(StatusCodes.OK).json({
-				success: true,
-				data: response.data,
+			res.cookie("access_token", response.data.access_token, {
+				httpOnly: true,
+				secure: false,
+				sameSite: "lax",
+				maxAge: 1000 * 60 * 60 * 24 * 7,
 			});
+		return res.status(StatusCodes.OK).json({
+			success: true,
+			data: response.data,
+		});
 	} catch (err) {
 		handleApiError(err, res);
 	}

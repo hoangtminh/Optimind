@@ -1,7 +1,8 @@
 "use client";
 
-import { tasksData } from "@/data/tasks-data";
-import { createContext, useContext, useState } from "react";
+import { taskApi } from "@/actions/task-action";
+import { createContext, useContext, useEffect, useState } from "react";
+import { toast } from "sonner";
 
 const TasksContext = createContext();
 
@@ -10,122 +11,92 @@ export function useTasks() {
 }
 
 export function TasksProvider({ children }) {
-	const [tasks, setTasks] = useState(tasksData);
-
-	const [newTask, setNewTask] = useState({
-		title: "",
-		subject: "",
-		type: "study",
-		taskType: "daily",
-		target: "",
-		unit: "hours",
-		deadline: "",
-		repeatFrequency: "daily", // Added repeat frequency to new task form
-		priority: "medium",
-		notes: "", // Added notes to new task form
-	});
+	const [tasks, setTasks] = useState([]);
+	const [taskLoading, setTaskLoading] = useState(false);
 
 	const [addTaskDialogOpen, setAddTaskDialogOpen] = useState(false);
 	const [editingTask, setEditingTask] = useState(null); // Added editing task state
 
-	const addTask = () => {
-		if (newTask.title && newTask.subject && newTask.target) {
-			const task = {
-				id: tasks.length + 1,
-				...newTask,
-				target: Number.parseFloat(newTask.target),
-				current: 0,
-				status: "active",
-			};
-			setTasks([...tasks, task]);
-			setNewTask({
-				title: "",
-				subject: "",
-				type: "study",
-				taskType: "daily",
-				target: "",
-				unit: "hours",
-				deadline: "",
-				repeatFrequency: "daily",
-				priority: "medium",
-				notes: "",
-			});
-			setAddTaskDialogOpen(false);
+	useEffect(() => {
+		if (taskLoading) return;
+		setTaskLoading(true);
+		getTask();
+	}, []);
+
+	const getTask = async () => {
+		try {
+			const res = await taskApi.getUserTask();
+			if (res.success) {
+				setTasks(res.data);
+			}
+		} catch (error) {
+			toast.error(error.message);
+		} finally {
+			setTaskLoading(false);
 		}
 	};
 
-	const updateTask = () => {
-		// Added update task function
-		if (
-			editingTask &&
-			editingTask.title &&
-			editingTask.subject &&
-			editingTask.target
-		) {
-			setTasks(
-				tasks.map((task) =>
-					task.id === editingTask.id
-						? {
-								...editingTask,
-								target: Number.parseFloat(editingTask.target),
-						  }
-						: task
-				)
-			);
-			setEditingTask(null);
+	const createTask = async (newTask) => {
+		if (taskLoading) return;
+		try {
+			setTaskLoading(true);
+			console.log(newTask);
+
+			const res = await taskApi.createTask(newTask);
+			if (res.success) {
+				getTask();
+			}
+		} catch (error) {
+			toast.error(error.message);
+		} finally {
+			setTaskLoading(false);
 		}
 	};
 
-	const deleteTask = (id) => {
-		setTasks(tasks.filter((task) => task.id !== id));
+	const updateTask = async (updateData) => {
+		if (taskLoading) return;
+		try {
+			setTaskLoading(true);
+			const res = await taskApi.updateTask(updateData);
+
+			if (res.success) {
+				getTask();
+			}
+		} catch (error) {
+			toast.error(error.message);
+		} finally {
+			setTaskLoading(false);
+		}
 	};
 
-	const updateProgress = (id, newCurrent) => {
-		const value = Number.parseFloat(newCurrent) || 0;
-		const roundedValue = Math.round(value * 10) / 10; // Round to 1 decimal place
-		setTasks(
-			tasks.map((task) =>
-				task.id === id
-					? {
-							...task,
-							current: roundedValue,
-							status:
-								roundedValue >= task.target
-									? "completed"
-									: "active",
-					  }
-					: task
-			)
-		);
+	const deleteTask = async (taskId) => {
+		if (taskLoading) return;
+		try {
+			setTaskLoading(true);
+			const res = await taskApi.deleteTask({ _id: taskId });
+			console.log(res);
+			if (res.success) {
+				getTask();
+			}
+		} catch (error) {
+			toast.error(error.message);
+		} finally {
+			setTaskLoading(false);
+		}
 	};
-
-	const getDaysLeft = (deadline) => {
-		const today = new Date();
-		const deadlineDate = new Date(deadline);
-		const diffTime = deadlineDate - today;
-		const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-		return diffDays;
-	};
-
-	const overdueLongTermTasks = tasks.filter(
-		// Only show long-term overdue tasks
-		(task) => task.taskType === "long-term" && task.status === "overdue"
-	);
 
 	const contextValue = {
 		tasks,
 		setTasks,
-		newTask,
-		setNewTask,
+
 		addTaskDialogOpen,
 		setAddTaskDialogOpen,
+
 		editingTask,
 		setEditingTask,
-		addTask,
+		createTask,
 		updateTask,
 		deleteTask,
-		updateProgress,
-		overdueLongTermTasks,
 	};
 	return (
 		<TasksContext.Provider value={contextValue}>

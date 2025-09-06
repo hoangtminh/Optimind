@@ -9,12 +9,13 @@ import {
 import { TrendingUp } from "lucide-react";
 
 import { useTasks } from "@/hooks/use-task";
-import ProgressPattern from "./pattern/progress-pattern";
+import TaskProgressPattern from "./pattern/task-progress-pattern";
+import StudyProgressPattern from "./pattern/study-progress-pattern";
 
 const LongtermTask = () => {
 	const { tasks } = useTasks();
 	const activeLongTermTasks = tasks.filter(
-		(task) => task.status === "active" && task.taskType === "long-term"
+		(task) => task.frequencyType === "deadline"
 	);
 
 	return (
@@ -29,14 +30,25 @@ const LongtermTask = () => {
 				</CardDescription>
 			</CardHeader>
 			<CardContent className="space-y-4">
-				{activeLongTermTasks.map((task) => (
-					<ProgressPattern
-						task={task}
-						color={"purple"}
-						type={"long-term"}
-						key={task.id}
-					/>
-				))}
+				{activeLongTermTasks.map((task) => {
+					if (task.taskType === "study")
+						return (
+							<StudyProgressPattern
+								task={task}
+								color="purple"
+								key={task._id}
+								type={"daily"}
+							/>
+						);
+					return (
+						<TaskProgressPattern
+							task={task}
+							color="purple"
+							key={task._id}
+							type={"daily"}
+						/>
+					);
+				})}
 			</CardContent>
 		</Card>
 	);

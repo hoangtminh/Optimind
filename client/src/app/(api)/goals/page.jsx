@@ -6,7 +6,7 @@ import { Award, AlertTriangle, Calendar, TrendingUp, Plus } from "lucide-react";
 import DailyTaskChart from "@/components/goals/daily-task-chart";
 import AddTask from "@/components/goals/add-tasks";
 import EditTask from "@/components/goals/edit-task";
-import LongtermTask from "@/components/goals/long-term-task";
+import LongtermTask from "@/components/goals/deadline-task";
 import DailyTasks from "@/components/goals/daily-tasks";
 import OverdueTasks from "@/components/goals/overdue-tasks";
 import CompletedTasks from "@/components/goals/completed-task";

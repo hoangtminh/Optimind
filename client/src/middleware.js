@@ -10,7 +10,7 @@ export function middleware(request) {
 
 	if (!isAuthenticated) {
 		if (!AUTH_PATHNAME.includes(pathname)) {
-			url.pathname = "auth/login";
+			url.pathname = "/auth/login";
 			console.log("To login");
 			return NextResponse.redirect(url);
 		}

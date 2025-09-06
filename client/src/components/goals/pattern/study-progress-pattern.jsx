@@ -6,6 +6,7 @@ import { Progress } from "../../ui/progress";
 import { Input } from "../../ui/input";
 import { Edit, Trash2 } from "lucide-react";
 import { useTasks } from "@/hooks/use-task";
+import { Checkbox } from "@/components/ui/checkbox";
 
 const ProgressPattern = ({ task, color, type }) => {
 	const { updateProgress, setEditingTask, deleteTask } = useTasks();
@@ -35,13 +36,13 @@ const ProgressPattern = ({ task, color, type }) => {
 										? "Hàng tuần"
 										: "Thứ 2-6"
 									: ""}
-								{type === "long-term" && "Dài hạn"}
+								{type === "deadline" && "Deadline"}
 							</Badge>
 						)}
 					</div>
-					{task.notes && (
+					{task.description && (
 						<p className={`text-xs text-${color}-600 mt-1 italic`}>
-							{task.notes}
+							{task.description}
 						</p>
 					)}
 				</div>
@@ -60,7 +61,7 @@ const ProgressPattern = ({ task, color, type }) => {
 						variant="ghost"
 						size="sm"
 						className="h-6 w-6 p-0"
-						onClick={() => deleteTask(task.id)}
+						onClick={() => deleteTask(task._id)}
 					>
 						<Trash2 className="h-3 w-3" />
 					</Button>
@@ -68,53 +69,27 @@ const ProgressPattern = ({ task, color, type }) => {
 			</div>
 			<div className="space-y-2">
 				<div
-					className={`flex w-auto gap-2 items-center justify-between text-xs text-${color}-600`}
+					className={`flex gap-3 items-center justify-between text-xs text-${color}-600`}
 				>
 					<Progress
-						value={(task.current / task.target) * 100}
+						value={(task.progress / task.target) * 100}
 						className={`h-2 bg-${color}-200`}
 						indicatorColor={`bg-${color}-600`}
 					/>
-					<span className="text-right text-nowrap min-w-25">
-						{task.current.toFixed(1)}/{task.target} {task.unit}
+
+					<span className="w-fit text-right text-wrap min-w-20">
+						{task.progress}/{task.target} hours
 					</span>
 				</div>
-
-				<div className="flex justify-between items-center text-xs">
-					{editable && (
-						<div className={`flex flex-row gap-2 items-center`}>
-							<span className={`text-nowrap text-${color}-600`}>
-								Cập nhật tiến độ:
-							</span>
-							<Input
-								type="number"
-								value={task.current}
-								onChange={(e) =>
-									updateProgress(
-										task.id,
-										Number.parseFloat(e.target.value) || 0
-									)
-								}
-								className="w-20 h-7 text-xs text-right p-1"
-								step="0.1"
-							/>
-						</div>
-					)}
-					{type === "long-term" && (
-						<div
-							className={`flex justify-between items-center text-xs text-${color}-600`}
-						>
-							Deadline: {task.deadline}
-						</div>
-					)}
-					{type === "overdue" && (
-						<div className="flex justify-between items-center text-xs">
-							<Badge variant="destructive" className="text-xs">
-								Deadline: {task.deadline}
-							</Badge>
-						</div>
-					)}
-				</div>
+			</div>
+			<div className="flex justify-between items-center text-xs">
+				{task.frequencyType === "deadline" && (
+					<div
+						className={`flex justify-between items-center text-xs text-${color}-600`}
+					>
+						Deadline: {task.deadline}
+					</div>
+				)}
 			</div>
 		</div>
 	);

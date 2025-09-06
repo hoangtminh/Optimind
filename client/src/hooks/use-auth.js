@@ -37,10 +37,10 @@ export function AuthProvider({ children }) {
 		getSession();
 		const interval = setInterval(async () => {
 			try {
-				await authApi.refreshSession();
+				const res = await authApi.refreshSession();
 			} catch (error) {
 				toast.warning("Login to continue");
-				router.push("/login");
+				router.push("/auth/login");
 			}
 		}, 15 * 60 * 1000); // Check every 5 minutes
 
@@ -115,6 +115,7 @@ export function AuthProvider({ children }) {
 			}
 		} catch (error) {
 			try {
+				console.log("Refreshing");
 				const refresh = await authApi.refreshSession();
 				if (refresh.success) {
 					dispatch({ type: "SET_USER", payload: refresh.data });

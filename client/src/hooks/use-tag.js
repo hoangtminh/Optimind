@@ -16,12 +16,6 @@ export function useTag() {
 	return useContext(TagContext);
 }
 
-// 		{ id: 1, name: "Ôn tập", color: "#228B22" },
-// 		{ id: 2, name: "Bài tập", color: "#FF7F50" },
-// 		{ id: 3, name: "Đọc sách", color: "#228B22" },
-// 		{ id: 4, name: "Nghiên cứu", color: "#4169E1" },
-// 		{ id: 5, name: "Thực hành", color: "#FF7F50" },
-
 export function TagProvider({ children }) {
 	const [tags, setTags] = useState([]);
 	const [editingTag, setEditingTag] = useState({

@@ -13,7 +13,7 @@ import { useTasks } from "@/hooks/use-task";
 
 const CompletedTasks = () => {
 	const { tasks } = useTasks();
-	const completedTasks = tasks.filter((task) => task.status === "completed");
+	const completedTasks = tasks.filter((task) => task.complete);
 
 	return (
 		<Card className="bg-gradient-to-br from-green-50 to-emerald-50 border-green-200">
@@ -45,26 +45,27 @@ const CompletedTasks = () => {
 											variant="outline"
 											className="text-xs"
 										>
-											{task.taskType === "daily"
+											{task.frequencyType === "repeat"
 												? "Hàng ngày"
 												: "Dài hạn"}
 										</Badge>
 									</div>
-									{task.notes && (
+									{task.description && (
 										<p className="text-xs text-green-600 mt-1 italic">
-											{task.notes}
+											{task.description}
 										</p>
 									)}
 								</div>
 							</div>
-							<div className="text-right">
-								<p className="text-xs font-medium text-green-700">
-									{task.current.toFixed(1)}/{task.target}{" "}
-									{task.unit}
-								</p>
+							<div className="text-right space-y-2">
 								<Badge className="bg-green-100 text-green-800 text-xs">
 									Hoàn thành
 								</Badge>
+								<p className="text-xs font-medium text-green-700">
+									{task.taskType === "study"
+										? `${task.progress}/${task.target}`
+										: task.target}
+								</p>
 							</div>
 						</div>
 					</div>

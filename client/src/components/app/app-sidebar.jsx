@@ -10,6 +10,8 @@ import {
 	Bell,
 	Brain,
 	Bluetooth,
+	Trophy,
+	Medal,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -65,6 +67,20 @@ const menuItems = [
 		icon: Target,
 		color: "text-amber-600",
 		bgColor: "bg-amber-50",
+	},
+	{
+		title: "Trò chơi",
+		url: "/gamification",
+		icon: Trophy,
+		color: "text-green-600",
+		bgColor: "bg-green-50",
+	},
+	{
+		title: "Bảng xếp hạng",
+		url: "/ranking",
+		icon: Medal,
+		color: "text-green-600",
+		bgColor: "bg-green-50",
 	},
 	{
 		title: "Thông báo",

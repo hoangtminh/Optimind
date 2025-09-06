@@ -22,7 +22,7 @@ const LoginForm = () => {
 
 	const handleLogin = (e) => {
 		e.preventDefault();
-		setIsSubmitting(true);
+		setIsSubmitting(() => true);
 		login(
 			{
 				email: formData.email.toLowerCase().trim(),
@@ -30,7 +30,7 @@ const LoginForm = () => {
 			},
 			remember
 		);
-		setIsSubmitting(false);
+		setIsSubmitting(() => false);
 	};
 
 	return (

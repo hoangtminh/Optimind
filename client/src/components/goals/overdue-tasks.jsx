@@ -9,22 +9,29 @@ import {
 	CardHeader,
 	CardTitle,
 } from "../ui/card";
-import { AlertTriangle, ChevronLeft, ChevronRight, Trash2 } from "lucide-react";
-import { Badge } from "../ui/badge";
+import { AlertTriangle, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "../ui/button";
-import { Progress } from "../ui/progress";
 import { useTasks } from "@/hooks/use-task";
-import ProgressPattern from "./pattern/progress-pattern";
+import TaskProgressPattern from "./pattern/task-progress-pattern";
+import { getDaysLeft } from "@/lib/utils";
 
 const OverdueTasks = () => {
-	const { overdueLongTermTasks } = useTasks();
-	const [overdueTasksPage, setOverdueTasksPage] = useState(0); // Added pagination for overdue tasks
+	const { tasks } = useTasks();
+	const [overdueTasksPage, setOverdueTasksPage] = useState(0);
+
+	const overdueDeadlineTasks = tasks.filter(
+		(task) =>
+			task.frequencyType === "deadline" &&
+			getDaysLeft(task.deadline) < 0 &&
+			!task.complete
+	);
 
 	const overdueTasksPerPage = 4;
 	const totalOverduePages = Math.ceil(
-		overdueLongTermTasks.length / overdueTasksPerPage
+		overdueDeadlineTasks.length / overdueTasksPerPage
 	);
-	const paginatedOverdueTasks = overdueLongTermTasks.slice(
+
+	const paginatedOverdueTasks = overdueDeadlineTasks.slice(
 		overdueTasksPage * overdueTasksPerPage,
 		(overdueTasksPage + 1) * overdueTasksPerPage
 	);
@@ -35,7 +42,7 @@ const OverdueTasks = () => {
 				<div>
 					<CardTitle className="flex items-center gap-2 text-red-800">
 						<AlertTriangle className="h-5 w-5" />
-						Tasks quá hạn ({overdueLongTermTasks.length})
+						Tasks quá hạn ({overdueDeadlineTasks.length})
 					</CardTitle>
 					<CardDescription className="text-red-600">
 						Chỉ hiển thị tasks dài hạn cần ưu tiên xử lý
@@ -85,11 +92,11 @@ const OverdueTasks = () => {
 			<CardContent className="space-y-4">
 				<div className="grid gap-4 lg:grid-cols-2 grid-cols-1">
 					{paginatedOverdueTasks.map((task) => (
-						<ProgressPattern
+						<TaskProgressPattern
 							task={task}
 							color={"red"}
 							type={"overdue"}
-							key={task.id}
+							key={task._id}
 						/>
 					))}
 				</div>
