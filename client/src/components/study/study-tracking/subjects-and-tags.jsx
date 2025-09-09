@@ -10,17 +10,17 @@ const SubjectAndTags = () => {
 	const { subjects } = useSubject();
 
 	const sessionTags = tags.filter((tag) =>
-		sessionData.tags.some((sessionTag) => sessionTag.id === tag.id)
+		sessionData.tags.some((sessionTag) => sessionTag._id === tag._id)
 	);
 
 	const sessionSubjects = subjects.filter((subject) =>
 		sessionData.subjects.some(
-			(sessionSubject) => sessionSubject.id === subject.id
+			(sessionSubject) => sessionSubject._id === subject._id
 		)
 	);
 
 	return (
-		<div className="flex flex-col gap-4">
+		<div className="flex flex-col p-3 gap-4 bg-white rounded-lg shadow-lg border-gray-400/70">
 			<div className="flex items-center gap-2">
 				<span className="text-nowrap font-medium text-gray-700">
 					Môn học:

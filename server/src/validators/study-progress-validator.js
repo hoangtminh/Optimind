@@ -8,13 +8,10 @@ const createStudyProgressValidate = (req, res, next) => {
 			title: z.string().min(3).max(60).nonempty(),
 			description: z.string().max(100),
 			subject: z.string().array(),
-			taskType: z.string(),
 			frequencyType: z.string().nonempty(),
-			frequency: z.string(),
-			deadline: z.iso.date().nonempty(),
-			target: z.any(),
-			progress: z.any(),
-			complete: z.boolean(),
+			frequency: z.string().array(),
+			deadline: z.string(),
+			target: z.number(),
 		});
 
 		validate(req, schema, next);
@@ -28,13 +25,10 @@ const updateStudyProgressValidate = (req, res, next) => {
 			title: z.string().min(3).max(60).nonempty(),
 			description: z.string().max(100),
 			subject: z.string().array(),
-			taskType: z.string(),
 			frequencyType: z.string().nonempty(),
-			frequency: z.string(),
-			deadline: z.iso.date().nonempty(),
+			frequency: z.string().array(),
+			deadline: z.string(),
 			target: z.number(),
-			progress: z.number(),
-			complete: z.boolean(),
 		});
 
 		validate(req, schema, next);

@@ -7,17 +7,15 @@ import {
 	CardDescription,
 	CardHeader,
 	CardTitle,
-} from "../ui/card";
+} from "../../ui/card";
 import { Calendar, ChevronLeft, ChevronRight } from "lucide-react";
 
-import TaskProgressPattern from "./pattern/task-progress-pattern";
-import { Button } from "../ui/button";
+import TaskProgressPattern from "../pattern/task-progress-pattern";
+import { Button } from "../../ui/button";
 
 const DailyTasks = () => {
 	const { tasks } = useTasks();
-
 	const [taskPage, setTaskPage] = useState(0);
-
 	const paginatedTasks = tasks.slice(taskPage * 4, (taskPage + 1) * 4);
 
 	return (

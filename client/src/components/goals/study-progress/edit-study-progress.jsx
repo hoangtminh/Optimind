@@ -1,45 +1,58 @@
-"use client";
-
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
 	Dialog,
 	DialogContent,
 	DialogDescription,
 	DialogHeader,
 	DialogTitle,
-} from "../ui/dialog";
-import { Button } from "../ui/button";
-import { Label } from "../ui/label";
-import { Input } from "../ui/input";
+} from "../../ui/dialog";
+import { Label } from "../../ui/label";
+import { Input } from "../../ui/input";
 import {
 	Select,
 	SelectContent,
 	SelectItem,
 	SelectTrigger,
 	SelectValue,
-} from "../ui/select";
-import { Textarea } from "../ui/textarea";
-import { useTasks } from "@/hooks/use-task";
-import { Check } from "lucide-react";
+} from "../../ui/select";
+import { Textarea } from "../../ui/textarea";
+import { Button } from "../../ui/button";
+import { useStudyProgress } from "@/hooks/use-study-progress";
+import { Badge } from "../../ui/badge";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
-	DropdownMenuItem,
 	DropdownMenuTrigger,
-} from "../ui/dropdown-menu";
-import { useSubject } from "@/hooks/use-subject";
-import { Badge } from "../ui/badge";
+} from "../../ui/dropdown-menu";
+import { Check } from "lucide-react";
+import { toast } from "sonner";
 
-const AddTask = () => {
-	const { addTaskDialogOpen, setAddTaskDialogOpen, createTask } = useTasks();
-	const { subjects } = useSubject();
+const EditStudyProgress = () => {
+	const {
+		editingStudyProgress,
+		setEditingStudyProgress,
+		updateStudyProgress,
+	} = useStudyProgress();
 
-	const [taskTitle, setTaskTitle] = useState("");
-	const [taskDescription, setTaskDescription] = useState("");
-	const [taskTarget, setTaskTarget] = useState("");
-	const [taskFrequencyType, setTaskFrequencyType] = useState("one-time");
-	const [selectedSubjects, setSelectedSubjects] = useState([]);
-	const [taskDeadline, setTaskDeadline] = useState("");
+	if (!editingStudyProgress) return null;
+
+	const [studyProgressTitle, setStudyProgressTitle] = useState(
+		editingStudyProgress.title
+	);
+	const [studyProgressDescription, setStudyProgressDescription] = useState(
+		editingStudyProgress.description
+	);
+	const [studyProgressHours, setStudyProgressHours] = useState(
+		Math.floor(editingStudyProgress.target / 60)
+	);
+	const [studyProgressMinutes, setStudyProgressMinutes] = useState(
+		editingStudyProgress.target % 60
+	);
+	const [studyProgressFrequencyType, setStudyProgressFrequencyType] =
+		useState(editingStudyProgress.frequencyType);
+	const [studyProgressDeadline, setStudyProgressDeadline] = useState(
+		editingStudyProgress.deadline.slice(0, 10)
+	);
 
 	const [selectedDays, setSelectedDays] = useState([
 		{ name: "Thứ 2", value: "monday", repeat: false },
@@ -51,6 +64,18 @@ const AddTask = () => {
 		{ name: "Chủ nhật", value: "sunday", repeat: false },
 	]);
 
+	useEffect(() => {
+		setSelectedDays((prev) =>
+			prev.map((day) =>
+				editingStudyProgress.frequency.some(
+					(StudyProgressDay) => StudyProgressDay === day.value
+				)
+					? { ...day, repeat: true }
+					: day
+			)
+		);
+	}, []);
+
 	const toggleDay = (value) => {
 		setSelectedDays((prev) =>
 			prev.map((day) =>
@@ -59,97 +84,66 @@ const AddTask = () => {
 		);
 	};
 
-	const toggleSubject = (subject) => {
-		setSelectedSubjects((prev) =>
-			isSubjectSeleted(subject._id)
-				? prev.filter((prevSubject) => prevSubject._id !== subject._id)
-				: [...prev, subject]
-		);
-	};
-
-	const isSubjectSeleted = (id) => {
-		return selectedSubjects.some((subject) => subject._id === id);
-	};
-
-	const handleAddTask = () => {
-		if (taskFrequencyType === "repeat") {
-			setTaskDeadline((prev) => ({
-				...prev,
-				deadline: new Date().toISOString(),
-			}));
+	const handleUpdateStudyProgress = () => {
+		if (
+			!selectedDays.some((day) => day.repeat) &&
+			studyProgressFrequencyType === "repeat"
+		) {
+			toast.error("Select day for StudyProgress");
+			return;
 		}
 
-		createTask({
-			title: taskTitle,
-			description: taskDescription,
-			frequencyType: taskFrequencyType,
+		console.log(studyProgressDeadline);
+
+		updateStudyProgress({
+			_id: editingStudyProgress._id,
+			title: studyProgressTitle,
+			description: studyProgressDescription,
+			frequencyType: studyProgressFrequencyType,
 			frequency: selectedDays
 				.filter((day) => day.repeat)
 				.map((day) => day.value),
-			subject: selectedSubjects.map((subject) => subject.name),
-			target: taskTarget,
-			deadline: taskDeadline,
+			subject: editingStudyProgress.subject,
+			target: studyProgressHours * 60 + studyProgressMinutes,
+			deadline: studyProgressDeadline,
 		});
-		setAddTaskDialogOpen(false);
-	};
 
-	const onClose = () => {
-		setAddTaskDialogOpen(false);
-
-		setSelectedSubjects([]);
-		setSelectedDays((prev) =>
-			prev.map((subject) => ({ ...subject, repeat: false }))
-		);
+		setEditingStudyProgress(null);
 	};
 
 	return (
-		<Dialog open={addTaskDialogOpen} onOpenChange={onClose}>
+		<Dialog
+			open={!!editingStudyProgress}
+			onOpenChange={() => setEditingStudyProgress(null)}
+		>
 			<DialogContent className="max-w-2xl">
 				<DialogHeader>
 					<DialogTitle className={`text-blue-700`}>
-						Tạo task mới
+						Cập nhật StudyProgress
 					</DialogTitle>
 					<DialogDescription>
-						Đặt một nhiệm vụ học tập mới để theo dõi tiến độ
+						Cập nhật một số thông tin của StudyProgress
 					</DialogDescription>
 				</DialogHeader>
 				<div className="space-y-4">
 					<div className="space-y-2">
 						<Label className={`text-blue-800`} htmlFor="title">
-							Tiêu đề task
+							Tiêu đề StudyProgress
 						</Label>
 						<Input
 							id="title"
-							value={taskTitle}
-							onChange={(e) => setTaskTitle(e.target.value)}
+							value={studyProgressTitle}
+							onChange={(e) =>
+								setStudyProgressTitle(e.target.value)
+							}
 							placeholder="Ví dụ: Hoàn thành chương 1"
 						/>
 					</div>
 					<div className="w-full flex flex-row flex-wrap gap-2">
-						<Label className={`text-blue-800`}>Môn học:</Label>
-						{subjects.map((subject) => (
-							<Badge
-								key={subject._id}
-								variant={
-									isSubjectSeleted(subject._id)
-										? "default"
-										: "outline"
-								}
-								className="cursor-pointer"
-								style={{
-									backgroundColor: isSubjectSeleted(
-										subject._id
-									)
-										? subject.color
-										: "white",
-									borderColor: subject.color,
-									color: isSubjectSeleted(subject._id)
-										? "white"
-										: subject.color,
-								}}
-								onClick={() => toggleSubject(subject)}
-							>
-								{subject.name}
+						<Label className={`text-blue-800/40`}>Môn học:</Label>
+						{editingStudyProgress.subject.map((subject, index) => (
+							<Badge key={index} variant={"outline"}>
+								{subject}
 							</Badge>
 						))}
 					</div>
@@ -162,9 +156,9 @@ const AddTask = () => {
 								Loại nhiệm vụ
 							</Label>
 							<Select
-								value={taskFrequencyType}
+								value={studyProgressFrequencyType}
 								onValueChange={(value) =>
-									setTaskFrequencyType(value)
+									setStudyProgressFrequencyType(value)
 								}
 							>
 								<SelectTrigger>
@@ -187,18 +181,35 @@ const AddTask = () => {
 								>
 									Mục tiêu
 								</Label>
-								<Input
-									id="target"
-									type="text"
-									value={taskTarget}
-									onChange={(e) =>
-										setTaskTarget(e.target.value)
-									}
-									placeholder="Nhập muc tieu"
-								/>
+								<div className="flex flex-row gap-2 items-center">
+									<Input
+										id="target"
+										type="number"
+										value={studyProgressHours}
+										onChange={(e) =>
+											setStudyProgressHours(
+												Math.max(0, e.target.value)
+											)
+										}
+										className={`w-fit px-2 text-center`}
+									/>
+									<span className="text-nowrap">h : </span>
+									<Input
+										id="target"
+										type="number"
+										value={studyProgressMinutes}
+										onChange={(e) =>
+											setStudyProgressMinutes(
+												Math.max(0, e.target.value)
+											)
+										}
+										className={`w-fit px-2 text-center`}
+									/>
+									m
+								</div>
 							</div>
 						</div>
-						{taskFrequencyType === "repeat" ? (
+						{studyProgressFrequencyType === "repeat" ? (
 							<div className="space-y-2">
 								<Label
 									className={`text-blue-800`}
@@ -257,9 +268,9 @@ const AddTask = () => {
 								<Input
 									id="deadline"
 									type="date"
-									value={taskDeadline}
+									value={studyProgressDeadline}
 									onChange={(e) =>
-										setTaskDeadline(e.target.value)
+										setStudyProgressDeadline(e.target.value)
 									}
 								/>
 							</div>
@@ -269,18 +280,20 @@ const AddTask = () => {
 						<Label htmlFor="description">Ghi chú</Label>
 						<Textarea
 							id="description"
-							value={taskDescription}
-							onChange={(e) => setTaskDescription(e.target.value)}
-							placeholder="Thêm ghi chú cho task này..."
+							value={studyProgressDescription}
+							onChange={(e) =>
+								setStudyProgressDescription(e.target.value)
+							}
+							placeholder="Thêm ghi chú cho StudyProgress này..."
 							rows={3}
 						/>
 					</div>
 					<Button
 						variant={"primary"}
-						onClick={handleAddTask}
+						onClick={handleUpdateStudyProgress}
 						className="w-full "
 					>
-						Tạo task
+						Cập nhật StudyProgress
 					</Button>
 				</div>
 			</DialogContent>
@@ -288,4 +301,4 @@ const AddTask = () => {
 	);
 };
 
-export default AddTask;
+export default EditStudyProgress;

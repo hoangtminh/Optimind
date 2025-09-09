@@ -77,7 +77,7 @@ const TaskProgressPattern = ({ task, color, type }) => {
 						<div
 							className={`flex text-wrap text-right text-${color}-600 text-sm min-w-30`}
 						>
-							Hạn: {task.deadline}
+							Hạn: {task.deadline.slice(0, 10)}
 						</div>
 					)}
 				</div>

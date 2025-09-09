@@ -7,10 +7,10 @@ import React from "react";
 
 const TagSelection = () => {
 	const { tags } = useTag();
-	const { selectedTags, setSelectedTags } = useStudy();
+	const { sessionTags, setSessionTags } = useStudy();
 
 	const isTagSelected = (id) => {
-		return selectedTags.some((selectedTag) => selectedTag._id === id);
+		return sessionTags.some((selectedTag) => selectedTag._id === id);
 	};
 
 	return (
@@ -32,7 +32,7 @@ const TagSelection = () => {
 							color: isTagSelected(tag._id) ? "white" : tag.color,
 						}}
 						onClick={() => {
-							setSelectedTags((prev) =>
+							setSessionTags((prev) =>
 								isTagSelected(tag._id)
 									? prev.filter(
 											(prevTag) => prevTag._id !== tag._id

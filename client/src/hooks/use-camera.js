@@ -32,7 +32,6 @@ export const CameraProvider = ({ children }) => {
 			videoRef.current.playsInline = true;
 			videoRef.current.play().catch((err) => toast.error(err));
 		}
-		console.log(videoRef);
 	}, [cameraStream]);
 
 	const startCamera = async () => {
@@ -44,7 +43,6 @@ export const CameraProvider = ({ children }) => {
 
 			setCameraStream(stream);
 
-			console.log(videoRef);
 			if (videoRef.current) {
 				videoRef.current.srcObject = stream;
 				videoRef.current.muted = true; // đảm bảo muted

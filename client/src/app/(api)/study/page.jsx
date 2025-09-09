@@ -4,10 +4,10 @@ import ProgressCard from "@/components/study/progress-card";
 import StudyTracking from "@/components/study/study-tracking";
 import PrepareTracking from "@/components/study/prepare-tracking";
 import TodaySession from "@/components/study/today-session";
-import DailyTasks from "@/components/goals/daily-tasks";
+import DailyTasks from "@/components/goals/task/tasks";
 import TagManagement from "@/components/study/tag-subject-manage";
 import { useStudy } from "@/hooks/use-study-session";
-import LongtermTask from "@/components/goals/deadline-task";
+import StudyProgress from "@/components/goals/study-progress/study-progress";
 
 export default function TrackingPage() {
 	const { isSessionActive } = useStudy();
@@ -26,14 +26,16 @@ export default function TrackingPage() {
 				{/* Progress Section */}
 				<ProgressCard />
 			</div>
-			{/* Session Setup Card */}
-			{isSessionActive ? <StudyTracking /> : <PrepareTracking />}
+			<div id="#study">
+				{/* Session Setup Card */}
+				{isSessionActive ? <StudyTracking /> : <PrepareTracking />}
+			</div>
 
 			<div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
 				{/* Left Column - Session Setup */}
 				<div className="lg:col-span-3 space-y-6">
 					<TodaySession />
-					<LongtermTask />
+					<StudyProgress />
 				</div>
 
 				{/* Right Column - Goals and Tag Management */}

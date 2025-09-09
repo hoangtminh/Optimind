@@ -2,6 +2,9 @@
 
 import { todaySessions } from "@/data/study-data";
 import { useCamera } from "./use-camera";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+import studySessionApi from "@/actions/study-session-action";
 
 const { createContext, useContext, useState } = require("react");
 
@@ -12,6 +15,7 @@ export function useStudy() {
 }
 
 export function StudyProvider({ children }) {
+	const router = useRouter();
 	const [allSessions, setAllSessions] = useState(todaySessions);
 
 	// Session state
@@ -32,10 +36,10 @@ export function StudyProvider({ children }) {
 	const [studyCycle, setStudyCycle] = useState(1);
 	const [timeCount, setTimeCount] = useState(0);
 
-	const [selectedSubjects, setSelectedSubjects] = useState([]);
-	const [selectedTags, setSelectedTags] = useState([]);
-	const [selectedTasks, setSelectedTasks] = useState([]);
-	const [selectedProgress, setSelectedProgress] = useState([]);
+	const [sessionSubjects, setSessionSubjects] = useState([]);
+	const [sessionTags, setSessionTags] = useState([]);
+	const [sessionTasks, setSessionTasks] = useState([]);
+	const [sessionStudyProgress, setSessionStudyProgress] = useState([]);
 	const { startCamera, startRecording, stopRecording, cameraStream } =
 		useCamera();
 
@@ -49,7 +53,7 @@ export function StudyProvider({ children }) {
 		subjects: [],
 		tags: [],
 		tasks: [],
-		progress: [],
+		studyProgress: [],
 		currentCycle: 1,
 		totalTime: 0,
 		finished: false,
@@ -57,16 +61,31 @@ export function StudyProvider({ children }) {
 	});
 
 	const startSession = () => {
+		if (
+			!sessionData.name.trim() ||
+			sessionSubjects.length === 0 ||
+			(sessionTasks.length === 0 && sessionStudyProgress.length === 0)
+		) {
+			toast.error(
+				"Please fill session name, select subject and add task/study progress"
+			);
+			return;
+		}
+
 		let duration = 0;
 		let method = activeTab;
-		setSelectedTasks((prev) =>
+		setSessionTasks((prev) =>
 			prev.map((task) => {
 				return { ...task, completed: false };
 			})
 		);
 
+		setSessionStudyProgress((prev) =>
+			prev.map((studyProgress) => ({ ...studyProgress, activeTime: 0 }))
+		);
+
 		if (activeTab === "free") {
-			duration = 0; // Freeform has no set duration
+			duration = 60000; // Freeform has no set duration
 		} else {
 			duration = studyTime * 60;
 		}
@@ -78,10 +97,10 @@ export function StudyProvider({ children }) {
 				studyTime: studyTime,
 				breakTime: breakTime,
 				cycles: studyCycle,
-				subjects: selectedSubjects,
-				tags: selectedTags,
-				tasks: selectedTasks,
-				progress: selectedProgress,
+				subjects: sessionSubjects,
+				tags: sessionTags,
+				tasks: sessionTasks,
+				studyProgress: sessionStudyProgress,
 				currentCycle: 1,
 				totalTime: 0,
 				concentrateScore: [],
@@ -97,9 +116,10 @@ export function StudyProvider({ children }) {
 			startCamera();
 			startRecording();
 		}
+		router.push("#study");
 	};
 
-	const endSession = () => {
+	const endSession = async () => {
 		setIsPaused(false);
 		setIsBreakTime(false);
 		if (cameraStream) {
@@ -121,6 +141,15 @@ export function StudyProvider({ children }) {
 			};
 		});
 
+		const response = await studySessionApi.createStudySession({
+			...sessionData,
+			subjects: sessionSubjects.map((subject) => subject.name),
+			tags: sessionSubjects.map((tag) => tag.name),
+			tasks: sessionTasks,
+			studyProgress: sessionStudyProgress,
+		});
+		console.log(response);
+
 		setAllSessions((prev) => [...prev, sessionData]);
 		setIsSessionActive(false);
 		setSessionData({
@@ -133,11 +162,17 @@ export function StudyProvider({ children }) {
 			subjects: [],
 			tags: [],
 			tasks: [],
+			studyProgress: [],
 			currentCycle: 1,
 			totalTime: 0,
 			finished: false,
 			concentrateScore: [],
 		});
+
+		setSessionTags([]);
+		setSessionSubjects([]);
+		setSessionTasks([]);
+		setSessionStudyProgress([]);
 	};
 
 	const contextValue = {
@@ -176,16 +211,16 @@ export function StudyProvider({ children }) {
 		setTimeCount,
 
 		// Tags & Subject
-		selectedTags,
-		setSelectedTags,
-		selectedSubjects,
-		setSelectedSubjects,
+		sessionTags,
+		setSessionTags,
+		sessionSubjects,
+		setSessionSubjects,
 
 		// Tasks
-		selectedTasks,
-		setSelectedTasks,
-		selectedProgress,
-		setSelectedProgress,
+		sessionTasks,
+		setSessionTasks,
+		sessionStudyProgress,
+		setSessionStudyProgress,
 	};
 	return (
 		<StudyContext.Provider value={contextValue}>

@@ -14,23 +14,10 @@ import TaskPlanning from "./prepare-session/task-planning";
 import SetNameDescription from "./prepare-session/set-name-description.jsx.jsx";
 import Camera from "./camera";
 import FocusChart from "./focus-chart";
+import StudyProgressPlanning from "./prepare-session/study-progress-planning.jsx";
 
 const PrepareTracking = () => {
 	const { startSession } = useStudy();
-
-	const addTask = () => {
-		if (newTask.trim()) {
-			setSessionTasks([
-				...sessionTasks,
-				{ id: Date.now(), text: newTask, completed: false },
-			]);
-			setNewTask("");
-		}
-	};
-
-	const removeTask = (id) => {
-		setSessionTasks(sessionTasks.filter((task) => task.id !== id));
-	};
 
 	return (
 		<Card className="bg-gradient-to-br from-green-50 to-green-100 border-2 border-green-200">
@@ -41,14 +28,12 @@ const PrepareTracking = () => {
 				</CardTitle>
 			</CardHeader>
 			<CardContent className="w-full space-y-4 ">
-				{/* Study Methods Tabs */}
-				<div className="flex flex-col w-full items-center">
-					<StudyMethod />
-					{/* Name and Desciption */}
+				<div className="flex flex-row gap-4 w-full items-start">
 					<SetNameDescription />
+					<StudyMethod />
 				</div>
 
-				<div className="grid grid-cols-2 gap-4">
+				<div className="grid grid-cols-2 p-4 gap-4 bg-white rounded-lg shadow-md">
 					{/* Subject Selection */}
 					<SubjectSelection />
 
@@ -57,7 +42,10 @@ const PrepareTracking = () => {
 				</div>
 
 				{/* Task Planning */}
-				<TaskPlanning addTask={addTask} removeTask={removeTask} />
+				<div className="grid grid-cols-2 gap-3	">
+					<TaskPlanning />
+					<StudyProgressPlanning />
+				</div>
 
 				<div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
 					{/* Camera Section */}

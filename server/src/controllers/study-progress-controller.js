@@ -1,6 +1,6 @@
-import studyProgressService from "../services/study-progress-service.js";
 import { handleApiError } from "../utils/api-error.js";
 import { StatusCodes } from "http-status-codes";
+import studyProgressService from "../services/study-progress-service.js";
 
 const getUserStudyProgress = async (req, res, next) => {
 	try {
@@ -17,6 +17,7 @@ const getUserStudyProgress = async (req, res, next) => {
 };
 const createStudyProgress = async (req, res, next) => {
 	try {
+		console.log("Creating: ", req.body);
 		const response = await studyProgressService.createStudyProgressService(
 			req
 		);

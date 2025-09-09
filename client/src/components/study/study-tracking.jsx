@@ -1,28 +1,27 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { formatTime } from "@/lib/utils";
 import { Button } from "../ui/button";
-import { Brain, CheckCircle2, Circle, Pause, Play, Square } from "lucide-react";
+import { Brain, Pause, Play, Square } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
-import { Progress } from "../ui/progress";
 
 import { useStudy } from "@/hooks/use-study-session";
 import FocusChart from "./focus-chart";
 import SubjectAndTags from "./study-tracking/subjects-and-tags";
 import TimeAndProgress from "./study-tracking/time-and-progress";
-import { Label } from "../ui/label";
 import NameAndDescription from "./study-tracking/name-and-description";
 import TaskList from "./study-tracking/task-list";
 import Camera from "./camera";
+import StudyProgressList from "./study-tracking/progress-list";
 
 const StudyTracking = () => {
 	const {
 		sessionData,
 		setSessionData,
+		sessionStudyProgress,
+		setSessionStudyProgress,
 
 		isPaused,
-		setIsPaused,
 		isSessionActive,
 		setIsSessionActive,
 
@@ -33,9 +32,16 @@ const StudyTracking = () => {
 
 		endSession,
 	} = useStudy();
+
 	// Timer state
 	const [progressPercentage, setProgressPercentage] = useState(100);
-	const [sessionTasks, setSessionTasks] = useState([]);
+	const [activeProgress, setActiveProgress] = useState(
+		sessionStudyProgress[0]
+	);
+
+	const changeActiveProgress = (progress) => {
+		setActiveProgress(progress);
+	};
 
 	// Timer effect
 	useEffect(() => {
@@ -44,6 +50,18 @@ const StudyTracking = () => {
 			interval = setInterval(() => {
 				setTimeRemaining((time) => time - 1);
 				setProgressPercentage(() => (timeRemaining / maxTime) * 100);
+				if (!sessionData.isBreak) {
+					setSessionStudyProgress((prev) =>
+						prev.map((studyProgress) =>
+							studyProgress._id === activeProgress._id
+								? {
+										...studyProgress,
+										progress: (studyProgress.progress += 1),
+								  }
+								: studyProgress
+						)
+					);
+				}
 			}, 1000);
 		} else if (timeRemaining === 0 && isSessionActive) {
 			// Handle session completion or break transition
@@ -51,8 +69,8 @@ const StudyTracking = () => {
 				if (!sessionData.isBreak) {
 					// Switch to break
 					setSessionData((prev) => ({ ...prev, isBreak: true }));
-					setTimeRemaining(sessionData.breakDuration * 60);
-					setMaxTime(sessionData.breakDuration * 60);
+					setTimeRemaining(sessionData.breakTime * 60);
+					setMaxTime(sessionData.breakTime * 60);
 				} else {
 					// End break, start next cycle or finish
 					if (sessionData.currentCycle < sessionData.cycles) {
@@ -61,8 +79,8 @@ const StudyTracking = () => {
 							isBreak: false,
 							currentCycle: prev.currentCycle + 1,
 						}));
-						setTimeRemaining(sessionData.duration * 60);
-						setMaxTime(sessionData.duration * 60);
+						setTimeRemaining(sessionData.studyTime * 60);
+						setMaxTime(sessionData.studyTime * 60);
 					} else {
 						// Session complete
 						setIsSessionActive(false);
@@ -76,18 +94,6 @@ const StudyTracking = () => {
 		}
 		return () => clearInterval(interval);
 	}, [isSessionActive, isPaused, timeRemaining]);
-
-	const pauseSession = () => {
-		setIsPaused(!isPaused);
-	};
-
-	const toggleTask = (id) => {
-		setSessionTasks(
-			sessionTasks.map((task) =>
-				task.id === id ? { ...task, completed: !task.completed } : task
-			)
-		);
-	};
 
 	return (
 		<div className="space-y-6">
@@ -107,46 +113,36 @@ const StudyTracking = () => {
 						</CardTitle>
 					</CardHeader>
 					<CardContent className="space-y-6">
-						{/* Name and Description */}
-						<NameAndDescription />
+						<div className="grid grid-cols-5 gap-4">
+							<div className="space-y-2 col-span-3 ">
+								{/* Name and Description */}
+								<NameAndDescription />
 
-						{/* Subjects and Tags */}
-						<SubjectAndTags />
+								{/* Subjects and Tags */}
+								<SubjectAndTags />
+							</div>
 
-						{/* Time and Progress */}
-						<TimeAndProgress
-							progressPercentage={progressPercentage}
-						/>
+							<div className="col-span-2">
+								{/* Time and Progress */}
+								<TimeAndProgress
+									progressPercentage={progressPercentage}
+								/>
+							</div>
+						</div>
 
-						{/* Tasks */}
-						<TaskList />
+						{/* Tasks and Progress */}
+						<div className="grid grid-cols-2 gap-4">
+							<TaskList />
+							<StudyProgressList
+								activeProgress={activeProgress}
+								changeActiveProgress={changeActiveProgress}
+							/>
+						</div>
 
 						<div className="grid grid-cols-1 lg:grid-cols-2">
 							{/* Focus Chart */}
 							<Camera />
 							<FocusChart />
-						</div>
-						<div className="flex gap-2 items-center justify-center">
-							<Button
-								onClick={pauseSession}
-								variant="outline"
-								size="sm"
-							>
-								{isPaused ? (
-									<Play className="h-4 w-4" />
-								) : (
-									<Pause className="h-4 w-4" />
-								)}
-								{isPaused ? "Tiếp tục" : "Tạm dừng"}
-							</Button>
-							<Button
-								onClick={endSession}
-								variant="destructive"
-								size="sm"
-							>
-								<Square className="h-4 w-4" />
-								Kết thúc
-							</Button>
 						</div>
 					</CardContent>
 				</Card>

@@ -4,7 +4,7 @@ import React from "react";
 const NameAndDescription = () => {
 	const { sessionData } = useStudy();
 	return (
-		<div className="flex flex-col gap-4">
+		<div className="flex flex-col p-3 gap-1 mb-4 rounded-lg shadow-lg bg-white border-gray-400/70">
 			<div className="text-lg text-nowrap font-medium text-gray-700">
 				Tên phiên học: {sessionData.name}
 			</div>

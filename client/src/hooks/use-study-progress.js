@@ -14,18 +14,6 @@ export function StudyProgressProvider({ children }) {
 	const [studyProgress, setStudyProgress] = useState([]);
 	const [studyProgressLoading, setStudyProgressLoading] = useState(false);
 
-	const [newStudyProgress, setNewStudyProgress] = useState({
-		title: "",
-		description: "",
-		subject: "",
-		frequencyType: "one-time",
-		frequency: "",
-		deadline: "",
-		target: "",
-		progress: 0,
-		complete: false,
-	});
-
 	const [addStudyProgressDialogOpen, setAddStudyProgressDialogOpen] =
 		useState(false);
 	const [editingStudyProgress, setEditingStudyProgress] = useState(null); // Added editing StudyProgress state
@@ -49,7 +37,7 @@ export function StudyProgressProvider({ children }) {
 		}
 	};
 
-	const createStudyProgress = async () => {
+	const createStudyProgress = async (newStudyProgress) => {
 		if (studyProgressLoading) return;
 		try {
 			setStudyProgressLoading(true);
@@ -62,26 +50,16 @@ export function StudyProgressProvider({ children }) {
 		} catch (error) {
 			toast.error(error.message);
 		} finally {
-			setNewStudyProgress({
-				title: "",
-				description: "",
-				subject: "",
-				frequencyType: "one-time",
-				frequency: "daily",
-				deadline: "",
-				target: 0,
-				progress: 0,
-				complete: false,
-			});
+			setStudyProgressLoading(false);
 		}
 	};
 
-	const updateStudyProgress = async () => {
+	const updateStudyProgress = async (newStudyProgress) => {
 		if (studyProgressLoading) return;
 		try {
 			setStudyProgressLoading(true);
 			const res = await studyProgressApi.updateStudyProgress(
-				editingStudyProgress
+				newStudyProgress
 			);
 
 			if (res.success) {
@@ -89,6 +67,8 @@ export function StudyProgressProvider({ children }) {
 			}
 		} catch (error) {
 			toast.error(error.message);
+		} finally {
+			setStudyProgressLoading(false);
 		}
 	};
 
@@ -105,15 +85,14 @@ export function StudyProgressProvider({ children }) {
 			}
 		} catch (error) {
 			toast.error(error.message);
+		} finally {
+			setStudyProgressLoading(false);
 		}
 	};
 
 	const contextValue = {
 		studyProgress,
 		setStudyProgress,
-
-		newStudyProgress,
-		setNewStudyProgress,
 
 		addStudyProgressDialogOpen,
 		setAddStudyProgressDialogOpen,

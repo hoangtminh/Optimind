@@ -36,11 +36,11 @@ const studyProgressSchema = new mongoose.Schema(
 			require: true,
 		},
 		target: {
-			type: String,
+			type: Number,
 			require: true,
 		},
 		progress: {
-			type: String,
+			type: Number,
 			default: 0,
 		},
 		complete: {

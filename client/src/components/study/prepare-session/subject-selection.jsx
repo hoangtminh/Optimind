@@ -7,10 +7,10 @@ import React from "react";
 
 const SubjectSelection = () => {
 	const { subjects } = useSubject();
-	const { selectedSubjects, setSelectedSubjects } = useStudy();
+	const { sessionSubjects, setSessionSubjects } = useStudy();
 
 	const isSubjectSeleted = (id) => {
-		return selectedSubjects.some(
+		return sessionSubjects.some(
 			(selectedSubject) => selectedSubject._id === id
 		);
 	};
@@ -40,7 +40,7 @@ const SubjectSelection = () => {
 								: subject.color,
 						}}
 						onClick={() => {
-							setSelectedSubjects((prev) =>
+							setSessionSubjects((prev) =>
 								isSubjectSeleted(subject._id)
 									? prev.filter(
 											(prevSubject) =>

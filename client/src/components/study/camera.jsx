@@ -10,8 +10,6 @@ const Camera = () => {
 	const { cameraStream, videoRef, isRecording, startCamera, stopCamera } =
 		useCamera();
 
-	console.log(videoRef);
-
 	return (
 		<div>
 			<Label className="text-md font-medium block">Camera</Label>

@@ -1,48 +1,45 @@
-import React, { useEffect, useState } from "react";
+"use client";
+
+import React, { useState } from "react";
 import {
 	Dialog,
 	DialogContent,
 	DialogDescription,
 	DialogHeader,
 	DialogTitle,
-} from "../ui/dialog";
-import { Label } from "../ui/label";
-import { Input } from "../ui/input";
+} from "../../ui/dialog";
+import { Button } from "../../ui/button";
+import { Label } from "../../ui/label";
+import { Input } from "../../ui/input";
 import {
 	Select,
 	SelectContent,
 	SelectItem,
 	SelectTrigger,
 	SelectValue,
-} from "../ui/select";
-import { Textarea } from "../ui/textarea";
-import { Button } from "../ui/button";
+} from "../../ui/select";
+import { Textarea } from "../../ui/textarea";
 import { useTasks } from "@/hooks/use-task";
-import { useSubject } from "@/hooks/use-subject";
-import { Badge } from "../ui/badge";
+import { Check } from "lucide-react";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
+	DropdownMenuItem,
 	DropdownMenuTrigger,
-} from "../ui/dropdown-menu";
-import { Check } from "lucide-react";
-import { toast } from "sonner";
+} from "../../ui/dropdown-menu";
+import { useSubject } from "@/hooks/use-subject";
+import { Badge } from "../../ui/badge";
 
-const EditTask = () => {
+const AddTask = () => {
+	const { addTaskDialogOpen, setAddTaskDialogOpen, createTask } = useTasks();
 	const { subjects } = useSubject();
-	const { editingTask, setEditingTask, updateTask } = useTasks();
 
-	if (!editingTask) return null;
-
-	const [taskTitle, setTaskTitle] = useState(editingTask.title);
-	const [taskDescription, setTaskDescription] = useState(
-		editingTask.description
-	);
-	const [taskTarget, setTaskTarget] = useState(editingTask.target);
-	const [taskFrequencyType, setTaskFrequencyType] = useState(
-		editingTask.frequencyType
-	);
-	const [taskDeadline, setTaskDeadline] = useState(editingTask.deadline);
+	const [taskTitle, setTaskTitle] = useState("");
+	const [taskDescription, setTaskDescription] = useState("");
+	const [taskTarget, setTaskTarget] = useState("");
+	const [taskFrequencyType, setTaskFrequencyType] = useState("one-time");
+	const [selectedSubjects, setSelectedSubjects] = useState([]);
+	const [taskDeadline, setTaskDeadline] = useState("");
 
 	const [selectedDays, setSelectedDays] = useState([
 		{ name: "Thứ 2", value: "monday", repeat: false },
@@ -54,16 +51,6 @@ const EditTask = () => {
 		{ name: "Chủ nhật", value: "sunday", repeat: false },
 	]);
 
-	useEffect(() => {
-		setSelectedDays((prev) =>
-			prev.map((day) =>
-				editingTask.frequency.some((taskDay) => taskDay === day.value)
-					? { ...day, repeat: true }
-					: day
-			)
-		);
-	}, []);
-
 	const toggleDay = (value) => {
 		setSelectedDays((prev) =>
 			prev.map((day) =>
@@ -72,37 +59,58 @@ const EditTask = () => {
 		);
 	};
 
-	const handleUpdateTask = () => {
-		if (!selectedDays.some((day) => day.repeat)) {
-			toast.error("Select day for task");
-			return;
+	const toggleSubject = (subject) => {
+		setSelectedSubjects((prev) =>
+			isSubjectSeleted(subject._id)
+				? prev.filter((prevSubject) => prevSubject._id !== subject._id)
+				: [...prev, subject]
+		);
+	};
+
+	const isSubjectSeleted = (id) => {
+		return selectedSubjects.some((subject) => subject._id === id);
+	};
+
+	const handleAddTask = () => {
+		if (taskFrequencyType === "repeat") {
+			setTaskDeadline((prev) => ({
+				...prev,
+				deadline: new Date().toISOString(),
+			}));
 		}
 
-		updateTask({
-			_id: editingTask._id,
+		createTask({
 			title: taskTitle,
 			description: taskDescription,
 			frequencyType: taskFrequencyType,
 			frequency: selectedDays
 				.filter((day) => day.repeat)
 				.map((day) => day.value),
-			subject: editingTask.subject,
+			subject: selectedSubjects.map((subject) => subject.name),
 			target: taskTarget,
 			deadline: taskDeadline,
 		});
+		setAddTaskDialogOpen(false);
+	};
 
-		setEditingTask(null);
+	const onClose = () => {
+		setAddTaskDialogOpen(false);
+
+		setSelectedSubjects([]);
+		setSelectedDays((prev) =>
+			prev.map((subject) => ({ ...subject, repeat: false }))
+		);
 	};
 
 	return (
-		<Dialog open={!!editingTask} onOpenChange={() => setEditingTask(null)}>
+		<Dialog open={addTaskDialogOpen} onOpenChange={onClose}>
 			<DialogContent className="max-w-2xl">
 				<DialogHeader>
 					<DialogTitle className={`text-blue-700`}>
-						Cập nhật task
+						Tạo task mới
 					</DialogTitle>
 					<DialogDescription>
-						Cập nhật một số thông tin của task
+						Đặt một nhiệm vụ học tập mới để theo dõi tiến độ
 					</DialogDescription>
 				</DialogHeader>
 				<div className="space-y-4">
@@ -118,10 +126,30 @@ const EditTask = () => {
 						/>
 					</div>
 					<div className="w-full flex flex-row flex-wrap gap-2">
-						<Label className={`text-blue-800/40`}>Môn học:</Label>
-						{editingTask.subject.map((subject, index) => (
-							<Badge key={index} variant={"outline"}>
-								{subject}
+						<Label className={`text-blue-800`}>Môn học:</Label>
+						{subjects.map((subject) => (
+							<Badge
+								key={subject._id}
+								variant={
+									isSubjectSeleted(subject._id)
+										? "default"
+										: "outline"
+								}
+								className="cursor-pointer"
+								style={{
+									backgroundColor: isSubjectSeleted(
+										subject._id
+									)
+										? subject.color
+										: "white",
+									borderColor: subject.color,
+									color: isSubjectSeleted(subject._id)
+										? "white"
+										: subject.color,
+								}}
+								onClick={() => toggleSubject(subject)}
+							>
+								{subject.name}
 							</Badge>
 						))}
 					</div>
@@ -249,10 +277,10 @@ const EditTask = () => {
 					</div>
 					<Button
 						variant={"primary"}
-						onClick={handleUpdateTask}
+						onClick={handleAddTask}
 						className="w-full "
 					>
-						Cập nhật task
+						Tạo task
 					</Button>
 				</div>
 			</DialogContent>
@@ -260,4 +288,4 @@ const EditTask = () => {
 	);
 };
 
-export default EditTask;
+export default AddTask;

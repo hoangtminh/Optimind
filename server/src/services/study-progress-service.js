@@ -15,17 +15,6 @@ const getUserStudyProgressService = async (req) => {
 const createStudyProgressService = async (req) => {
 	try {
 		const userId = req.userId;
-		// const {
-		// 	title,
-		// 	description,
-		// 	subject,
-		// 	frequencyType,
-		// 	deadline,
-		// 	frequency,
-		// 	target,
-		//	progress,
-		// 	complete,
-		// } = req.body;
 		const newStudyProgress = new StudyProgress({
 			...req.body,
 			userId,
