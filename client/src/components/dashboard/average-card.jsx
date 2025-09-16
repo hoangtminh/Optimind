@@ -16,16 +16,8 @@ import {
 	ChevronLeft,
 	ChevronRight,
 	Goal,
-	Target,
-	TrendingUp,
 } from "lucide-react";
-import {
-	ChartContainer,
-	ChartLegend,
-	ChartLegendContent,
-	ChartTooltip,
-	ChartTooltipContent,
-} from "../ui/chart";
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from "../ui/chart";
 import {
 	Bar,
 	CartesianGrid,
@@ -35,19 +27,15 @@ import {
 	Line,
 	LineChart,
 	XAxis,
-	YAxis,
 } from "recharts";
 import { Button } from "../ui/button";
 import { cn } from "@/lib/utils";
 
-const AverageCards = ({
-	timePeriod,
-	setTimePeriod,
-	selectedWeek,
-	setSelectedWeek,
-	selectedMonth,
-	setSelectedMonth,
-}) => {
+const AverageCards = () => {
+	const [timePeriod, setTimePeriod] = useState("week");
+	const [selectedWeek, setSelectedWeek] = useState(0);
+	const [selectedMonth, setSelectedMonth] = useState(0);
+
 	const studytimeChartConfig = {
 		hours: {
 			label: "Số giờ học",
