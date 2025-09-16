@@ -490,16 +490,16 @@ export default function ProgressPage() {
 			{/* Stats Cards */}
 			<div className="grid grid-cols-1 md:grid-cols-3 gap-6">
 				<Card className="border-l-4 border-l-blue-500 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-950 dark:to-blue-900">
-					<CardHeader className="pb-2">
-						<CardTitle className="text-sm font-medium text-blue-700 dark:text-blue-300">
+					<CardHeader className="">
+						<CardTitle className="text-lg font-medium text-blue-700 dark:text-blue-300">
 							Thời gian trung bình
 						</CardTitle>
 					</CardHeader>
 					<CardContent>
-						<div className="text-2xl font-bold text-blue-900 dark:text-blue-100">
+						<div className="text-3xl font-bold text-blue-900 dark:text-blue-100">
 							{getAverageTime()}h
 						</div>
-						<p className="text-xs text-blue-600 dark:text-blue-400">
+						<p className="text-blue-600 dark:text-blue-400">
 							{timeFrame === "daily"
 								? "mỗi ngày"
 								: timeFrame === "weekly"
@@ -511,15 +511,15 @@ export default function ProgressPage() {
 
 				<Card className="border-l-4 border-l-green-500 bg-gradient-to-br from-green-50 to-green-100 dark:from-green-950 dark:to-green-900">
 					<CardHeader className="pb-2">
-						<CardTitle className="text-sm font-medium text-green-700 dark:text-green-300">
+						<CardTitle className="text-lg font-medium text-green-700 dark:text-green-300">
 							Tỷ lệ hoàn thành
 						</CardTitle>
 					</CardHeader>
 					<CardContent>
-						<div className="text-2xl font-bold text-green-900 dark:text-green-100">
+						<div className="text-3xl font-bold text-green-900 dark:text-green-100">
 							{getCompletionRate()}%
 						</div>
-						<p className="text-xs text-green-600 dark:text-green-400">
+						<p className="text-green-600 dark:text-green-400">
 							đạt mục tiêu
 						</p>
 					</CardContent>
@@ -527,18 +527,18 @@ export default function ProgressPage() {
 
 				<Card className="border-l-4 border-l-purple-500 bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-950 dark:to-purple-900">
 					<CardHeader className="pb-2">
-						<CardTitle className="text-sm font-medium text-purple-700 dark:text-purple-300">
+						<CardTitle className="text-lg font-medium text-purple-700 dark:text-purple-300">
 							Tổng thời gian
 						</CardTitle>
 					</CardHeader>
 					<CardContent>
-						<div className="text-2xl font-bold text-purple-900 dark:text-purple-100">
+						<div className="text-3xl font-bold text-purple-900 dark:text-purple-100">
 							{getCurrentData()
 								.reduce((sum, item) => sum + item.studyTime, 0)
 								.toFixed(1)}
 							h
 						</div>
-						<p className="text-xs text-purple-600 dark:text-purple-400">
+						<p className="text-purple-600 dark:text-purple-400">
 							{timeFrame === "daily"
 								? "tuần này"
 								: timeFrame === "weekly"

@@ -58,19 +58,19 @@ export default function TasksPage() {
 			<OverviewTasks />
 
 			<div className="grid gap-6 lg:grid-cols-2">
-				{/* Daily tasks chart */}
-				<DailyTaskChart />
-
-				{/* Completed Tasks */}
-				<CompletedTasks />
-			</div>
-
-			<div className="grid gap-6 lg:grid-cols-2">
 				{/* Active Daily Tasks */}
 				<DailyTasks />
 
 				{/* Active Long-term Tasks */}
 				<StudyProgress />
+			</div>
+
+			<div className="grid gap-6 lg:grid-cols-2">
+				{/* Daily tasks chart */}
+				<DailyTaskChart />
+
+				{/* Completed Tasks */}
+				<CompletedTasks />
 			</div>
 
 			<OverdueTasks />

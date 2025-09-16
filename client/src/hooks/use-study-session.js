@@ -63,7 +63,6 @@ export function StudyProvider({ children }) {
 	const startSession = () => {
 		if (
 			!sessionData.name.trim() ||
-			sessionSubjects.length === 0 ||
 			(sessionTasks.length === 0 && sessionStudyProgress.length === 0)
 		) {
 			toast.error(

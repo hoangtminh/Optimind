@@ -125,7 +125,7 @@ export function AppSidebar() {
 					{open && (
 						<div className="flex flex-col">
 							<span className="font-bold text-2xl bg-gradient-to-r from-indigo-600 to-cyan-600 bg-clip-text text-transparent">
-								Optimind
+								EduFocus
 							</span>
 						</div>
 					)}
