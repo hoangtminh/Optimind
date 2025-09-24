@@ -9,6 +9,15 @@ import FeaturesSection from "@/components/landing-page/feature-section";
 import InteractiveStats from "@/components/landing-page/interactive-stats";
 import CoursesSection from "@/components/landing-page/course-section";
 import HeroSection from "@/components/landing-page/hero-section";
+import React from "react";
+
+import GlassNavigation from "@/components/landing-page/navigation";
+import PricingSection from "@/components/landing-page/pricing";
+import FloatingShapes from "@/components/landing-page/floating-shapes";
+import FeaturesSection from "@/components/landing-page/feature-section";
+import InteractiveStats from "@/components/landing-page/interactive-stats";
+import CoursesSection from "@/components/landing-page/course-section";
+import HeroSection from "@/components/landing-page/hero-section";
 
 // Main App Component
 const App = () => {
