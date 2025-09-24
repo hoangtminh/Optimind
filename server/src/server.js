@@ -5,9 +5,6 @@ import apiRouter from "./routes/route.js";
 import verifyToken from "./middlewares/verifyToken.js";
 import "dotenv/config";
 import mongoose from "mongoose";
-import { handleApiError } from "./utils/api-error.js";
-
-const router = Router();
 
 const app = express();
 
@@ -28,7 +25,7 @@ app.use("/api", verifyToken, (req, res) => {
 });
 
 // Start server
-const PORT = process.env.APP_PORT;
+const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
 	console.log(`Server listening on port ${PORT}`);
 });

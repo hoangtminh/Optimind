@@ -7,16 +7,16 @@ const loginUser = async (req, res, next) => {
 		const response = await authService.loginService(req);
 		res.cookie("access_token", response.data.access_token, {
 			httpOnly: true,
-			secure: false,
-			sameSite: "lax",
+			secure: true,
+			sameSite: "none",
 			maxAge: 15 * 60 * 1000,
 		});
 
 		if (req.body.remember) {
 			res.cookie("refresh_token", response.data.refresh_token, {
 				httpOnly: true,
-				secure: false,
-				sameSite: "lax",
+				secure: true,
+				sameSite: "none",
 				maxAge: 1000 * 60 * 60 * 24 * 7,
 			});
 		}
