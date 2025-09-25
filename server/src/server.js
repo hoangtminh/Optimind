@@ -18,6 +18,10 @@ app.use(
 app.use(json());
 app.use(cookieParser());
 app.use(urlencoded({ extended: true }));
+app.use("/", (req, res, next) => {
+	console.log(req);
+	next();
+});
 app.use("/", apiRouter());
 
 app.use("/api", verifyToken, (req, res) => {
