@@ -18,7 +18,7 @@ app.use(
 app.use(json());
 app.use(cookieParser());
 app.use(urlencoded({ extended: true }));
-app.use("/", (req, res, next) => {
+app.use("/ping", (req, res, next) => {
 	console.log(req);
 	next();
 });
