@@ -48,30 +48,38 @@ const TaskList = () => {
 								)}
 							</Button>
 							<div className="flex-1 space-y-2">
-								<div className="flex items-center gap-2">
-									<h4
-										className={`font-medium text-cyan-700 mr-4 ${
+								<div className="flex items-center justify-between gap-2">
+									<div
+										className={`font-medium text-base text-cyan-800 mr-4 ${
 											task.completed
 												? "line-through text-green-700"
 												: ""
 										}`}
 									>
 										{task.title}
-									</h4>
-									<div className="flex flex-wrap gap-1 justify-end">
-										{task.subject.map((subject) => (
-											<Badge
-												variant="ghost"
-												className={`text-xs ${
-													task.completed
-														? "line-through text-green-700 border-green-500"
-														: "text-cyan-700 border-cyan-500"
-												}`}
-											>
-												{subject}
-											</Badge>
-										))}
 									</div>
+									{task.frequencyType === "repeat" ? (
+										<div
+											className={`flex flex-wrap items-start justify-end gap-2 text-cyan-600`}
+										>
+											{task.frequency.map(
+												(day, index) => (
+													<Badge
+														variant={`ghost`}
+														key={index}
+													>
+														{day}
+													</Badge>
+												)
+											)}
+										</div>
+									) : (
+										<div
+											className={`flex text-wrap text-right text-cyan-600 text-sm min-w-30`}
+										>
+											Hạn: {task.deadline.slice(0, 10)}
+										</div>
+									)}
 								</div>
 								<p
 									className={`text-sm  ${
@@ -82,9 +90,17 @@ const TaskList = () => {
 								>
 									{task.description}
 								</p>
-								<p className="text-xs font-medium text-blue-600">
-									Mục tiêu: {task.target}
-								</p>
+								<div className="flex items-start justify-between">
+									<div className="w-full flex justify-between">
+										<div>
+											<div
+												className={`w-fit text-right text-wrap text-sm text-cyan-600 min-w-20`}
+											>
+												Mục tiêu: {task.target}
+											</div>
+										</div>
+									</div>
+								</div>
 							</div>
 						</div>
 					</div>

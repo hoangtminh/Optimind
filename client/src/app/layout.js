@@ -1,11 +1,10 @@
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { Toaster } from "@/components/ui/sonner";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
-	title: "Optimind - Cải thiện độ tập trung và hiệu suất học tập",
+	title: "EduFocus AI - Cải thiện độ tập trung và hiệu suất học tập",
 	description:
 		"Hệ thống thông minh giúp cải thiện độ tập trung và tối ưu hóa hiệu suất học tập cá nhân",
 };
@@ -15,7 +14,6 @@ export default function RootLayout({ children }) {
 		<html lang="vi">
 			<body className={inter.className}>
 				<main>{children}</main>
-				<Toaster />
 			</body>
 		</html>
 	);

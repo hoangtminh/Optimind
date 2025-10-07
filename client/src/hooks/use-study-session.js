@@ -16,7 +16,7 @@ export function useStudy() {
 
 export function StudyProvider({ children }) {
 	const router = useRouter();
-	const [allSessions, setAllSessions] = useState(todaySessions);
+	const [allSessions, setAllSessions] = useState([]);
 
 	// Session state
 	const [isPaused, setIsPaused] = useState(false);
@@ -36,7 +36,6 @@ export function StudyProvider({ children }) {
 	const [studyCycle, setStudyCycle] = useState(1);
 	const [timeCount, setTimeCount] = useState(0);
 
-	const [sessionSubjects, setSessionSubjects] = useState([]);
 	const [sessionTags, setSessionTags] = useState([]);
 	const [sessionTasks, setSessionTasks] = useState([]);
 	const [sessionStudyProgress, setSessionStudyProgress] = useState([]);
@@ -50,7 +49,6 @@ export function StudyProvider({ children }) {
 		studyTime: 25,
 		breakTime: 0,
 		cycles: 1,
-		subjects: [],
 		tags: [],
 		tasks: [],
 		studyProgress: [],
@@ -65,9 +63,7 @@ export function StudyProvider({ children }) {
 			!sessionData.name.trim() ||
 			(sessionTasks.length === 0 && sessionStudyProgress.length === 0)
 		) {
-			toast.error(
-				"Please fill session name, select subject and add task/study progress"
-			);
+			toast.error("Please fill session name, select task/study progress");
 			return;
 		}
 
@@ -96,7 +92,6 @@ export function StudyProvider({ children }) {
 				studyTime: studyTime,
 				breakTime: breakTime,
 				cycles: studyCycle,
-				subjects: sessionSubjects,
 				tags: sessionTags,
 				tasks: sessionTasks,
 				studyProgress: sessionStudyProgress,
@@ -142,8 +137,7 @@ export function StudyProvider({ children }) {
 
 		const response = await studySessionApi.createStudySession({
 			...sessionData,
-			subjects: sessionSubjects.map((subject) => subject.name),
-			tags: sessionSubjects.map((tag) => tag.name),
+			tags: sessionTags.map((tag) => tag.name),
 			tasks: sessionTasks,
 			studyProgress: sessionStudyProgress,
 		});
@@ -158,7 +152,6 @@ export function StudyProvider({ children }) {
 			studyTime: 25,
 			breakTime: 0,
 			cycles: 1,
-			subjects: [],
 			tags: [],
 			tasks: [],
 			studyProgress: [],
@@ -169,7 +162,6 @@ export function StudyProvider({ children }) {
 		});
 
 		setSessionTags([]);
-		setSessionSubjects([]);
 		setSessionTasks([]);
 		setSessionStudyProgress([]);
 	};
@@ -209,11 +201,9 @@ export function StudyProvider({ children }) {
 		timeCount,
 		setTimeCount,
 
-		// Tags & Subject
+		// Tags
 		sessionTags,
 		setSessionTags,
-		sessionSubjects,
-		setSessionSubjects,
 
 		// Tasks
 		sessionTasks,

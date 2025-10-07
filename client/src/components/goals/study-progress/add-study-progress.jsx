@@ -26,7 +26,6 @@ import {
 	DropdownMenuContent,
 	DropdownMenuTrigger,
 } from "../../ui/dropdown-menu";
-import { useSubject } from "@/hooks/use-subject";
 import { Badge } from "../../ui/badge";
 
 const AddStudyProgress = () => {
@@ -35,7 +34,6 @@ const AddStudyProgress = () => {
 		setAddStudyProgressDialogOpen,
 		createStudyProgress,
 	} = useStudyProgress();
-	const { subjects } = useSubject();
 
 	const [studyProgressTitle, setStudyProgressTitle] = useState("");
 	const [studyProgressDescription, setStudyProgressDescription] =
@@ -44,7 +42,6 @@ const AddStudyProgress = () => {
 	const [studyProgressMinutes, setStudyProgressMinutes] = useState(0);
 	const [studyProgressFrequencyType, setStudyProgressFrequencyType] =
 		useState("one-time");
-	const [selectedSubjects, setSelectedSubjects] = useState([]);
 	const [studyProgressDeadline, setStudyProgressDeadline] = useState("");
 
 	const [selectedDays, setSelectedDays] = useState([
@@ -65,18 +62,6 @@ const AddStudyProgress = () => {
 		);
 	};
 
-	const toggleSubject = (subject) => {
-		setSelectedSubjects((prev) =>
-			isSubjectSeleted(subject._id)
-				? prev.filter((prevSubject) => prevSubject._id !== subject._id)
-				: [...prev, subject]
-		);
-	};
-
-	const isSubjectSeleted = (id) => {
-		return selectedSubjects.some((subject) => subject._id === id);
-	};
-
 	const handleAddStudyProgress = () => {
 		if (studyProgressFrequencyType === "repeat") {
 			setStudyProgressDeadline((prev) => ({
@@ -92,7 +77,6 @@ const AddStudyProgress = () => {
 			frequency: selectedDays
 				.filter((day) => day.repeat)
 				.map((day) => day.value),
-			subject: selectedSubjects.map((subject) => subject.name),
 			target: studyProgressHours * 60 + studyProgressMinutes,
 			deadline: studyProgressDeadline,
 		});
@@ -102,9 +86,8 @@ const AddStudyProgress = () => {
 	const onClose = () => {
 		setAddStudyProgressDialogOpen(false);
 
-		setSelectedSubjects([]);
 		setSelectedDays((prev) =>
-			prev.map((subject) => ({ ...subject, repeat: false }))
+			prev.map((day) => ({ ...day, repeat: false }))
 		);
 	};
 
@@ -133,34 +116,7 @@ const AddStudyProgress = () => {
 							placeholder="Ví dụ: Hoàn thành chương 1"
 						/>
 					</div>
-					<div className="w-full flex flex-row flex-wrap gap-2">
-						<Label className={`text-blue-800`}>Môn học:</Label>
-						{subjects.map((subject) => (
-							<Badge
-								key={subject._id}
-								variant={
-									isSubjectSeleted(subject._id)
-										? "default"
-										: "outline"
-								}
-								className="cursor-pointer"
-								style={{
-									backgroundColor: isSubjectSeleted(
-										subject._id
-									)
-										? subject.color
-										: "white",
-									borderColor: subject.color,
-									color: isSubjectSeleted(subject._id)
-										? "white"
-										: subject.color,
-								}}
-								onClick={() => toggleSubject(subject)}
-							>
-								{subject.name}
-							</Badge>
-						))}
-					</div>
+
 					<div className="grid grid-cols-2 gap-4">
 						<div className="space-y-2">
 							<Label

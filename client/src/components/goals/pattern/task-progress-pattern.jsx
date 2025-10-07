@@ -44,20 +44,6 @@ const TaskProgressPattern = ({ task, color, type }) => {
 				<div className="w-full flex justify-between">
 					<div>
 						<div
-							className={`flex flex-wrap items-center gap-2 text-sm text-${color}-600 mb-1`}
-						>
-							<span className="text-nowrap">Môn học:</span>
-							{task.subject.map((subject, index) => (
-								<Badge
-									variant={"ghost"}
-									key={index}
-									className={`border border-${color}-200`}
-								>
-									{subject}
-								</Badge>
-							))}
-						</div>
-						<div
 							className={`w-fit text-right text-wrap text-sm text-${color}-600 min-w-20`}
 						>
 							Mục tiêu: {task.target}

@@ -40,7 +40,6 @@ const CompletedTasks = () => {
 										{task.title}
 									</p>
 									<div className="flex items-center gap-2 text-xs text-green-600">
-										<span>{task.subject}</span>
 										<Badge
 											variant="outline"
 											className="text-xs"

@@ -24,7 +24,6 @@ const createStudySessionService = async (req) => {
 			studyTime: req.body.studyTime,
 			breakTime: req.body.breakTime,
 			cycles: req.body.cycles,
-			subjects: req.body.subjects,
 			tags: req.body.tags,
 			tasks: req.body.tasks,
 			studyProgress: req.body.studyProgress,

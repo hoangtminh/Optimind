@@ -61,15 +61,6 @@ const ProgressPattern = ({ studyProgress, color, type }) => {
 							className={`flex flex-wrap items-center gap-2 text-sm text-${color}-600 mb-1`}
 						>
 							<span className="text-nowrap">Môn học:</span>
-							{studyProgress.subject.map((subject, index) => (
-								<Badge
-									variant={"ghost"}
-									key={index}
-									className={`border border-${color}-200`}
-								>
-									{subject}
-								</Badge>
-							))}
 						</div>
 						<div
 							className={`w-fit text-right text-wrap text-sm text-${color}-600 min-w-20`}

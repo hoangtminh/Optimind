@@ -107,7 +107,7 @@ const StudyProgressPlanning = () => {
 			</div>
 			<div className="space-y-4">
 				<div className="flex flex-row p-2 gap-3 bg-white shadow-md rounded-lg border border-green-300">
-					<ScrollArea className="flex flex-col gap-2 h-[100%] max-h-100 px-1 py-2 w-full rounded-md overflow-y-auto ">
+					<ScrollArea className="flex flex-col gap-2 h-[100%] max-h-80 px-1 py-2 w-full rounded-md overflow-y-auto ">
 						{getFilteredStudyProgress().map((studyProgress) => (
 							<div
 								key={studyProgress._id}
@@ -120,11 +120,40 @@ const StudyProgressPlanning = () => {
 									toggleStudyProgressSelection(studyProgress)
 								}
 							>
-								<div className="flex flex-row justify-between items-start">
+								<div className="flex flex-row justify-between items-start mb-1">
 									<div
 										className={`font-medium text-purple-800 text-md`}
 									>
 										{studyProgress.title}
+									</div>
+									<div
+										className={`flex m-0 flex-row gap-2 items-center`}
+									>
+										{studyProgress.complete ? (
+											<Badge className="bg-green-100 text-green-800 text-xs">
+												Hoàn thành
+											</Badge>
+										) : (
+											<Badge
+												className={`bg-purple-100 text-purple-800 text-xs`}
+											>
+												Chưa hoàn thành
+											</Badge>
+										)}
+									</div>
+								</div>
+								<div className="flex items-start justify-between">
+									<div className="w-full flex justify-between">
+										<div>
+											<div
+												className={`w-fit text-right text-wrap text-sm text-purple-600 min-w-20`}
+											>
+												Mục tiêu:{" "}
+												{formatTime(
+													studyProgress.target
+												)}
+											</div>
+										</div>
 									</div>
 									{studyProgress.frequencyType ===
 									"repeat" ? (
@@ -155,39 +184,7 @@ const StudyProgressPlanning = () => {
 										</div>
 									)}
 								</div>
-								<div className="flex items-start justify-between">
-									<div className="w-full flex justify-between">
-										<div>
-											<div
-												className={`flex flex-wrap items-center gap-2 text-sm text-purple-600 mb-1`}
-											>
-												<span className="text-nowrap">
-													Môn học:
-												</span>
-												{studyProgress.subject.map(
-													(subject, index) => (
-														<Badge
-															variant={"ghost"}
-															key={index}
-															className={`border border-purple-200`}
-														>
-															{subject}
-														</Badge>
-													)
-												)}
-											</div>
-											<div
-												className={`w-fit text-right text-wrap text-sm text-purple-600 min-w-20`}
-											>
-												Mục tiêu:{" "}
-												{formatTime(
-													studyProgress.target
-												)}
-											</div>
-										</div>
-									</div>
-								</div>
-								<div className="space-y-2">
+								<div className="space-y-1">
 									<div
 										className={`flex gap-3 items-center justify-between text-sm text-purple-600`}
 									>
@@ -199,21 +196,6 @@ const StudyProgressPlanning = () => {
 												{studyProgress.description}
 											</p>
 										)}
-										<div
-											className={`flex m-0 flex-row gap-2 items-center`}
-										>
-											{studyProgress.complete ? (
-												<Badge className="bg-green-100 text-green-800 text-xs">
-													Hoàn thành
-												</Badge>
-											) : (
-												<Badge
-													className={`bg-purple-100 text-purple-800 text-xs`}
-												>
-													Chưa hoàn thành
-												</Badge>
-											)}
-										</div>
 									</div>
 									<div
 										className={`flex gap-3 items-center justify-between text-xs text-purple-600`}

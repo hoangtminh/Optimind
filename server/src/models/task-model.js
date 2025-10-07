@@ -17,11 +17,6 @@ const taskSchema = new mongoose.Schema(
 			type: String,
 			max: 60,
 		},
-		subject: {
-			type: [String],
-			require: false,
-			default: null,
-		},
 		frequencyType: {
 			type: String,
 			enum: ["repeat", "one-time"],

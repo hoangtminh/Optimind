@@ -92,7 +92,7 @@ const TaskPlanning = () => {
 			</div>
 			<div className="space-y-4">
 				<div className="flex flex-row p-2 gap-3 bg-white shadow-md rounded-lg border border-green-300">
-					<ScrollArea className="flex flex-col gap-2 h-[100%] max-h-100 px-1 py-2 w-full rounded-md overflow-y-auto ">
+					<ScrollArea className="flex flex-col gap-2 h-[100%] max-h-80 px-1 w-full rounded-md overflow-y-auto ">
 						{getFilteredTasks().map((task) => (
 							<div
 								key={task._id}
@@ -105,13 +105,39 @@ const TaskPlanning = () => {
 							>
 								<div className="flex flex-row justify-between items-start">
 									<div
-										className={`font-medium text-cyan-800 text-base mb-2`}
+										className={`font-medium text-cyan-800 text-base mb-1`}
 									>
 										{task.title}
 									</div>
+									<div
+										className={`flex m-0 flex-row gap-2 items-center`}
+									>
+										{task.complete ? (
+											<Badge className="bg-green-100 text-green-800 text-xs">
+												Hoàn thành
+											</Badge>
+										) : (
+											<Badge
+												className={`bg-cyan-100 text-cyan-800 text-xs`}
+											>
+												Chưa hoàn thành
+											</Badge>
+										)}
+									</div>
+								</div>
+								<div className="flex items-start justify-between">
+									<div className="w-full flex justify-between">
+										<div>
+											<div
+												className={`w-fit text-right text-wrap text-sm text-cyan-600 min-w-20`}
+											>
+												Mục tiêu: {task.target}
+											</div>
+										</div>
+									</div>
 									{task.frequencyType === "repeat" ? (
 										<div
-											className={`flex flex-wrap items-start justify-end gap-2 text-cyan-600`}
+											className={`flex flex-nowrap min-w-30 items-start justify-end gap-2 text-cyan-600`}
 										>
 											{task.frequency.map(
 												(day, index) => (
@@ -126,40 +152,11 @@ const TaskPlanning = () => {
 										</div>
 									) : (
 										<div
-											className={`flex text-wrap text-right text-cyan-600 text-sm min-w-30`}
+											className={`flex text-no-wrap text-right text-cyan-600 text-sm min-w-30`}
 										>
 											Hạn: {task.deadline.slice(0, 10)}
 										</div>
 									)}
-								</div>
-								<div className="flex items-start justify-between">
-									<div className="w-full flex justify-between">
-										<div>
-											<div
-												className={`flex flex-wrap items-center gap-2 text-sm text-cyan-600 mb-1`}
-											>
-												<span className="text-nowrap">
-													Môn học:
-												</span>
-												{task.subject.map(
-													(subject, index) => (
-														<Badge
-															variant={"ghost"}
-															key={index}
-															className={`border border-cyan-200`}
-														>
-															{subject}
-														</Badge>
-													)
-												)}
-											</div>
-											<div
-												className={`w-fit text-right text-wrap text-sm text-cyan-600 min-w-20`}
-											>
-												Mục tiêu: {task.target}
-											</div>
-										</div>
-									</div>
 								</div>
 								<div className="space-y-2">
 									<div
@@ -172,21 +169,6 @@ const TaskPlanning = () => {
 												Ghi chú: {task.description}
 											</p>
 										)}
-										<div
-											className={`flex m-0 flex-row gap-2 items-center`}
-										>
-											{task.complete ? (
-												<Badge className="bg-green-100 text-green-800 text-xs">
-													Hoàn thành
-												</Badge>
-											) : (
-												<Badge
-													className={`bg-cyan-100 text-cyan-800 text-xs`}
-												>
-													Chưa hoàn thành
-												</Badge>
-											)}
-										</div>
 									</div>
 								</div>
 							</div>

@@ -5,12 +5,16 @@ import StudyTracking from "@/components/study/study-tracking";
 import PrepareTracking from "@/components/study/prepare-tracking";
 import TodaySession from "@/components/study/today-session";
 import DailyTasks from "@/components/goals/task/tasks";
-import TagManagement from "@/components/study/tag-subject-manage";
+import TagManagement from "@/components/study/tag-manage";
 import { useStudy } from "@/hooks/use-study-session";
 import StudyProgress from "@/components/goals/study-progress/study-progress";
+import SessionEndDialog from "@/components/study/session-end-dialog";
+import { useState } from "react";
 
 export default function TrackingPage() {
 	const { isSessionActive } = useStudy();
+	const [isSessionEndDialogOpen, setIsSessionEndDialogOpen] = useState(false);
+	const [sessionEndData, setSessionEndData] = useState(null);
 
 	return (
 		<div className="space-y-6">
@@ -29,6 +33,7 @@ export default function TrackingPage() {
 			<div id="#study">
 				{/* Session Setup Card */}
 				{isSessionActive ? <StudyTracking /> : <PrepareTracking />}
+				<SessionEndDialog open={isSessionEndDialogOpen} />
 			</div>
 
 			<div className="grid grid-cols-1 lg:grid-cols-5 gap-6">

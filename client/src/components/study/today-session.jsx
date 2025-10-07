@@ -6,7 +6,7 @@ import { useStudy } from "@/hooks/use-study-session";
 import { Button } from "../ui/button";
 
 const TodaySession = () => {
-	const { allSessions } = useStudy();
+	const { allSessions } = useStudy([]);
 
 	const [sessionPage, setSessionPage] = useState(1);
 

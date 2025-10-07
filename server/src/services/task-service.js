@@ -15,16 +15,6 @@ const getUserTaskService = async (req) => {
 const createTaskService = async (req) => {
 	try {
 		const userId = req.userId;
-		// const {
-		// 	title,
-		// 	description,
-		// 	subject,
-		// 	type,
-		// 	taskType,
-		// 	deadline,
-		// 	frequency,
-		// 	complete,
-		// } = req.body;
 		const newTask = new Task({
 			...req.body,
 			userId,

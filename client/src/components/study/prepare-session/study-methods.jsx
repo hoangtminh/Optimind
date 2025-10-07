@@ -22,7 +22,7 @@ const StudyMethod = () => {
 	// Session state
 
 	return (
-		<div className="w-[70%]">
+		<div>
 			<Label className="text-base font-medium mb-3 block">
 				Phương pháp học
 			</Label>
@@ -92,8 +92,8 @@ const StudyMethod = () => {
 								max="180"
 							/>
 						</div>
-						<div className="text-center">
-							<div className="text-4xl font-mono font-bold text-slate-700 mb-2">
+						<div className="mt-4 text-center">
+							<div className="text-6xl font-bold text-slate-700 mb-2">
 								{formatTime(studyTime * 60)}
 							</div>
 						</div>
@@ -156,8 +156,8 @@ const StudyMethod = () => {
 								/>
 							</div>
 						</div>
-						<div className="text-center">
-							<div className="text-4xl font-mono font-bold text-slate-700 mb-2">
+						<div className="mt-4 text-center">
+							<div className="text-6xl  font-bold text-slate-700 mb-2">
 								{formatTime(studyTime * 60)}
 							</div>
 						</div>
@@ -166,8 +166,10 @@ const StudyMethod = () => {
 
 				<TabsContent value="free" className="mt-4">
 					<div className="text-center mb-3">
-						<div className="text-4xl font-mono font-bold text-slate-700 mb-2">
-							{formatTime(timeCount)}
+						<div className="mt-4 text-center">
+							<div className="text-6xl font-bold text-slate-700 mb-2">
+								{formatTime(timeCount)}
+							</div>
 						</div>
 						<p className="text-base text-slate-500">
 							Bấm giờ tự do

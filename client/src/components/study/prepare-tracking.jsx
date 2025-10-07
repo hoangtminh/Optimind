@@ -8,7 +8,6 @@ import { Book, Play } from "lucide-react";
 import { Button } from "../ui/button";
 import { useStudy } from "@/hooks/use-study-session";
 import StudyMethod from "./prepare-session/study-methods";
-import SubjectSelection from "./prepare-session/subject-selection";
 import TagSelection from "./prepare-session/tag-selection";
 import TaskPlanning from "./prepare-session/task-planning";
 import SetNameDescription from "./prepare-session/set-name-description.jsx.jsx";
@@ -29,16 +28,13 @@ const PrepareTracking = () => {
 			</CardHeader>
 			<CardContent className="w-full space-y-4 ">
 				<div className="flex flex-row gap-4 w-full items-start">
-					<SetNameDescription />
-					<StudyMethod />
-				</div>
-
-				<div className="grid grid-cols-2 p-4 gap-4 bg-white rounded-lg shadow-md">
-					{/* Subject Selection */}
-					<SubjectSelection />
-
-					{/* Session Tags */}
-					<TagSelection />
+					<div className="flex flex-col gap-4 p-4 w-[60%] bg-white border border-green-400 rounded-lg shadow-md">
+						<SetNameDescription />
+						<TagSelection />
+					</div>
+					<div className="w-[70%] p-4">
+						<StudyMethod />
+					</div>
 				</div>
 
 				{/* Task Planning */}

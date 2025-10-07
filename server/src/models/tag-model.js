@@ -22,5 +22,4 @@ const baseSchema = new mongoose.Schema(
 	}
 );
 
-export const Subject = mongoose.model("Subject", baseSchema);
 export const Tag = mongoose.model("Tag", baseSchema);

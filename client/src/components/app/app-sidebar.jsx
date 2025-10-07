@@ -12,6 +12,8 @@ import {
 	Bluetooth,
 	Trophy,
 	Medal,
+	MessageCircle,
+	TvMinimalIcon,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -41,16 +43,23 @@ const menuItems = [
 		bgColor: "bg-blue-50",
 	},
 	{
-		title: "Thiết bị",
-		url: "/device",
-		icon: Bluetooth,
-		color: "text-indigo-600",
-		bgColor: "bg-indigo-50",
-	},
-	{
 		title: "Theo dõi học tập",
 		url: "/study",
 		icon: Clock,
+		color: "text-green-600",
+		bgColor: "bg-green-50",
+	},
+	{
+		title: "Chat",
+		url: "/chat",
+		icon: MessageCircle,
+		color: "text-green-600",
+		bgColor: "bg-green-50",
+	},
+	{
+		title: "Phòng học",
+		url: "/study-room",
+		icon: TvMinimalIcon,
 		color: "text-green-600",
 		bgColor: "bg-green-50",
 	},
@@ -88,13 +97,6 @@ const menuItems = [
 		icon: Bell,
 		color: "text-red-600",
 		bgColor: "bg-red-50",
-	},
-	{
-		title: "Lịch học",
-		url: "/calendar",
-		icon: Calendar,
-		color: "text-purple-600",
-		bgColor: "bg-purple-50",
 	},
 	{
 		title: "Cài đặt",

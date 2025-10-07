@@ -7,7 +7,6 @@ const createTaskValidate = (req, res, next) => {
 		const schema = z.object({
 			title: z.string().min(3).max(60).nonempty(),
 			description: z.string().max(100),
-			subject: z.string().array(),
 			frequencyType: z.string().nonempty(),
 			frequency: z.string().array(),
 			deadline: z.string(),
@@ -24,7 +23,6 @@ const updateTaskValidate = (req, res, next) => {
 		const schema = z.object({
 			title: z.string().min(3).max(60).nonempty(),
 			description: z.string().max(100),
-			subject: z.string().array(),
 			frequencyType: z.string().nonempty(),
 			frequency: z.string().array(),
 			deadline: z.string(),

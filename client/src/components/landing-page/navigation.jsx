@@ -1,6 +1,8 @@
 "use client";
 import { useParams, usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
+import { Button } from "../ui/button";
+import Link from "next/link";
 
 const GlassNavigation = () => {
 	const [activeSection, setActiveSection] = useState("home");
@@ -15,7 +17,7 @@ const GlassNavigation = () => {
 
 	return (
 		<nav className="fixed top-4 left-1/2 transform -translate-x-1/2 z-40">
-			<div className="bg-white/40 backdrop-blur-lg border border-white/20 rounded-full px-6 py-3">
+			<div className="flex flex-row gap-6 align-center bg-white/40 backdrop-blur-lg border border-white/20 rounded-full px-6 py-3">
 				<ul className="flex space-x-6">
 					{navItems.map((item) => (
 						<li key={item.id}>
@@ -35,6 +37,9 @@ const GlassNavigation = () => {
 						</li>
 					))}
 				</ul>
+				<Link href={"/dashboard"}>
+					<Button variant={`primary`}>Get started</Button>
+				</Link>
 			</div>
 		</nav>
 	);

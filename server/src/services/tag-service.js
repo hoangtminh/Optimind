@@ -1,6 +1,6 @@
 import { StatusCodes } from "http-status-codes";
 import { ApiError } from "../utils/api-error.js";
-import { Tag } from "../models/tag-and-subject-model.js";
+import { Tag } from "../models/tag-model.js";
 
 const getUserTagService = async (req) => {
 	try {

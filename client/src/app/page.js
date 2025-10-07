@@ -9,6 +9,7 @@ import FeaturesSection from "@/components/landing-page/feature-section";
 import InteractiveStats from "@/components/landing-page/interactive-stats";
 import CoursesSection from "@/components/landing-page/course-section";
 import HeroSection from "@/components/landing-page/hero-section";
+import Feedback from "@/components/landing-page/feedback";
 
 // Main App Component
 const App = () => {
@@ -23,6 +24,7 @@ const App = () => {
 				<FeaturesSection />
 				<CoursesSection />
 				<PricingSection />
+				<Feedback />
 			</main>
 
 			<footer className="py-16 px-6 bg-gradient-to-r from-slate-800 to-slate-900 text-white">

@@ -18,7 +18,6 @@ import {
 import { Textarea } from "../../ui/textarea";
 import { Button } from "../../ui/button";
 import { useTasks } from "@/hooks/use-task";
-import { useSubject } from "@/hooks/use-subject";
 import { Badge } from "../../ui/badge";
 import {
 	DropdownMenu,
@@ -90,7 +89,6 @@ const EditTask = () => {
 			frequency: selectedDays
 				.filter((day) => day.repeat)
 				.map((day) => day.value),
-			subject: editingTask.subject,
 			target: taskTarget,
 			deadline: taskDeadline,
 		});
@@ -120,14 +118,6 @@ const EditTask = () => {
 							onChange={(e) => setTaskTitle(e.target.value)}
 							placeholder="Ví dụ: Hoàn thành chương 1"
 						/>
-					</div>
-					<div className="w-full flex flex-row flex-wrap gap-2">
-						<Label className={`text-blue-800/40`}>Môn học:</Label>
-						{editingTask.subject.map((subject, index) => (
-							<Badge key={index} variant={"outline"}>
-								{subject}
-							</Badge>
-						))}
 					</div>
 					<div className="grid grid-cols-2 gap-4">
 						<div className="space-y-2">

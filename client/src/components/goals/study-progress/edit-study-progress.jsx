@@ -103,7 +103,6 @@ const EditStudyProgress = () => {
 			frequency: selectedDays
 				.filter((day) => day.repeat)
 				.map((day) => day.value),
-			subject: editingStudyProgress.subject,
 			target: studyProgressHours * 60 + studyProgressMinutes,
 			deadline: studyProgressDeadline,
 		});
@@ -138,14 +137,6 @@ const EditStudyProgress = () => {
 							}
 							placeholder="Ví dụ: Hoàn thành chương 1"
 						/>
-					</div>
-					<div className="w-full flex flex-row flex-wrap gap-2">
-						<Label className={`text-blue-800/40`}>Môn học:</Label>
-						{editingStudyProgress.subject.map((subject, index) => (
-							<Badge key={index} variant={"outline"}>
-								{subject}
-							</Badge>
-						))}
 					</div>
 					<div className="grid grid-cols-2 gap-4">
 						<div className="space-y-2">
