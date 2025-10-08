@@ -30,6 +30,8 @@ export function StudyProvider({ children }) {
 	const [focusData, setFocusData] = useState([]);
 
 	// Session configuration
+	const [sessionName, setSessionName] = useState("");
+	const [sessionDescription, setSessionDescription] = useState("");
 	const [activeTab, setActiveTab] = useState("countdown");
 	const [studyTime, setStudyTime] = useState(25);
 	const [breakTime, setBreakTime] = useState(5);
@@ -64,7 +66,7 @@ export function StudyProvider({ children }) {
 			(sessionTasks.length === 0 && sessionStudyProgress.length === 0)
 		) {
 			toast.error("Please fill session name, select task/study progress");
-			return;
+			// return;
 		}
 
 		let duration = 0;
@@ -88,6 +90,8 @@ export function StudyProvider({ children }) {
 		setSessionData((prev) => {
 			return {
 				...prev,
+				name: sessionName,
+				description: sessionDescription,
 				method,
 				studyTime: studyTime,
 				breakTime: breakTime,
@@ -110,7 +114,6 @@ export function StudyProvider({ children }) {
 			startCamera();
 			startRecording();
 		}
-		router.push("#study");
 	};
 
 	const endSession = async () => {
@@ -180,6 +183,10 @@ export function StudyProvider({ children }) {
 		setIsSessionActive,
 
 		// Session Data
+		sessionName,
+		setSessionName,
+		sessionDescription,
+		setSessionDescription,
 		sessionData,
 		setSessionData,
 		focusData,

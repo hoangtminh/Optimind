@@ -17,60 +17,6 @@ export function StatisticCards() {
 		subjects: ["Toán", "Lý", "Hóa"],
 	};
 
-	const getAverageStats = () => {
-		if (timePeriod === "week") {
-			const weekData = [
-				{
-					daily: 5.3,
-					weekly: 37.2,
-					monthly: 158.4,
-					lastComparison: +0.8,
-					monthComparison: +12.3,
-				},
-				{
-					daily: 4.5,
-					weekly: 31.5,
-					monthly: 142.1,
-					lastComparison: -0.8,
-					monthComparison: +8.7,
-				},
-				{
-					daily: 6.1,
-					weekly: 42.7,
-					monthly: 171.2,
-					lastComparison: +1.6,
-					monthComparison: +15.9,
-				},
-			];
-			return weekData[Math.abs(selectedWeek)] || weekData[0];
-		} else {
-			const monthData = [
-				{
-					daily: 5.3,
-					weekly: 37.2,
-					monthly: 158.4,
-					lastComparison: +12.3,
-					weekComparison: +2.1,
-				},
-				{
-					daily: 4.8,
-					weekly: 33.6,
-					monthly: 146.1,
-					lastComparison: -12.3,
-					weekComparison: -3.6,
-				},
-				{
-					daily: 5.9,
-					weekly: 41.3,
-					monthly: 177.8,
-					lastComparison: +31.7,
-					weekComparison: +7.7,
-				},
-			];
-			return monthData[Math.abs(selectedMonth)] || monthData[0];
-		}
-	};
-
 	const weeklyProgress = 75;
 
 	const averageStats = {

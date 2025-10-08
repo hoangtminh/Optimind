@@ -29,7 +29,7 @@ export default function RegisterPage() {
 							<p className="text-sm text-gray-600">
 								Đã có tài khoản?{" "}
 								<Link
-									href="/login"
+									href="/auth/login"
 									className="text-emerald-600 hover:text-emerald-700 font-medium hover:underline"
 								>
 									Đăng nhập ngay

@@ -69,34 +69,6 @@ const TodaySession = () => {
 									<div>
 										<div className="flex flex-row gap-2 font-medium text-slate-700 capitalize">
 											{session.method} -{" "}
-											<div className="flex flex-row gap-2">
-												{session.subjects.length > 0
-													? session.subjects.map(
-															(
-																subject,
-																index
-															) => {
-																return (
-																	<Badge
-																		key={
-																			index
-																		}
-																		variant="default"
-																		className="text-xs"
-																		style={{
-																			backgroundColor:
-																				subject.color,
-																		}}
-																	>
-																		{
-																			subject.name
-																		}
-																	</Badge>
-																);
-															}
-													  )
-													: "Study free"}
-											</div>
 										</div>
 										<div className="text-sm text-slate-500">
 											Duration: {session.studyTime} minute

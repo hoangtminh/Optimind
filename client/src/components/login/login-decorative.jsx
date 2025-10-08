@@ -16,7 +16,7 @@ const LoginDecorative = () => {
 
 				{/* System name */}
 				<h1 className="text-5xl font-bold mb-4 bg-gradient-to-r from-white to-cyan-200 bg-clip-text text-transparent">
-					Optimind
+					EduFocus AI
 				</h1>
 				<p className="text-xl text-white/80 mb-8 max-w-md">
 					Nền tảng học tập thông minh giúp bạn đạt được tiềm năng tối

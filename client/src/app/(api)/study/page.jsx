@@ -14,7 +14,6 @@ import { useState } from "react";
 export default function TrackingPage() {
 	const { isSessionActive } = useStudy();
 	const [isSessionEndDialogOpen, setIsSessionEndDialogOpen] = useState(false);
-	const [sessionEndData, setSessionEndData] = useState(null);
 
 	return (
 		<div className="space-y-6">

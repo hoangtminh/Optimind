@@ -91,7 +91,7 @@ const detailedProgressData = [
 		targetTime: 3.0,
 		completionRate: 83,
 		rateScore: 8.5,
-		topics: "Đạo hàm, Tích phân",
+		tags: ["Đạo hàm", "Tích phân"],
 		efficiency: "Cao",
 	},
 	{
@@ -102,7 +102,7 @@ const detailedProgressData = [
 		targetTime: 2.0,
 		completionRate: 90,
 		rateScore: 9.2,
-		topics: "Điện học, Từ học",
+		tags: ["Điện học", "Từ học"],
 		efficiency: "Rất cao",
 	},
 	{
@@ -113,7 +113,7 @@ const detailedProgressData = [
 		targetTime: 2.5,
 		completionRate: 88,
 		rateScore: 7.8,
-		topics: "Hóa hữu cơ",
+		tags: ["Hóa hữu cơ"],
 		efficiency: "Cao",
 	},
 	{
@@ -124,7 +124,7 @@ const detailedProgressData = [
 		targetTime: 2.0,
 		completionRate: 75,
 		rateScore: 7.2,
-		topics: "Di truyền học",
+		tags: ["Di truyền học"],
 		efficiency: "Trung bình",
 	},
 	{
@@ -135,7 +135,7 @@ const detailedProgressData = [
 		targetTime: 1.5,
 		completionRate: 80,
 		rateScore: 8.0,
-		topics: "Thơ Nguyễn Du",
+		tags: ["Thơ Nguyễn Du"],
 		efficiency: "Cao",
 	},
 	{
@@ -146,7 +146,7 @@ const detailedProgressData = [
 		targetTime: 2.0,
 		completionRate: 100,
 		rateScore: 9.5,
-		topics: "Grammar, Vocabulary",
+		tags: ["Grammar", "Vocabulary"],
 		efficiency: "Rất cao",
 	},
 	{
@@ -157,7 +157,7 @@ const detailedProgressData = [
 		targetTime: 3.0,
 		completionRate: 107,
 		rateScore: 9.0,
-		topics: "Hình học không gian",
+		tags: ["Math"],
 		efficiency: "Rất cao",
 	},
 	{
@@ -168,7 +168,7 @@ const detailedProgressData = [
 		targetTime: 2.0,
 		completionRate: 75,
 		rateScore: 6.8,
-		topics: "Quang học",
+		tags: ["Quang học"],
 		efficiency: "Trung bình",
 	},
 ];
@@ -205,20 +205,18 @@ export default function ProgressPage() {
 			),
 		},
 		{
-			accessorKey: "subject",
-			header: "Môn học",
+			accessorKey: "tags",
+			header: "Tags",
 			cell: ({ row }) => (
-				<Badge variant="outline" className="bg-white dark:bg-gray-800">
-					{row.getValue("subject")}
-				</Badge>
-			),
-		},
-		{
-			accessorKey: "topics",
-			header: "Chủ đề",
-			cell: ({ row }) => (
-				<div className="text-sm text-gray-600 dark:text-gray-300">
-					{row.getValue("topics")}
+				<div className="flex gap-1">
+					{row.getValue("tags").map((tag) => (
+						<Badge
+							variant="outline"
+							className="bg-white dark:bg-gray-800"
+						>
+							{tag}
+						</Badge>
+					))}
 				</div>
 			),
 		},
@@ -373,7 +371,7 @@ export default function ProgressPage() {
 											Chủ đề học
 										</label>
 										<div className="text-sm text-gray-800 mt-1">
-											{session.topics}
+											{session.tags}
 										</div>
 									</div>
 									<div>
@@ -548,89 +546,101 @@ export default function ProgressPage() {
 					</CardContent>
 				</Card>
 			</div>
-
-			{/* Main Progress Chart */}
-			<Card className="bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
-				<CardHeader>
-					<CardTitle className="flex items-center gap-2">
-						Biểu đồ tiến độ học tập
-						<Badge
-							variant="secondary"
-							className="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
-						>
-							{timeFrame === "daily"
-								? "Hàng ngày"
-								: timeFrame === "weekly"
-								? "Hàng tuần"
-								: "Hàng tháng"}
-						</Badge>
-					</CardTitle>
-					<CardDescription>
-						So sánh thời gian học thực tế với mục tiêu và trung bình
-					</CardDescription>
-				</CardHeader>
-				<CardContent>
-					<ResponsiveContainer width="100%" height={400}>
-						<LineChart data={getCurrentData()}>
-							<CartesianGrid
-								strokeDasharray="3 3"
-								className="opacity-30"
-							/>
-							<XAxis
-								dataKey={
-									timeFrame === "daily"
-										? "date"
-										: timeFrame === "weekly"
-										? "week"
-										: "month"
-								}
-								className="text-sm"
-							/>
-							<YAxis className="text-sm" />
-							<Tooltip
-								contentStyle={{
-									backgroundColor:
-										"rgba(255, 255, 255, 0.95)",
-									border: "1px solid #e2e8f0",
-									borderRadius: "8px",
-									boxShadow:
-										"0 4px 6px -1px rgba(0, 0, 0, 0.1)",
-								}}
-							/>
-							<Legend />
-							<Line
-								type="monotone"
-								dataKey="studyTime"
-								stroke="#3b82f6"
-								strokeWidth={3}
-								name="Thời gian học"
-								dot={{ fill: "#3b82f6", strokeWidth: 2, r: 4 }}
-							/>
-							<Line
-								type="monotone"
-								dataKey="average"
-								stroke="#10b981"
-								strokeWidth={2}
-								strokeDasharray="5 5"
-								name="Trung bình"
-								dot={{ fill: "#10b981", strokeWidth: 2, r: 3 }}
-							/>
-							<Line
-								type="monotone"
-								dataKey="target"
-								stroke="#ef4444"
-								strokeWidth={2}
-								strokeDasharray="10 5"
-								name="Mục tiêu"
-								dot={{ fill: "#ef4444", strokeWidth: 2, r: 3 }}
-							/>
-						</LineChart>
-					</ResponsiveContainer>
-				</CardContent>
-			</Card>
-
-			{/* Subject Distribution Chart */}
 			<div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+				{/* Main Progress Chart */}
+				<Card className="bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
+					<CardHeader>
+						<CardTitle className="flex items-center gap-2">
+							Biểu đồ tiến độ học tập
+							<Badge
+								variant="secondary"
+								className="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
+							>
+								{timeFrame === "daily"
+									? "Hàng ngày"
+									: timeFrame === "weekly"
+									? "Hàng tuần"
+									: "Hàng tháng"}
+							</Badge>
+						</CardTitle>
+						<CardDescription>
+							So sánh thời gian học thực tế với mục tiêu và trung
+							bình
+						</CardDescription>
+					</CardHeader>
+					<CardContent>
+						<ResponsiveContainer width="100%" height={300}>
+							<LineChart data={getCurrentData()}>
+								<CartesianGrid
+									strokeDasharray="3 3"
+									className="opacity-30"
+								/>
+								<XAxis
+									dataKey={
+										timeFrame === "daily"
+											? "date"
+											: timeFrame === "weekly"
+											? "week"
+											: "month"
+									}
+									className="text-sm"
+								/>
+								<YAxis className="text-sm" />
+								<Tooltip
+									contentStyle={{
+										backgroundColor:
+											"rgba(255, 255, 255, 0.95)",
+										border: "1px solid #e2e8f0",
+										borderRadius: "8px",
+										boxShadow:
+											"0 4px 6px -1px rgba(0, 0, 0, 0.1)",
+									}}
+								/>
+								<Legend />
+								<Line
+									type="monotone"
+									dataKey="studyTime"
+									stroke="#3b82f6"
+									strokeWidth={3}
+									name="Thời gian học"
+									dot={{
+										fill: "#3b82f6",
+										strokeWidth: 2,
+										r: 4,
+									}}
+								/>
+								<Line
+									type="monotone"
+									dataKey="average"
+									stroke="#10b981"
+									strokeWidth={2}
+									strokeDasharray="5 5"
+									name="Trung bình"
+									dot={{
+										fill: "#10b981",
+										strokeWidth: 2,
+										r: 3,
+									}}
+								/>
+								<Line
+									type="monotone"
+									dataKey="target"
+									stroke="#ef4444"
+									strokeWidth={2}
+									strokeDasharray="10 5"
+									name="Mục tiêu"
+									dot={{
+										fill: "#ef4444",
+										strokeWidth: 2,
+										r: 3,
+									}}
+								/>
+							</LineChart>
+						</ResponsiveContainer>
+					</CardContent>
+				</Card>
+
+				{/* Subject Distribution Chart */}
 				<Card className="bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-950 dark:to-orange-900">
 					<CardHeader>
 						<CardTitle className="text-orange-800 dark:text-orange-200">
@@ -666,47 +676,6 @@ export default function ProgressPage() {
 						</ResponsiveContainer>
 					</CardContent>
 				</Card>
-
-				<Card className="bg-gradient-to-br from-teal-50 to-teal-100 dark:from-teal-950 dark:to-teal-900">
-					<CardHeader>
-						<CardTitle className="text-teal-800 dark:text-teal-200">
-							Top môn học
-						</CardTitle>
-						<CardDescription>
-							Thời gian học nhiều nhất (tháng này)
-						</CardDescription>
-					</CardHeader>
-					<CardContent>
-						<ResponsiveContainer width="100%" height={300}>
-							<BarChart data={subjectData} layout="horizontal">
-								<CartesianGrid
-									strokeDasharray="3 3"
-									className="opacity-30"
-								/>
-								<XAxis type="number" className="text-sm" />
-								<YAxis
-									dataKey="name"
-									type="category"
-									width={80}
-									className="text-sm"
-								/>
-								<Tooltip
-									contentStyle={{
-										backgroundColor:
-											"rgba(255, 255, 255, 0.95)",
-										border: "1px solid #e2e8f0",
-										borderRadius: "8px",
-									}}
-								/>
-								<Bar
-									dataKey="hours"
-									fill="#14b8a6"
-									radius={[0, 4, 4, 0]}
-								/>
-							</BarChart>
-						</ResponsiveContainer>
-					</CardContent>
-				</Card>
 			</div>
 
 			<Card className="bg-gradient-to-br from-indigo-50 to-indigo-100 dark:from-indigo-950 dark:to-indigo-900">
@@ -719,9 +688,9 @@ export default function ProgressPage() {
 					</CardDescription>
 				</CardHeader>
 				<CardContent>
-					<div className="rounded-md border">
+					<div className="bg-white border-2 border-white">
 						<table className="w-full">
-							<thead>
+							<thead className="w-full bg-indigo-600 rounded-lg">
 								{table.getHeaderGroups().map((headerGroup) => (
 									<tr
 										key={headerGroup.id}
@@ -730,7 +699,7 @@ export default function ProgressPage() {
 										{headerGroup.headers.map((header) => (
 											<th
 												key={header.id}
-												className="h-12 px-2 text-left align-middle font-medium text-muted-foreground"
+												className="h-12 px-2 text-white text-center align-middle font-medium"
 											>
 												{header.isPlaceholder
 													? null
