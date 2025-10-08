@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import {
 	Card,
 	CardContent,
@@ -29,7 +29,6 @@ import {
 	DialogDescription,
 	DialogHeader,
 	DialogTitle,
-	DialogTrigger,
 } from "@/components/ui/dialog";
 import { RealTimeChat } from "@/components/chat/chat";
 import CreateRoom from "@/components/study-room/hall/create-room";
@@ -163,9 +162,14 @@ export default function StudyRoomsPage() {
 
 							<TabsContent value="public">
 								<div className="grid gap-4">
-									{publicRooms.map((room) => (
-										<RoomCard key={room.id} room={room} />
-									))}
+									<Suspense>
+										{publicRooms.map((room) => (
+											<RoomCard
+												key={room.id}
+												room={room}
+											/>
+										))}
+									</Suspense>
 								</div>
 							</TabsContent>
 
@@ -257,26 +261,28 @@ export default function StudyRoomsPage() {
 
 					{/* Quick Stats */}
 					<div className="space-y-4">
-						<Card>
+						<Card
+							className={`bg-gradient-to-br from-orange-50 to-orange-100 border-2 border-orange-200`}
+						>
 							<CardHeader>
-								<CardTitle className="text-lg">
+								<CardTitle className="text-lg text-orange-600">
 									Thống kê nhanh
 								</CardTitle>
 							</CardHeader>
 							<CardContent className="space-y-4">
 								<div className="flex items-center justify-between">
-									<span className="text-sm text-gray-600">
+									<span className="text-sm text-orange-700">
 										Phòng đang hoạt động
 									</span>
-									<Badge variant="secondary">
+									<Badge className={`bg-orange-400`}>
 										{publicRooms.length + myRooms.length}
 									</Badge>
 								</div>
 								<div className="flex items-center justify-between">
-									<span className="text-sm text-gray-600">
+									<span className="text-sm text-orange-700">
 										Tổng người tham gia
 									</span>
-									<Badge variant="secondary">
+									<Badge className={`bg-orange-400`}>
 										{publicRooms.reduce(
 											(sum, room) =>
 												sum + room.participants,
@@ -285,49 +291,12 @@ export default function StudyRoomsPage() {
 									</Badge>
 								</div>
 								<div className="flex items-center justify-between">
-									<span className="text-sm text-gray-600">
+									<span className="text-sm text-orange-700">
 										Phòng của tôi
 									</span>
-									<Badge variant="secondary">
+									<Badge className={`bg-orange-400`}>
 										{myRooms.length}
 									</Badge>
-								</div>
-							</CardContent>
-						</Card>
-
-						<Card>
-							<CardHeader>
-								<CardTitle className="text-lg">
-									Môn học phổ biến
-								</CardTitle>
-							</CardHeader>
-							<CardContent className="space-y-2">
-								<div className="flex items-center justify-between">
-									<span className="text-sm">Toán học</span>
-									<div className="w-20 bg-gray-200 rounded-full h-2">
-										<div
-											className="bg-blue-500 h-2 rounded-full"
-											style={{ width: "80%" }}
-										></div>
-									</div>
-								</div>
-								<div className="flex items-center justify-between">
-									<span className="text-sm">Lập trình</span>
-									<div className="w-20 bg-gray-200 rounded-full h-2">
-										<div
-											className="bg-green-500 h-2 rounded-full"
-											style={{ width: "65%" }}
-										></div>
-									</div>
-								</div>
-								<div className="flex items-center justify-between">
-									<span className="text-sm">Tiếng Anh</span>
-									<div className="w-20 bg-gray-200 rounded-full h-2">
-										<div
-											className="bg-purple-500 h-2 rounded-full"
-											style={{ width: "45%" }}
-										></div>
-									</div>
 								</div>
 							</CardContent>
 						</Card>

@@ -16,7 +16,7 @@ const RegisterDecoration = () => {
 
 				{/* System name */}
 				<h1 className="text-5xl font-bold mb-4 bg-gradient-to-r from-white to-emerald-200 bg-clip-text text-transparent">
-					Optimind
+					EduFocus AI
 				</h1>
 				<p className="text-xl text-white/80 mb-6 max-w-md">
 					Bắt đầu hành trình học tập thông minh cùng chúng tôi

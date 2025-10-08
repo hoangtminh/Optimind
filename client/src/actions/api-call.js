@@ -9,7 +9,6 @@ class ApiError extends Error {
 
 export const apiCall = async (endpoint, options = {}) => {
 	const url = `${API_BASE_URL}${endpoint}`;
-	console.log(url);
 	const headers = {
 		...options,
 		headers: {
