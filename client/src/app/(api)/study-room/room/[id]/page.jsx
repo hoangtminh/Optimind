@@ -15,9 +15,11 @@ import { useRealtime } from "@/hooks/use-real-time";
 import { toast } from "sonner";
 import VideoGrid from "@/components/study-room/room/video-grid";
 import Participants from "@/components/study-room/room/participants";
+import { useRouter } from "next/navigation";
 
 const Room = () => {
 	const roomId = "1";
+	const router = useRouter();
 	const { participants, updateParticipant, setParticipants } =
 		useRealtime(roomId);
 
@@ -25,9 +27,8 @@ const Room = () => {
 
 	const [activeRoom] = useState({
 		id: 4,
-		name: "Nhóm học Vật lý",
-		description: "Phòng riêng cho nhóm học vật lý lớp 12A1",
-		subject: "Vật lý",
+		name: "Nhóm học chung",
+		description: "Phòng riêng cho nhóm học chung",
 		host: "Me",
 		participants: 6,
 		maxParticipants: 8,
@@ -48,10 +49,8 @@ const Room = () => {
 
 	const handleLeaveRoom = () => {
 		stopCamera();
-		toast({
-			title: "Đã rời phòng",
-			description: "Bạn đã rời khỏi phòng học",
-		});
+		toast("Đã rời phòng");
+		router.push("/study-room");
 	};
 
 	const stopCamera = () => {
@@ -59,7 +58,6 @@ const Room = () => {
 			stream.getTracks().forEach((track) => track.stop());
 			setStream(null);
 		}
-		setCameraEnabled(false);
 	};
 
 	return (

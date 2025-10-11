@@ -41,8 +41,13 @@ export function StudyProvider({ children }) {
 	const [sessionTags, setSessionTags] = useState([]);
 	const [sessionTasks, setSessionTasks] = useState([]);
 	const [sessionStudyProgress, setSessionStudyProgress] = useState([]);
-	const { startCamera, startRecording, stopRecording, cameraStream } =
-		useCamera();
+	const {
+		startCamera,
+		startRecording,
+		stopRecording,
+		cameraStream,
+		stopCamera,
+	} = useCamera();
 
 	const [sessionData, setSessionData] = useState({
 		name: "",
@@ -62,11 +67,11 @@ export function StudyProvider({ children }) {
 
 	const startSession = () => {
 		if (
-			!sessionData.name.trim() ||
+			!sessionName.trim() ||
 			(sessionTasks.length === 0 && sessionStudyProgress.length === 0)
 		) {
 			toast.error("Please fill session name, select task/study progress");
-			// return;
+			return;
 		}
 
 		let duration = 0;
@@ -121,7 +126,7 @@ export function StudyProvider({ children }) {
 		setIsBreakTime(false);
 		if (cameraStream) {
 			stopRecording();
-			startCamera();
+			stopCamera();
 		}
 		const isFinish =
 			currentCycle == sessionData.cycles && timeRemaining == 0;
@@ -164,9 +169,12 @@ export function StudyProvider({ children }) {
 			concentrateScore: [],
 		});
 
+		setSessionName("");
+		setSessionDescription("");
 		setSessionTags([]);
 		setSessionTasks([]);
 		setSessionStudyProgress([]);
+		setFocusData([]);
 	};
 
 	const contextValue = {

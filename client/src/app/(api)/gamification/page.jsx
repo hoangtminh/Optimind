@@ -1,6 +1,4 @@
 "use client";
-
-import { useState } from "react";
 import {
 	Card,
 	CardContent,
@@ -11,458 +9,509 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
-	Trophy,
-	Star,
-	Award,
-	Coins,
-	Gift,
-	Zap,
-	Target,
-	Crown,
 	Sparkles,
-	ShoppingCart,
 	Lock,
-	CheckCircle,
+	Star,
+	Trophy,
+	Clock,
+	Zap,
+	Crown,
+	Heart,
 	TrendingUp,
-	Gamepad2,
-	Medal,
-	Flame,
 } from "lucide-react";
+import { usePet } from "@/hooks/use-pet";
 
 export default function GamificationPage() {
-	const [userPoints, setUserPoints] = useState(2450);
-	const [userLevel, setUserLevel] = useState(12);
-	const [currentStreak, setCurrentStreak] = useState(7);
-
-	// Mock data for achievements
-	const achievements = [
-		{
-			id: 1,
-			name: "Người mới bắt đầu",
-			description: "Hoàn thành phiên học đầu tiên",
-			icon: Star,
-			unlocked: true,
-			points: 50,
-			rarity: "common",
-		},
-		{
-			id: 2,
-			name: "Kiên trì 7 ngày",
-			description: "Học liên tục 7 ngày",
-			icon: Flame,
-			unlocked: true,
-			points: 200,
-			rarity: "rare",
-		},
-		{
-			id: 3,
-			name: "Bậc thầy tập trung",
-			description: "Đạt 95% độ tập trung trong 1 phiên",
-			icon: Target,
-			unlocked: true,
-			points: 300,
-			rarity: "epic",
-		},
-		{
-			id: 4,
-			name: "Vua thời gian",
-			description: "Học 100 giờ tích lũy",
-			icon: Crown,
-			unlocked: false,
-			points: 500,
-			rarity: "legendary",
-			progress: 67,
-		},
-		{
-			id: 5,
-			name: "Siêu nhân học tập",
-			description: "Học 8 giờ trong 1 ngày",
-			icon: Zap,
-			unlocked: false,
-			points: 400,
-			rarity: "epic",
-			progress: 25,
-		},
-		{
-			id: 6,
-			name: "Nhà vô địch",
-			description: "Đứng top 1 bảng xếp hạng tuần",
-			icon: Medal,
-			unlocked: false,
-			points: 1000,
-			rarity: "legendary",
-			progress: 0,
-		},
-	];
-
-	// Mock data for shop items
-	const shopItems = [
-		{
-			id: 1,
-			name: "Theme Dark Mode Premium",
-			description: "Giao diện tối cao cấp cho mắt",
-			price: 500,
-			icon: Sparkles,
-			category: "theme",
-			owned: false,
-		},
-		{
-			id: 2,
-			name: "Nhạc nền tập trung",
-			description: "Bộ sưu tập nhạc giúp tập trung",
-			price: 300,
-			icon: Gamepad2,
-			category: "audio",
-			owned: true,
-		},
-		{
-			id: 3,
-			name: "Avatar khung vàng",
-			description: "Khung avatar đặc biệt",
-			price: 800,
-			icon: Crown,
-			category: "cosmetic",
-			owned: false,
-		},
-		{
-			id: 4,
-			name: "Boost XP x2",
-			description: "Nhân đôi điểm kinh nghiệm trong 24h",
-			price: 1000,
-			icon: Zap,
-			category: "boost",
-			owned: false,
-		},
-		{
-			id: 5,
-			name: "Thông báo tùy chỉnh",
-			description: "Âm thanh thông báo cá nhân hóa",
-			price: 200,
-			icon: Gift,
-			category: "audio",
-			owned: false,
-		},
-		{
-			id: 6,
-			name: "Báo cáo chi tiết Pro",
-			description: "Phân tích học tập nâng cao",
-			price: 1500,
-			icon: TrendingUp,
-			category: "feature",
-			owned: false,
-		},
-	];
+	const { pets, totalStudyHours, addStudyTime, setActivePet, getActivePet } =
+		usePet();
+	const activePet = getActivePet();
 
 	const getRarityColor = (rarity) => {
 		switch (rarity) {
 			case "common":
-				return "bg-gray-100 text-gray-800 border-gray-200";
+				return "bg-gradient-to-br from-cyan-50 to-cyan-100 border-gray-200";
+			case "uncommon":
+				return "bg-gradient-to-br from-green-50 to-green-100 border-green-200";
 			case "rare":
-				return "bg-blue-100 text-blue-800 border-blue-200";
+				return "bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200";
 			case "epic":
-				return "bg-purple-100 text-purple-800 border-purple-200";
+				return "bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200";
 			case "legendary":
-				return "bg-yellow-100 text-yellow-800 border-yellow-200";
+				return "bg-gradient-to-br from-yellow-50 to-orange-100 border-yellow-200";
+			case "mythic":
+				return "bg-gradient-to-br from-pink-50 to-rose-100 border-pink-200";
+			case "cosmic":
+				return "bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 border-indigo-200";
 			default:
-				return "bg-gray-100 text-gray-800 border-gray-200";
+				return "bg-gradient-to-br from-gray-50 to-gray-100 border-gray-200";
 		}
 	};
 
-	const getCategoryColor = (category) => {
-		switch (category) {
-			case "theme":
-				return "bg-indigo-100 text-indigo-800";
-			case "audio":
-				return "bg-green-100 text-green-800";
-			case "cosmetic":
-				return "bg-pink-100 text-pink-800";
-			case "boost":
-				return "bg-orange-100 text-orange-800";
-			case "feature":
-				return "bg-cyan-100 text-cyan-800";
+	const getRarityTextColor = (rarity) => {
+		switch (rarity) {
+			case "common":
+				return "text-cyan-800";
+			case "uncommon":
+				return "text-green-800";
+			case "rare":
+				return "text-blue-800";
+			case "epic":
+				return "text-purple-800";
+			case "legendary":
+				return "text-yellow-800";
+			case "mythic":
+				return "text-pink-800";
+			case "cosmic":
+				return "text-indigo-800";
 			default:
-				return "bg-gray-100 text-gray-800";
+				return "text-gray-800";
 		}
 	};
 
-	const handlePurchase = (item) => {
-		if (userPoints >= item.price && !item.owned) {
-			setUserPoints(userPoints - item.price);
-			// Update item as owned (in real app, this would be an API call)
-			console.log(`Purchased ${item.name}`);
+	const getStageEmoji = (stage) => {
+		switch (stage) {
+			case "egg":
+				return "🥚";
+			case "baby":
+				return "🐣";
+			case "teen":
+				return "🐥";
+			case "adult":
+				return "🦅";
+			case "master":
+				return "👑";
+			default:
+				return "🥚";
+		}
+	};
+
+	const getStageName = (stage) => {
+		switch (stage) {
+			case "egg":
+				return "Trứng";
+			case "baby":
+				return "Bé";
+			case "teen":
+				return "Thiếu niên";
+			case "adult":
+				return "Trưởng thành";
+			case "master":
+				return "Bậc thầy";
+			default:
+				return "Trứng";
 		}
 	};
 
 	return (
-		<div className="p-6 space-y-6">
-			{/* Header */}
+		<div className="space-y-6">
 			<div className="flex items-center justify-between">
 				<div>
-					<h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-						Trò chơi & Phần thưởng
+					<h1 className="text-3xl font-bold text-blue-600">
+						Nuôi Pet Học Tập
 					</h1>
 					<p className="text-muted-foreground mt-1">
-						Kiếm điểm, mở khóa thành tựu và đổi phần thưởng
+						Nuôi pet từ trứng và phát triển chúng bằng cách học tập
 					</p>
 				</div>
 			</div>
 
-			{/* Stats Overview */}
 			<div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-				<Card className="bg-gradient-to-br from-primary/10 to-accent/10 border-primary/20">
-					<CardHeader className="pb-3">
+				<Card className="bg-gradient-to-br from-blue-50 to-cyan-100 border-blue-200">
+					<CardHeader>
 						<div className="flex items-center justify-between">
-							<CardTitle className="text-sm font-medium text-primary">
-								Điểm hiện tại
+							<CardTitle className="text-xl font-bold text-blue-800">
+								Tổng giờ học
 							</CardTitle>
-							<Coins className="h-5 w-5 text-primary" />
+							<Clock className="h-5 w-5 text-blue-600" />
 						</div>
 					</CardHeader>
 					<CardContent>
-						<div className="text-2xl font-bold text-primary">
-							{userPoints.toLocaleString()}
+						<div className="text-3xl font-bold text-blue-900">
+							{totalStudyHours.toFixed(1)}h
 						</div>
-						<p className="text-xs text-muted-foreground mt-1">
-							+150 điểm hôm nay
+						<p className="text-sm text-blue-600 mt-1">
+							Học tiếp để mở khóa pet mới
 						</p>
 					</CardContent>
 				</Card>
 
-				<Card className="bg-gradient-to-br from-secondary/10 to-primary/10 border-secondary/20">
-					<CardHeader className="pb-3">
+				<Card className="bg-gradient-to-br from-purple-50 to-pink-100 border-purple-200">
+					<CardHeader>
 						<div className="flex items-center justify-between">
-							<CardTitle className="text-sm font-medium text-secondary">
-								Cấp độ
+							<CardTitle className="text-xl font-bold text-purple-800">
+								Pet đã mở
 							</CardTitle>
-							<Trophy className="h-5 w-5 text-secondary" />
+							<Trophy className="h-5 w-5 text-purple-600" />
 						</div>
 					</CardHeader>
 					<CardContent>
-						<div className="text-2xl font-bold text-secondary">
-							Cấp {userLevel}
+						<div className="text-3xl font-bold text-purple-900">
+							{pets.filter((p) => p.unlocked).length}/
+							{pets.length}
 						</div>
-						<Progress value={75} className="mt-2 h-2" />
-						<p className="text-xs text-muted-foreground mt-1">
-							750/1000 XP đến cấp tiếp theo
+						<p className="text-sm text-purple-600 mt-1">
+							Sưu tập đầy đủ
 						</p>
 					</CardContent>
 				</Card>
 
-				<Card className="bg-gradient-to-br from-accent/10 to-secondary/10 border-accent/20">
-					<CardHeader className="pb-3">
+				<Card className="bg-gradient-to-br from-green-50 to-emerald-100 border-green-200">
+					<CardHeader>
 						<div className="flex items-center justify-between">
-							<CardTitle className="text-sm font-medium text-accent">
-								Streak hiện tại
+							<CardTitle className="text-xl font-bold text-green-800">
+								Pet đang nuôi
 							</CardTitle>
-							<Flame className="h-5 w-5 text-accent" />
+							<Heart className="h-5 w-5 text-green-600" />
 						</div>
 					</CardHeader>
 					<CardContent>
-						<div className="text-2xl font-bold text-accent">
-							{currentStreak} ngày
+						<div className="text-3xl font-bold text-green-900">
+							{activePet ? activePet.name : "Chưa có"}
 						</div>
-						<p className="text-xs text-muted-foreground mt-1">
-							Kỷ lục cá nhân: 15 ngày
+						<p className="text-sm text-green-600 mt-1">
+							{activePet
+								? getStageName(activePet.stage)
+								: "Chọn pet"}
 						</p>
 					</CardContent>
 				</Card>
 
-				<Card className="bg-gradient-to-br from-green-50 to-emerald-50 border-green-200">
-					<CardHeader className="pb-3">
+				<Card className="bg-gradient-to-br from-orange-50 to-yellow-100 border-orange-200">
+					<CardHeader>
 						<div className="flex items-center justify-between">
-							<CardTitle className="text-sm font-medium text-green-800">
-								Thành tựu
+							<CardTitle className="text-xl font-bold text-orange-800">
+								Cấp độ cao nhất
 							</CardTitle>
-							<Award className="h-5 w-5 text-green-600" />
+							<Crown className="h-5 w-5 text-orange-600" />
 						</div>
 					</CardHeader>
 					<CardContent>
-						<div className="text-2xl font-bold text-green-800">
-							{achievements.filter((a) => a.unlocked).length}/
-							{achievements.length}
+						<div className="text-3xl font-bold text-orange-900">
+							{pets.filter((p) => p.stage === "master").length}
 						</div>
-						<p className="text-xs text-green-600 mt-1">
-							Đã mở khóa
+						<p className="text-sm text-orange-600 mt-1">
+							Pet đạt bậc thầy
 						</p>
 					</CardContent>
 				</Card>
 			</div>
 
-			{/* Main Content */}
-			<Tabs defaultValue="achievements" className="space-y-6">
-				<TabsList className="grid w-full grid-cols-2">
-					<TabsTrigger
-						value="achievements"
-						className="flex items-center gap-2"
-					>
-						<Award className="h-4 w-4" />
-						Thành tựu
-					</TabsTrigger>
-					<TabsTrigger
-						value="shop"
-						className="flex items-center gap-2"
-					>
-						<ShoppingCart className="h-4 w-4" />
-						Cửa hàng
-					</TabsTrigger>
-				</TabsList>
-
-				<TabsContent value="achievements" className="space-y-6">
-					<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-						{achievements.map((achievement) => (
-							<Card
-								key={achievement.id}
-								className={`relative overflow-hidden transition-all duration-300 hover:shadow-lg ${
-									achievement.unlocked
-										? "bg-gradient-to-br from-green-50 to-emerald-50 border-green-200"
-										: "bg-card border-border"
-								}`}
+			{activePet && (
+				<Card
+					className={`${getRarityColor(activePet.rarity)} border-2`}
+				>
+					<CardHeader>
+						<div className="flex items-center justify-between">
+							<div>
+								<CardTitle
+									className={`text-2xl ${getRarityTextColor(
+										activePet.rarity
+									)}`}
+								>
+									{getStageEmoji(activePet.stage)}{" "}
+									{activePet.name}
+								</CardTitle>
+								<CardDescription
+									className={getRarityTextColor(
+										activePet.rarity
+									)}
+								>
+									{getStageName(activePet.stage)} -{" "}
+									{activePet.rarity.toUpperCase()}
+								</CardDescription>
+							</div>
+							<Badge
+								className={`text-lg px-4 py-2 bg-gradient-to-r ${activePet.color} text-white border-0`}
 							>
-								<CardHeader className="pb-3">
-									<div className="flex items-start justify-between">
-										<div className="flex items-center gap-3">
-											<div
-												className={`p-2 rounded-lg ${
-													achievement.unlocked
-														? "bg-green-100 text-green-600"
-														: "bg-muted text-muted-foreground"
-												}`}
-											>
-												{achievement.unlocked ? (
-													<achievement.icon className="h-6 w-6" />
-												) : (
-													<Lock className="h-6 w-6" />
-												)}
-											</div>
-											<div>
-												<CardTitle className="text-base">
-													{achievement.name}
-												</CardTitle>
-												<Badge
-													className={`text-xs mt-1 ${getRarityColor(
-														achievement.rarity
-													)}`}
-												>
-													{achievement.rarity}
-												</Badge>
-											</div>
-										</div>
-										{achievement.unlocked && (
-											<CheckCircle className="h-5 w-5 text-green-500" />
-										)}
-									</div>
-								</CardHeader>
-								<CardContent>
-									<CardDescription className="mb-3">
-										{achievement.description}
-									</CardDescription>
-									<div className="flex items-center justify-between">
-										<div className="flex items-center gap-1 text-sm font-medium text-primary">
-											<Coins className="h-4 w-4" />
-											{achievement.points} điểm
-										</div>
-										{!achievement.unlocked &&
-											achievement.progress !==
-												undefined && (
-												<div className="text-xs text-muted-foreground">
-													{achievement.progress}%
-												</div>
-											)}
-									</div>
-									{!achievement.unlocked &&
-										achievement.progress !== undefined && (
-											<Progress
-												value={achievement.progress}
-												className="mt-2 h-2"
-											/>
-										)}
-								</CardContent>
-							</Card>
-						))}
-					</div>
-				</TabsContent>
-
-				<TabsContent value="shop" className="space-y-6">
-					<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-						{shopItems.map((item) => (
-							<Card
-								key={item.id}
-								className="relative overflow-hidden transition-all duration-300 hover:shadow-lg"
+								<Star className="h-4 w-4 mr-1" />
+								{activePet.rarity}
+							</Badge>
+						</div>
+					</CardHeader>
+					<CardContent className="space-y-4">
+						<div className="bg-white/60 p-4 rounded-lg">
+							<div className="flex justify-between items-center mb-2">
+								<span
+									className={`text-sm font-medium ${getRarityTextColor(
+										activePet.rarity
+									)}`}
+								>
+									Kinh nghiệm đến cấp tiếp theo
+								</span>
+								<span
+									className={`text-sm font-bold ${getRarityTextColor(
+										activePet.rarity
+									)}`}
+								>
+									{activePet.experience.toFixed(1)}/
+									{activePet.requiredExp}h
+								</span>
+							</div>
+							<Progress
+								value={
+									(activePet.experience /
+										activePet.requiredExp) *
+									100
+								}
+								className="h-3"
+								indicatorClassName={`bg-gradient-to-r ${activePet.color}`}
+							/>
+							<p
+								className={`text-xs mt-2 ${getRarityTextColor(
+									activePet.rarity
+								)}`}
 							>
-								<CardHeader className="pb-3">
-									<div className="flex items-start justify-between">
-										<div className="flex items-center gap-3">
-											<div className="p-2 bg-gradient-to-r from-primary to-accent rounded-lg text-white">
-												<item.icon className="h-6 w-6" />
-											</div>
-											<div>
-												<CardTitle className="text-base">
-													{item.name}
-												</CardTitle>
-												<Badge
-													className={`text-xs mt-1 ${getCategoryColor(
-														item.category
-													)}`}
-												>
-													{item.category}
-												</Badge>
-											</div>
-										</div>
-										{item.owned && (
-											<CheckCircle className="h-5 w-5 text-green-500" />
-										)}
-									</div>
-								</CardHeader>
-								<CardContent>
-									<CardDescription className="mb-4">
-										{item.description}
-									</CardDescription>
-									<div className="flex items-center justify-between">
-										<div className="flex items-center gap-1 text-lg font-bold text-primary">
-											<Coins className="h-5 w-5" />
-											{item.price.toLocaleString()}
-										</div>
-										<Button
-											onClick={() => handlePurchase(item)}
-											disabled={
-												item.owned ||
-												userPoints < item.price
-											}
-											size="sm"
-											className={
-												item.owned
-													? "bg-green-100 text-green-800 hover:bg-green-100"
-													: userPoints < item.price
-													? "bg-muted text-muted-foreground"
-													: "bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90"
-											}
+								Học thêm{" "}
+								{(
+									activePet.requiredExp - activePet.experience
+								).toFixed(1)}{" "}
+								giờ để lên cấp
+							</p>
+						</div>
+
+						<div className="grid grid-cols-5 gap-2">
+							{["egg", "baby", "teen", "adult", "master"].map(
+								(stage, index) => {
+									const stages = [
+										"egg",
+										"baby",
+										"teen",
+										"adult",
+										"master",
+									];
+									const currentIndex = stages.indexOf(
+										activePet.stage
+									);
+									const isCompleted = index <= currentIndex;
+									return (
+										<div
+											key={stage}
+											className={`p-3 rounded-lg text-center transition-all ${
+												isCompleted
+													? `bg-gradient-to-br ${activePet.color} text-white`
+													: "bg-white/40 text-gray-400"
+											}`}
 										>
-											{item.owned ? (
-												<>
-													<CheckCircle className="h-4 w-4 mr-1" />
-													Đã sở hữu
-												</>
-											) : userPoints < item.price ? (
-												<>
-													<Lock className="h-4 w-4 mr-1" />
-													Không đủ điểm
-												</>
-											) : (
-												<>
-													<ShoppingCart className="h-4 w-4 mr-1" />
-													Mua ngay
-												</>
-											)}
-										</Button>
+											<div className="text-2xl mb-1">
+												{getStageEmoji(stage)}
+											</div>
+											<div className="text-xs font-medium">
+												{getStageName(stage)}
+											</div>
+										</div>
+									);
+								}
+							)}
+						</div>
+					</CardContent>
+				</Card>
+			)}
+
+			<div>
+				<h2 className="text-2xl font-bold mb-4 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+					Bộ sưu tập Pet
+				</h2>
+				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+					{pets.map((pet) => (
+						<Card
+							key={pet.id}
+							className={`${getRarityColor(
+								pet.rarity
+							)} transition-all duration-300 hover:shadow-lg ${
+								pet.active
+									? "ring-2 ring-offset-2 ring-purple-500"
+									: ""
+							} ${!pet.unlocked ? "opacity-60" : ""}`}
+						>
+							<CardHeader className="pb-3">
+								<div className="flex items-start justify-between">
+									<div className="flex-1">
+										<div className="flex items-center gap-2 mb-2">
+											<div className="text-3xl">
+												{pet.unlocked
+													? getStageEmoji(pet.stage)
+													: "🔒"}
+											</div>
+											<div>
+												<CardTitle
+													className={`text-base ${getRarityTextColor(
+														pet.rarity
+													)}`}
+												>
+													{pet.unlocked
+														? pet.name
+														: "???"}
+												</CardTitle>
+												<Badge
+													className={`text-xs mt-1 bg-gradient-to-r ${pet.color} text-white border-0`}
+													variant="outline"
+												>
+													{pet.rarity}
+												</Badge>
+											</div>
+										</div>
 									</div>
-								</CardContent>
-							</Card>
-						))}
+									{pet.active && (
+										<Badge className="bg-green-500 text-white">
+											<Zap className="h-3 w-3 mr-1" />
+											Đang nuôi
+										</Badge>
+									)}
+								</div>
+							</CardHeader>
+							<CardContent className="space-y-3">
+								<div className="bg-white/60 p-3 rounded-lg space-y-2">
+									{pet.unlocked ? (
+										<>
+											<div className="flex justify-between text-xs">
+												<span
+													className={getRarityTextColor(
+														pet.rarity
+													)}
+												>
+													Giai đoạn:
+												</span>
+												<span
+													className={`font-medium ${getRarityTextColor(
+														pet.rarity
+													)}`}
+												>
+													{getStageName(pet.stage)}
+												</span>
+											</div>
+											<div className="flex justify-between text-xs">
+												<span
+													className={getRarityTextColor(
+														pet.rarity
+													)}
+												>
+													Kinh nghiệm:
+												</span>
+												<span
+													className={`font-medium ${getRarityTextColor(
+														pet.rarity
+													)}`}
+												>
+													{pet.experience.toFixed(1)}/
+													{pet.requiredExp}h
+												</span>
+											</div>
+											<Progress
+												value={
+													(pet.experience /
+														pet.requiredExp) *
+													100
+												}
+												className="h-2"
+												indicatorClassName={`bg-gradient-to-r ${pet.color}`}
+											/>
+										</>
+									) : (
+										<>
+											<div className="flex items-center gap-2 text-xs text-gray-600">
+												<Lock className="h-3 w-3" />
+												<span>
+													Cần {pet.studyHoursRequired}
+													h học tập
+												</span>
+											</div>
+											<Progress
+												value={
+													(totalStudyHours /
+														pet.studyHoursRequired) *
+													100
+												}
+												className="h-2"
+												indicatorClassName="bg-gray-400"
+											/>
+											<p className="text-xs text-gray-600">
+												Còn{" "}
+												{Math.max(
+													0,
+													pet.studyHoursRequired -
+														totalStudyHours
+												).toFixed(1)}
+												h nữa
+											</p>
+										</>
+									)}
+								</div>
+
+								<Button
+									onClick={() => setActivePet(pet.id)}
+									disabled={!pet.unlocked || pet.active}
+									className={`w-full ${
+										pet.active
+											? "bg-green-500 hover:bg-green-500"
+											: `bg-gradient-to-r ${pet.color} hover:opacity-90`
+									}`}
+								>
+									{pet.active ? (
+										<>
+											<Heart className="h-4 w-4 mr-2" />
+											Đang nuôi
+										</>
+									) : pet.unlocked ? (
+										<>
+											<Sparkles className="h-4 w-4 mr-2" />
+											Chọn nuôi
+										</>
+									) : (
+										<>
+											<Lock className="h-4 w-4 mr-2" />
+											Chưa mở khóa
+										</>
+									)}
+								</Button>
+							</CardContent>
+						</Card>
+					))}
+				</div>
+			</div>
+
+			<Card className="bg-gradient-to-br from-indigo-50 to-purple-100 border-indigo-200">
+				<CardHeader>
+					<CardTitle className="flex items-center gap-2 text-indigo-800">
+						<TrendingUp className="h-5 w-5" />
+						Hướng dẫn nuôi Pet
+					</CardTitle>
+				</CardHeader>
+				<CardContent className="space-y-3">
+					<div className="bg-white/60 p-4 rounded-lg">
+						<h3 className="font-semibold text-indigo-800 mb-2">
+							Cách mở khóa Pet mới:
+						</h3>
+						<ul className="space-y-1 text-sm text-indigo-700">
+							<li>• Học tập để tích lũy giờ học</li>
+							<li>
+								• Mỗi pet cần số giờ học khác nhau để mở khóa
+							</li>
+							<li>• Pet hiếm hơn cần nhiều giờ học hơn</li>
+						</ul>
 					</div>
-				</TabsContent>
-			</Tabs>
+					<div className="bg-white/60 p-4 rounded-lg">
+						<h3 className="font-semibold text-indigo-800 mb-2">
+							Cách phát triển Pet:
+						</h3>
+						<ul className="space-y-1 text-sm text-indigo-700">
+							<li>
+								• Chọn một pet để nuôi (chỉ nuôi được 1 pet cùng
+								lúc)
+							</li>
+							<li>• Mỗi giờ học sẽ cho pet kinh nghiệm</li>
+							<li>
+								• Pet sẽ phát triển qua 5 giai đoạn: Trứng → Bé
+								→ Thiếu niên → Trưởng thành → Bậc thầy
+							</li>
+							<li>
+								• Pet hiếm hơn cần nhiều kinh nghiệm hơn để lên
+								cấp
+							</li>
+						</ul>
+					</div>
+				</CardContent>
+			</Card>
 		</div>
 	);
 }

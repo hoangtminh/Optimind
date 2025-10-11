@@ -34,10 +34,7 @@ const RoomCard = ({ room }) => {
 				`/study-room/room/${room.id}?${newSearchParams.toString()}`
 			);
 
-			toast({
-				title: "Đã tham gia phòng",
-				description: `Bạn đã tham gia phòng "${room.name}"`,
-			});
+			toast("Bạn đã tham gia phòng");
 		}
 	};
 
