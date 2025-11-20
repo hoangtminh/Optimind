@@ -33,16 +33,22 @@ import {
 	Camera,
 	BarChart3,
 	PieChart, // Icon cho Hướng dẫn
-	RefreshCcw,
-	Users, // Icon cho Restart
+	RefreshCcw, // Icon cho Restart
+	History, // MỚI: Cho Lịch sử
+	LogOut,
+	Users, // MỚI: Cho Đăng xuất
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Progress } from "@/components/ui/progress";
+// MỚI: Imports cho Supabase Auth
+import { createBrowserClient } from "@supabase/ssr";
+import { User } from "@supabase/supabase-js";
+import { useRouter } from "next/navigation";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 // --- Hàm tiện ích ---
-const whiteBox = "bg-white rounded-2xl shadow-xl"; // Dùng cho các box nội dung trên ảnh nền
-const lightBox = "bg-gray-50 rounded-2xl shadow-lg"; // Dùng cho các box nội dung trên nền màu đơn
+const whiteBox = "bg-white rounded-2xl shadow-xl";
+const lightBox = "bg-gray-50 rounded-2xl shadow-lg";
 
 // Hàm định dạng thời gian
 const formatTime = (seconds: number): string => {
@@ -51,30 +57,29 @@ const formatTime = (seconds: number): string => {
 	return `${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
 };
 
-// --- Class cho hiệu ứng Gradient Mask ---
-// Dùng cho ảnh nền toàn màn hình
+// --- Class cho hiệu ứng linear Mask ---
 const maskClass =
-	"[mask-image:linear-gradient(to_bottom,transparent_0%,black_5%,black_95%,transparent_100%)]";
+	"[mask-image:linear-linear(to_bottom,transparent_0%,black_5%,black_95%,transparent_100%)]";
+
+// --- Supabase Config ---
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 
 // --- Component Chính: Landing Page (Theo phong cách Calm.com) ---
-const LandingPage: FC = () => {
-	// Ảnh nền cho Hero (Section 1) - (Ảnh 5 cũ)
+export default function LandingPage() {
+	// --- State Ảnh Nền ---
 	const [backgroundHeroUrl] = useState<string>(
 		"https://i.pinimg.com/1200x/9e/23/f0/9e23f0e8bacb5f03ad6418a3bdd1727b.jpg"
 	);
-	// Ảnh nền cho Demo (Section 3) - (Ảnh 3 cũ)
 	const [backgroundDemoUrl] = useState<string>(
 		"https://i.pinimg.com/1200x/02/12/9c/02129c9f9ee35d9ddae567afd49d27b8.jpg"
 	);
-	// Ảnh nền cho Pricing (Section 6) - (Ảnh 4 cũ)
 	const [backgroundPricingUrl] = useState<string>(
 		"https://i.pinimg.com/736x/a6/00/2c/a6002c180d0f925d224aa72d7a1ff8cd.jpg"
 	);
-	// Ảnh nền cho Hướng dẫn sử dụng (Section 7) - (Ảnh 2 cũ)
 	const [backgroundGuideUrl] = useState<string>(
 		"https://i.pinimg.com/736x/4f/bf/bd/4fbfbdabd294d91e676770037bd70322.jpg"
 	);
-	// Ảnh nền cho Footer (Section 8) - (Ảnh 1 cũ)
 	const [backgroundFooterUrl] = useState<string>(
 		"https://i.pinimg.com/736x/30/e7/cb/30e7cb6ab85a69c8e57e9e591e73b776.jpg"
 	);
@@ -84,13 +89,18 @@ const LandingPage: FC = () => {
 	const [isDemoRunning, setDemoRunning] = useState<boolean>(false);
 	const [demoFocus, setDemoFocus] = useState<number>(0); // Điểm tập trung giả
 
-	// --- State cho hiệu ứng Header ---
+	// --- State cho hiệu ứng Header & Auth ---
 	const [isScrolled, setIsScrolled] = useState<boolean>(false);
+	const [user, setUser] = useState<User | null>(null); // MỚI: State người dùng
+	const [loading, setLoading] = useState<boolean>(true); // MỚI: State tải
 
-	// --- Effect cho Header ---
+	// MỚI: Khởi tạo Supabase client và router
+	const supabase = createBrowserClient(supabaseUrl, supabaseAnonKey);
+	const router = useRouter();
+
+	// --- Effect cho Header (Scroll) ---
 	useEffect(() => {
 		const handleScroll = (): void => {
-			// Nếu cuộn xuống hơn 10px
 			if (window.scrollY > 10) {
 				setIsScrolled(true);
 			} else {
@@ -103,16 +113,26 @@ const LandingPage: FC = () => {
 		};
 	}, []); // Chỉ chạy 1 lần
 
+	// MỚI: Effect cho Auth (Lấy session)
+	useEffect(() => {
+		const getUser = async () => {
+			const {
+				data: { user },
+			} = await supabase.auth.getUser();
+			setUser(user);
+			setLoading(false);
+		};
+		getUser();
+	}, [supabase.auth]);
+
 	// --- Effect cho Demo Timer ---
 	useEffect(() => {
 		if (!isDemoRunning || timeLeft === 0) {
 			if (timeLeft === 0) setDemoRunning(false); // Tự dừng khi hết giờ
 			return;
 		}
-		// Khai báo kiểu cho interval
 		let timerInterval: NodeJS.Timeout | null = null;
 		let focusInterval: NodeJS.Timeout | null = null;
-
 		if (isDemoRunning && timeLeft > 0) {
 			timerInterval = setInterval(() => {
 				setTimeLeft((prev) => prev - 1);
@@ -121,7 +141,6 @@ const LandingPage: FC = () => {
 				setDemoFocus(Math.floor(Math.random() * 21) + 80); // Giả lập 80-100%
 			}, 2000);
 		}
-
 		return () => {
 			if (timerInterval) clearInterval(timerInterval);
 			if (focusInterval) clearInterval(focusInterval);
@@ -133,11 +152,17 @@ const LandingPage: FC = () => {
 		setDemoRunning(!isDemoRunning);
 	};
 
-	// MỚI: Hàm Reset Demo
 	const handleDemoReset = (): void => {
 		setDemoRunning(false);
 		setTimeLeft(5 * 60);
 		setDemoFocus(0);
+	};
+
+	// MỚI: Hàm Đăng xuất
+	const handleLogout = async () => {
+		await supabase.auth.signOut();
+		setUser(null);
+		router.refresh();
 	};
 
 	return (
@@ -148,10 +173,9 @@ const LandingPage: FC = () => {
 				className={cn(
 					"fixed top-0 z-50 flex w-full items-center justify-between p-4",
 					"transition-colors duration-300 ease-in-out",
-					// THAY ĐỔI: Nền gradient khi ở trên cùng
 					isScrolled
 						? "bg-white shadow-md text-blue-800"
-						: "bg-gradient-to-b from-black/50 to-transparent text-white"
+						: "bg-linear-to-b from-black/50 to-transparent text-white"
 				)}
 			>
 				<div className="flex items-center gap-6 max-w-7xl mx-auto w-full">
@@ -210,32 +234,99 @@ const LandingPage: FC = () => {
 						</Link>
 					</nav>
 
-					{/* Nút Đăng nhập / Đăng ký (Giống Calm) */}
+					{/* === Nút Đăng nhập / Đăng ký (THAY ĐỔI) === */}
 					<div className="flex gap-2 ml-auto">
-						<Button
-							asChild
-							variant="ghost"
-							className={cn(
-								"transition-colors text-base rounded-full", // THAY ĐỔI: rounded-full
-								isScrolled
-									? "text-blue-800 hover:bg-gray-100"
-									: "text-white hover:bg-white/20"
-							)}
-						>
-							<Link href="/login">Đăng nhập</Link>
-						</Button>
-						<Button
-							asChild
-							className={cn(
-								"text-base rounded-full", // THAY ĐỔI: rounded-full
-								isScrolled
-									? "bg-blue-600 hover:bg-blue-700 text-white"
-									: // THAY ĐỔI: Thêm gradient
-									  "bg-white hover:bg-gray-200 text-blue-600"
-							)}
-						>
-							<Link href="/register">Dùng thử Miễn phí</Link>
-						</Button>
+						{/* Trạng thái đang tải */}
+						{loading && (
+							<div className="flex gap-2">
+								<div className="h-10 w-24 rounded-full bg-gray-500/30 animate-pulse" />
+								<div className="h-10 w-36 rounded-full bg-gray-500/30 animate-pulse" />
+							</div>
+						)}
+
+						{/* Trạng thái Chưa Đăng Nhập */}
+						{!loading && !user && (
+							<>
+								<Button
+									asChild
+									variant="ghost"
+									className={cn(
+										"transition-colors text-base rounded-full",
+										isScrolled
+											? "text-blue-800 hover:bg-gray-100"
+											: "text-white hover:bg-white/20"
+									)}
+								>
+									<Link href="/login">
+										<LogIn className="mr-2 h-4 w-4" />
+										Đăng nhập
+									</Link>
+								</Button>
+								<Button
+									asChild
+									className={cn(
+										"text-base rounded-full",
+										isScrolled
+											? "bg-blue-600 hover:bg-blue-700 text-white"
+											: "bg-white hover:bg-gray-200 text-blue-600"
+									)}
+								>
+									<Link href="/register">
+										Dùng thử Miễn phí
+									</Link>
+								</Button>
+							</>
+						)}
+
+						{/* MỚI: Trạng thái Đã Đăng Nhập */}
+						{!loading && user && (
+							<>
+								<Button
+									asChild
+									variant="ghost"
+									className={cn(
+										"transition-colors text-base rounded-full",
+										isScrolled
+											? "text-blue-800 hover:bg-gray-100"
+											: "text-white hover:bg-white/20"
+									)}
+								>
+									<Link href="/history">
+										{" "}
+										{/* Cần tạo trang /history */}
+										<History className="mr-2 h-4 w-4" />
+										Lịch sử học tập
+									</Link>
+								</Button>
+								<Button
+									asChild
+									className={cn(
+										"text-base rounded-full text-white",
+										"bg-linear-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800"
+									)}
+								>
+									<Link href="/study">
+										{" "}
+										{/* Cần tạo trang /study */}
+										<Play className="mr-2 h-4 w-4" />
+										Bắt đầu học
+									</Link>
+								</Button>
+								<Button
+									variant="ghost"
+									onClick={handleLogout}
+									className={cn(
+										"transition-colors text-base rounded-full",
+										isScrolled
+											? "text-blue-800 hover:bg-gray-100"
+											: "text-white hover:bg-white/20"
+									)}
+								>
+									<LogOut className="mr-2 h-4 w-4" />
+									Đăng xuất
+								</Button>
+							</>
+						)}
 					</div>
 				</div>
 			</header>
@@ -263,7 +354,6 @@ const LandingPage: FC = () => {
 						className="mt-6 text-xl text-gray-100 max-w-2xl mx-auto"
 						style={{ textShadow: "0 2px 5px rgba(0,0,0,0.3)" }}
 					>
-						{/* THAY ĐỔI: Rút gọn text */}
 						Quản lý căng thẳng, học tập tốt hơn và cảm thấy hiện
 						diện hơn trong cuộc sống.
 					</p>
@@ -271,8 +361,7 @@ const LandingPage: FC = () => {
 						<Button
 							asChild
 							size="lg"
-							// THAY ĐỔI: Thêm gradient và bo tròn
-							className="bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 text-lg h-14 px-8 rounded-full text-white"
+							className="bg-linear-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 text-lg h-14 px-8 rounded-full text-white"
 						>
 							<Link href="/register">
 								Dùng thử Optimind Miễn phí
@@ -355,7 +444,7 @@ const LandingPage: FC = () => {
 			<section
 				className={cn(
 					"relative w-screen flex flex-col items-center justify-center p-8 overflow-hidden",
-					"py-10" // THAY ĐỔI: py-24 -> py-10
+					"py-10"
 				)}
 			>
 				{/* Ảnh nền */}
@@ -369,7 +458,6 @@ const LandingPage: FC = () => {
 				/>
 
 				{/* Tiêu đề */}
-				{/* THAY ĐỔI: Chữ trắng, có bóng, nổi trên ảnh */}
 				<div className="relative z-10 w-full max-w-4xl text-center mb-8">
 					<h2
 						className="text-5xl font-bold mb-4 text-white"
@@ -406,12 +494,10 @@ const LandingPage: FC = () => {
 									<div className="flex items-center justify-center gap-4">
 										<div className="text-6xl font-bold text-blue-800">
 											{" "}
-											{/* THAY ĐỔI: text-8xl -> text-6xl */}
 											{formatTime(timeLeft)}
 										</div>
 										<div className="flex flex-col gap-2">
 											{" "}
-											{/* THAY ĐỔI: Nút bên cạnh */}
 											<Button
 												onClick={handleDemoToggle}
 												size="icon"
@@ -579,7 +665,7 @@ const LandingPage: FC = () => {
 					<div
 						className={cn(
 							"p-8 bg-white/10 rounded-2xl border border-white/20",
-							"w-[90%] md:w-[400px] flex-shrink-0 scroll-snap-align-start"
+							"w-[90%] md:w-[400px] shrink-0 scroll-snap-align-start"
 						)}
 					>
 						<div className="flex items-center gap-4 mb-4">
@@ -605,7 +691,7 @@ const LandingPage: FC = () => {
 					<div
 						className={cn(
 							"p-8 bg-white/10 rounded-2xl border border-white/20",
-							"w-[90%] md:w-[400px] flex-shrink-0 scroll-snap-align-start"
+							"w-[90%] md:w-[400px] shrink-0 scroll-snap-align-start"
 						)}
 					>
 						<div className="flex items-center gap-4 mb-4">
@@ -630,7 +716,7 @@ const LandingPage: FC = () => {
 					<div
 						className={cn(
 							"p-8 bg-white/10 rounded-2xl border border-white/20",
-							"w-[90%] md:w-[400px] flex-shrink-0 scroll-snap-align-start"
+							"w-[90%] md:w-[400px] shrink-0 scroll-snap-align-start"
 						)}
 					>
 						<div className="flex items-center gap-4 mb-4">
@@ -655,7 +741,7 @@ const LandingPage: FC = () => {
 					<div
 						className={cn(
 							"p-8 bg-white/10 rounded-2xl border border-white/20",
-							"w-[90%] md:w-[400px] flex-shrink-0 scroll-snap-align-start"
+							"w-[90%] md:w-[400px] shrink-0 scroll-snap-align-start"
 						)}
 					>
 						<div className="flex items-center gap-4 mb-4">
@@ -863,14 +949,14 @@ const LandingPage: FC = () => {
 									bạn.
 								</p>
 							</div>
-							<div className="hidden md:flex items-center justify-center w-20 h-20 bg-blue-500 text-white rounded-full flex-shrink-0 shadow-lg">
+							<div className="hidden md:flex items-center justify-center w-20 h-20 bg-blue-500 text-white rounded-full shrink-0 shadow-lg">
 								<CheckSquare className="w-10 h-10" />
 							</div>
 						</div>
 
 						{/* Bước 2 (Phải) */}
 						<div className="w-full md:w-1/2 md:pl-12 md:self-end flex gap-6 items-center">
-							<div className="hidden md:flex items-center justify-center w-20 h-20 bg-green-500 text-white rounded-full flex-shrink-0 shadow-lg">
+							<div className="hidden md:flex items-center justify-center w-20 h-20 bg-green-500 text-white rounded-full shrink-0 shadow-lg">
 								<Camera className="w-10 h-10" />
 							</div>
 							<div
@@ -910,14 +996,14 @@ const LandingPage: FC = () => {
 									các yếu tố gây xao nhãng để cải thiện.
 								</p>
 							</div>
-							<div className="hidden md:flex items-center justify-center w-20 h-20 bg-purple-500 text-white rounded-full flex-shrink-0 shadow-lg">
+							<div className="hidden md:flex items-center justify-center w-20 h-20 bg-purple-500 text-white rounded-full shrink-0 shadow-lg">
 								<PieChart className="w-10 h-10" />
 							</div>
 						</div>
 
 						{/* Bước 4 (Phải) */}
 						<div className="w-full md:w-1/2 md:pl-12 md:self-end flex gap-6 items-center">
-							<div className="hidden md:flex items-center justify-center w-20 h-20 bg-yellow-500 text-white rounded-full flex-shrink-0 shadow-lg">
+							<div className="hidden md:flex items-center justify-center w-20 h-20 bg-yellow-500 text-white rounded-full shrink-0 shadow-lg">
 								<Star className="w-10 h-10" />
 							</div>
 							<div
@@ -958,7 +1044,6 @@ const LandingPage: FC = () => {
 
 				<div className="relative z-10 w-full max-w-7xl mx-auto">
 					{/* Nút CTA ở trên */}
-					{/* THAY ĐỔI: Giảm mb-24 -> mb-16, py-8 */}
 					<div className="text-center mb-16 p-8">
 						<h2
 							className="text-5xl font-bold mb-8 text-white"
@@ -969,7 +1054,7 @@ const LandingPage: FC = () => {
 						<Button
 							asChild
 							size="lg"
-							className="bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 text-lg h-16 px-10 rounded-full text-white"
+							className="bg-linear-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 text-lg h-16 px-10 rounded-full text-white"
 						>
 							<Link href="/register">Tham gia Optimind ngay</Link>
 						</Button>
@@ -1156,6 +1241,4 @@ const LandingPage: FC = () => {
 			</footer>
 		</main>
 	);
-};
-
-export default LandingPage;
+}

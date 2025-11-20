@@ -1,4 +1,3 @@
-// Tên file: app/login/page.tsx
 "use client";
 
 import React, { useState } from "react";
@@ -10,59 +9,24 @@ import { createBrowserClient } from "@supabase/ssr";
 import { useRouter } from "next/navigation";
 import { Brain, Mail, Lock, Chrome, Apple, ArrowLeft } from "lucide-react"; // Thêm icon
 import { cn } from "@/lib/utils";
+import { login } from "./action";
 
-// Đảm bảo bạn đã tạo file .env.local với 2 biến này
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 
-// Hàm tiện ích cho hiệu ứng "kính mờ"
+// Giảm độ trong suốt
 const glassEffect =
-	"bg-black/30 backdrop-blur-lg border border-white/20 rounded-2xl shadow-xl";
+	"bg-black/50 backdrop-blur-lg border border-white/20 rounded-2xl shadow-xl";
 
 export default function LoginPage() {
 	// === State ===
 	const [email, setEmail] = useState<string>("");
 	const [password, setPassword] = useState<string>("");
 	const [error, setError] = useState<string | null>(null);
-	const [isLoading, setIsLoading] = useState<boolean>(false);
 
 	// Khởi tạo Supabase client và router
 	const supabase = createBrowserClient(supabaseUrl, supabaseAnonKey);
 	const router = useRouter();
-
-	// === Handlers ===
-	const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
-		e.preventDefault();
-		setIsLoading(true);
-		setError(null);
-
-		const { error: signInError } = await supabase.auth.signInWithPassword({
-			email,
-			password,
-		});
-
-		if (signInError) {
-			setError("Email hoặc mật khẩu không đúng. Vui lòng thử lại.");
-			setIsLoading(false);
-		} else {
-			// Đăng nhập thành công, chuyển hướng đến trang chủ
-			router.push("/");
-			router.refresh(); // Làm mới session phía server
-		}
-	};
-
-	// MỚI: Xử lý đăng nhập OAuth (Google, Apple)
-	const handleOAuthLogin = async (provider: "google" | "apple") => {
-		setIsLoading(true);
-		setError(null);
-		await supabase.auth.signInWithOAuth({
-			provider,
-			options: {
-				redirectTo: `${location.origin}/auth/callback`,
-			},
-		});
-		// Không cần setIsLoading(false) vì trang sẽ tự chuyển hướng
-	};
 
 	return (
 		<main
@@ -75,113 +39,100 @@ export default function LoginPage() {
 		>
 			{/* Container để căn giữa form */}
 			<div className="relative w-full h-full flex items-center justify-center">
-				{/* === THAY ĐỔI: Bố cục 2 cột === */}
+				{/* === THAY ĐỔI: Bố cục 1 cột, max-w-md === */}
 				<div
 					className={cn(
-						"w-full max-w-4xl h-auto md:h-[650px] flex overflow-hidden", // Tăng chiều rộng
+						"w-full max-w-md p-8 flex flex-col gap-4", // THAY ĐỔI: gap-6 -> gap-4
 						glassEffect // Áp dụng hiệu ứng
 					)}
 				>
-					{/* === CỘT TRÁI (Ảnh nền + Quote) === */}
-					<div
-						className="w-1/2 relative h-full hidden md:flex flex-col justify-between p-8"
-						style={{
-							backgroundImage: `url(https://i.pinimg.com/736x/30/e7/cb/30e7cb6ab85a69c8e57e9e591e73b776.jpg)`, // Ảnh nền cột trái
-							backgroundSize: "cover",
-							backgroundPosition: "center",
-						}}
-					>
-						{/* Lớp phủ mờ */}
-						<div className="absolute inset-0 bg-black/40 z-0" />
-
+					{/* === MỚI: Header bên trong card === */}
+					<div className="flex justify-between items-center w-full">
 						{/* Logo */}
-						<div className="relative z-10 flex items-center gap-2">
+						<div className="flex items-center gap-2">
+							{/* THAY ĐỔI: Thêm màu gradient cho icon */}
 							<Brain className="w-8 h-8 text-white" />
 							<h1 className="text-2xl font-bold text-white">
 								Optimind
 							</h1>
 						</div>
-
-						{/* Quote */}
-						<div className="relative z-10">
-							<blockquote className="text-3xl font-semibold text-white">
-								"Tối ưu tâm trí. Thay đổi cuộc đời."
-							</blockquote>
-							<p className="text-gray-200 mt-2">
-								- Sứ mệnh của chúng tôi
-							</p>
-						</div>
-					</div>
-
-					{/* === CỘT PHẢI (Form đăng nhập) === */}
-					<div className="w-full md:w-1/2 h-full p-8 md:p-12 flex flex-col justify-center overflow-y-auto">
+						{/* Nút quay lại */}
 						<Button
 							asChild
 							variant="ghost"
-							className="absolute top-4 right-4 text-gray-300 hover:text-white"
+							className="text-gray-300 hover:text-white"
 						>
 							<Link href="/">
 								<ArrowLeft className="w-4 h-4 mr-2" />
 								Về trang chủ
 							</Link>
 						</Button>
+					</div>
 
-						<h1 className="text-3xl font-bold text-white mb-2">
-							Đăng nhập
+					{/* Đường kẻ ngang */}
+					<div className="h-px bg-white/20 w-full" />
+
+					{/* === CỘT PHẢI (Form đăng nhập) === */}
+					<div className="w-full flex flex-col justify-center">
+						{/* THAY ĐỔI: Tiêu đề căn giữa */}
+						<h1 className="text-3xl font-bold text-white mb-4 text-center">
+							{" "}
+							{/* THAY ĐỔI: mb-6 -> mb-4 */}
+							Chào mừng trở lại!
 						</h1>
-						<p className="text-gray-300 mb-6">
-							Chưa có tài khoản?{" "}
-							<Link
-								href="/register"
-								className="font-semibold text-blue-300 hover:underline"
-							>
-								Đăng ký
-							</Link>
-						</p>
 
 						{/* Form */}
-						<form className="space-y-4" onSubmit={handleLogin}>
+						<form className="space-y-3">
+							{" "}
+							{/* THAY ĐỔI: space-y-4 -> space-y-3 */}
 							{/* Trường Email */}
 							<div className="relative space-y-2">
 								<Label
 									htmlFor="email"
-									className="text-gray-100 text-sm"
+									className="text-white text-sm"
 								>
+									{" "}
+									{/* THAY ĐỔI: text-white */}
 									Email
 								</Label>
-								<Mail className="absolute left-3 top-[42px] h-5 w-5 text-gray-300" />
+								{/* THAY ĐỔI: Chỉnh vị trí icon top-9 (36px) cho vừa input h-10 */}
+								<Mail className="absolute left-3 top-9 h-5 w-5 text-gray-300" />
 								<Input
 									id="email"
 									type="email"
 									placeholder="vidu@optimind.vn"
+									// THAY ĐỔI: Bỏ h-12, text-lg. Đổi pl-12 -> pl-10
 									className="pl-10 text-base bg-white/10 border-white/20 placeholder:text-gray-300 text-white focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition-all"
 									value={email}
 									onChange={(e) => setEmail(e.target.value)}
 									required
 								/>
 							</div>
-
 							{/* Trường Mật khẩu */}
 							<div className="relative space-y-2">
 								<div className="flex justify-between items-center">
 									<Label
 										htmlFor="password"
-										className="text-gray-100 text-sm"
+										className="text-white text-sm"
 									>
+										{" "}
+										{/* THAY ĐỔI: text-white */}
 										Mật khẩu
 									</Label>
 									<Link
 										href="/forgot-password"
-										className="text-sm text-blue-300 hover:underline"
+										className="text-sm text-blue-400 hover:underline" // THAY ĐỔI: text-blue-400
 									>
 										Quên mật khẩu?
 									</Link>
 								</div>
-								<Lock className="absolute left-3 top-[42px] h-5 w-5 text-gray-300" />
+								{/* THAY ĐỔI: Chỉnh vị trí icon top-9 (36px) */}
+								<Lock className="absolute left-3 top-9 h-5 w-5 text-gray-300" />
 								<Input
 									id="password"
 									type="password"
 									placeholder="••••••••"
+									// THAY ĐỔI: Bỏ h-12, text-lg. Đổi pl-12 -> pl-10
 									className="pl-10 text-base bg-white/10 border-white/20 placeholder:text-gray-300 text-white focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition-all"
 									value={password}
 									onChange={(e) =>
@@ -190,50 +141,59 @@ export default function LoginPage() {
 									required
 								/>
 							</div>
-
 							{/* Hiển thị thông báo lỗi */}
 							{error && (
-								<p className="text-yellow-300 text-sm text-center">
+								<p className="text-red-400 text-sm text-center">
 									{error}
-								</p>
+								</p> // THAY ĐỔI: text-red-400
 							)}
-
+							{/* THAY ĐỔI: Chuyển link đăng ký lên trên */}
+							<div className="text-center text-gray-100 pt-2">
+								{" "}
+								{/* THAY ĐỔI: text-gray-100, pt-2 */}
+								Chưa có tài khoản?{" "}
+								<Link
+									href="/register"
+									className="font-semibold text-blue-400 hover:underline" // THAY ĐỔI: text-blue-400
+								>
+									Đăng ký
+								</Link>
+							</div>
 							{/* Nút Đăng nhập */}
 							<Button
-								type="submit"
+								type="button"
 								className="w-full text-lg h-12 bg-blue-600 hover:bg-blue-700"
-								disabled={isLoading}
+								// disabled={loading}
+								onClick={() => login({ email, password })}
 							>
-								{isLoading ? "Đang đăng nhập..." : "Đăng nhập"}
+								{/* {loading ? "Đang đăng nhập..." : "Đăng nhập"} */}
+								Đăng nhập
 							</Button>
 						</form>
 
 						{/* "Or register with" Separator */}
-						<div className="flex items-center gap-4 my-6">
+						<div className="flex items-center gap-4 my-4">
+							{" "}
+							{/* THAY ĐỔI: my-6 -> my-4 */}
 							<div className="flex-grow h-px bg-white/20"></div>
-							<span className="text-gray-300 text-sm">
+							<span className="text-gray-200 text-sm">
 								Hoặc đăng nhập với
-							</span>
+							</span>{" "}
+							{/* THAY ĐỔI: text-gray-200 */}
 							<div className="flex-grow h-px bg-white/20"></div>
 						</div>
 
 						{/* Social Logins */}
+						{/* THAY ĐỔI: Chỉ còn Google và đổi màu */}
 						<div className="flex flex-col gap-4">
 							<Button
 								variant="outline"
-								className="w-full bg-white/10 hover:bg-white/20 border-white/20 text-white"
-								onClick={() => handleOAuthLogin("google")}
-								disabled={isLoading}
+								// THAY ĐỔS: Nền trắng, chữ đen
+								className="w-full text-base h-11 bg-white hover:bg-gray-200 text-gray-800" // THAY ĐỔI: h-11
+								onClick={() => {}}
+								// disabled={loading}
 							>
 								<Chrome className="w-5 h-5 mr-2" /> Google
-							</Button>
-							<Button
-								variant="outline"
-								className="w-full bg-white/10 hover:bg-white/20 border-white/20 text-white"
-								onClick={() => handleOAuthLogin("apple")}
-								disabled={isLoading}
-							>
-								<Apple className="w-5 h-5 mr-2" /> Apple
 							</Button>
 						</div>
 					</div>
