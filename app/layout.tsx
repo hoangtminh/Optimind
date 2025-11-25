@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import "@stream-io/video-react-sdk/dist/css/styles.css";
 import { Toaster } from "@/components/ui/sonner";
 
 export const metadata: Metadata = {
@@ -18,7 +19,7 @@ export default function RootLayout({
 				{/* <AuthProvider> */}
 				{children}
 				{/* </AuthProvider> */}
-				<Toaster />
+				<Toaster position="top-right" richColors />
 			</body>
 		</html>
 	);
