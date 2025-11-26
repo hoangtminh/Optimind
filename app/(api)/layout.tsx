@@ -5,6 +5,7 @@ import LogoHeader from "@/components/app/logo-header";
 import NavSidebar from "@/components/app/sidebar";
 import ControlToolbar from "@/components/app/toolbar";
 import { CameraProvider } from "@/hooks/useCamera";
+import { MusicProvider } from "@/hooks/useMusic";
 import { usePathname } from "next/navigation";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 
@@ -69,44 +70,46 @@ const AppLayout = ({
 
 	return (
 		<div>
-			<CameraProvider>
-				<div
-					className="h-screen w-screen text-white transition-all duration-500 overflow-hidden"
-					style={{
-						backgroundImage: `url(${backgroundUrl})`,
-						backgroundSize: "cover",
-						backgroundPosition: "center",
-					}}
-				>
-					{/* MỚI: Thêm Logo Header */}
-					<LogoHeader isUiVisible={isUiVisible} />
-					{/* === 1. Sidebar Trái (Component Tái sử dụng) === */}
-					{/* Trang 'study' tương ứng với 'LayoutDashboard' (Trang chủ) */}
-					<NavSidebar
-						activePage={activePage}
-						isUiVisible={isUiVisible}
-					/>
+			<MusicProvider>
+				<CameraProvider>
+					<div
+						className="h-screen w-screen text-white transition-all duration-500 overflow-hidden"
+						style={{
+							backgroundImage: `url(${backgroundUrl})`,
+							backgroundSize: "cover",
+							backgroundPosition: "center",
+						}}
+					>
+						{/* MỚI: Thêm Logo Header */}
+						<LogoHeader isUiVisible={isUiVisible} />
+						{/* === 1. Sidebar Trái (Component Tái sử dụng) === */}
+						{/* Trang 'study' tương ứng với 'LayoutDashboard' (Trang chủ) */}
+						<NavSidebar
+							activePage={activePage}
+							isUiVisible={isUiVisible}
+						/>
 
-					{/* === 2. Toolbar Phải (Đã cập nhật, không còn Avatar) === */}
-					<ControlToolbar
-						onChangeBackground={(url: string) =>
-							setBackgroundUrl(url)
-						}
-						isUiVisible={isUiVisible}
-					/>
+						{/* === 2. Toolbar Phải (Đã cập nhật, không còn Avatar) === */}
+						<ControlToolbar
+							onChangeBackground={(url: string) =>
+								setBackgroundUrl(url)
+							}
+							isUiVisible={isUiVisible}
+						/>
 
-					{/* === 3. Header Người dùng (MỚI) === */}
-					<UserHeader
-						streak={streak}
-						studyHoursToday={studyHoursToday}
-						isUiVisible={isUiVisible}
-					/>
+						{/* === 3. Header Người dùng (MỚI) === */}
+						<UserHeader
+							streak={streak}
+							studyHoursToday={studyHoursToday}
+							isUiVisible={isUiVisible}
+						/>
 
-					{/* === 4. Camera Di động (Component Tái sử dụng) === */}
-					<DraggableCamera />
-					{children}
-				</div>
-			</CameraProvider>
+						{/* === 4. Camera Di động (Component Tái sử dụng) === */}
+						<DraggableCamera />
+						{children}
+					</div>
+				</CameraProvider>
+			</MusicProvider>
 		</div>
 	);
 };

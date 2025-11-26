@@ -17,6 +17,8 @@ import {
 	GripVertical,
 	ArrowDownLeft,
 	AlertTriangle,
+	VideoOff,
+	Video,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useCamera } from "@/hooks/useCamera";
@@ -34,18 +36,24 @@ const ASPECT_RATIO = 256 / 200; // w-64 (256px) / h-[200px]
 const DraggableCamera: FC<DraggableCameraProps> = () => {
 	// --- STATE ---
 	// Kích thước vẫn dùng PX vì nó là kích thước vật lý
-	const [size, setSize] = useState({ width: 225, height: 200 });
+	const [size, setSize] = useState({ width: (256 * 150) / 200, height: 150 });
 
 	// THAY ĐỔI: Vị trí giờ là TỶ LỆ % (0-100)
 	const [position, setPosition] = useState({ x: 85, y: 27 }); // 50% 50% (ở giữa)
-	const [isVisible, setIsVisible] = useState(false); // Chống giật
 
 	// State cho hành động (Kéo/Resize)
 	const [isDragging, setIsDragging] = useState(false);
 	const [isResizing, setIsResizing] = useState(false);
 
 	// --- REFs ---
-	const { videoRef, isCamActive, toggleCamera, camError } = useCamera();
+	const {
+		videoRef,
+		isCamActive,
+		toggleCamera,
+		camError,
+		isWidgetVisible,
+		setIsWidgetVisible,
+	} = useCamera();
 	const cameraRef = useRef<HTMLDivElement | null>(null);
 
 	// Ref lưu vị trí chuột ban đầu khi KÉO (tính bằng PX)
@@ -65,15 +73,9 @@ const DraggableCamera: FC<DraggableCameraProps> = () => {
 		startTopPercent: 0,
 	});
 
-	// Khởi tạo vị trí ban đầu (chỉ 1 lần)
-	useEffect(() => {
-		// Chỉ set visible, vị trí mặc định đã là 50/50
-		setIsVisible(true);
-	}, []);
-
 	const onClose = useCallback(() => {
 		toggleCamera(false);
-		setIsVisible(false);
+		setIsWidgetVisible(false);
 	}, []);
 
 	// --- LOGIC KÉO THẢ (DRAG) ---
@@ -195,8 +197,6 @@ const DraggableCamera: FC<DraggableCameraProps> = () => {
 		}
 	};
 
-	if (!isCamActive) return;
-
 	return (
 		<div
 			ref={cameraRef}
@@ -204,7 +204,7 @@ const DraggableCamera: FC<DraggableCameraProps> = () => {
 				"absolute z-40 rounded-xl overflow-hidden",
 				isDragging ? "cursor-grabbing" : "cursor-auto",
 				"transition-opacity duration-300",
-				isVisible ? "opacity-100" : "opacity-0",
+				isWidgetVisible ? "opacity-100" : "opacity-0 hidden",
 				glassEffect
 			)}
 			style={{
@@ -243,11 +243,30 @@ const DraggableCamera: FC<DraggableCameraProps> = () => {
 
 			{/* Nhóm icon ở góc trên bên phải */}
 			<div className="absolute top-2 right-2 z-10 flex gap-1">
+				{/* NÚT BẬT/TẮT CAMERA (TRONG WIDGET) */}
+				<Button
+					variant="ghost"
+					size="icon"
+					className={cn(
+						"h-6 w-6 rounded-full bg-gray-500/40 hover:bg-gray-500/50",
+						isCamActive ? "text-red-400" : "text-green-400"
+					)}
+					onClick={(e) => {
+						e.stopPropagation();
+						toggleCamera(!isCamActive); // Bật/Tắt luồng video thực
+					}}
+				>
+					{isCamActive ? (
+						<VideoOff className="h-5 w-5" />
+					) : (
+						<Video className="h-5 w-5" />
+					)}
+				</Button>
 				{/* Icon Kéo (Drag Handle) */}
 				<Button
 					variant="ghost"
 					size="icon"
-					className="h-8 w-8 rounded-full cursor-grab bg-white/10 text-white hover:bg-white/20"
+					className="h-6 w-6 rounded-full cursor-grab bg-white/10 text-white hover:bg-white/20"
 					onMouseDown={handleDragMouseDown}
 					onClick={(e) => e.stopPropagation()}
 				>
@@ -262,7 +281,7 @@ const DraggableCamera: FC<DraggableCameraProps> = () => {
 					}}
 					variant="ghost"
 					size="icon"
-					className="h-8 w-8 rounded-full bg-white/10 text-white hover:bg-white/20 hover:text-red-400"
+					className="h-6 w-6 rounded-full bg-white/10 text-white hover:bg-white/20 hover:text-red-400"
 				>
 					<X className="h-5 w-5" />
 				</Button>
@@ -272,7 +291,7 @@ const DraggableCamera: FC<DraggableCameraProps> = () => {
 			<Button
 				variant="ghost"
 				size="icon"
-				className="absolute bottom-1 left-1 h-8 w-8 rounded-full z-10 cursor-nesw-resize bg-white/10 text-white hover:bg-white/20"
+				className="absolute bottom-1 left-1 h-6 w-6 rounded-full z-10 cursor-nesw-resize bg-white/10 text-white hover:bg-white/20"
 				onMouseDown={handleResizeMouseDown}
 				onClick={(e) => e.stopPropagation()}
 			>

@@ -7,15 +7,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
-import {
-	DialogContent,
-	DialogHeader,
-	DialogTitle,
-	DialogFooter,
-	DialogClose,
-} from "@/components/ui/dialog";
-import { Save } from "lucide-react";
+import { X, Save, Upload } from "lucide-react";
 import { cn } from "@/lib/utils";
+
+// Hàm tiện ích
+const glassEffect =
+	"bg-black/40 backdrop-blur-md border border-white/20 rounded-xl shadow-lg";
 
 // Danh sách ảnh nền có sẵn
 const backgrounds = [
@@ -36,7 +33,6 @@ const BackgroundSelector: FC<BackgroundSelectorProps> = ({
 	onChange,
 	onClose,
 }) => {
-	// State cục bộ lưu trữ ảnh người dùng đang chọn/thử
 	const [selectedUrl, setSelectedUrl] = useState<string>(currentBackground);
 	const [isFileLoading, setIsFileLoading] = useState<boolean>(false);
 
@@ -44,7 +40,7 @@ const BackgroundSelector: FC<BackgroundSelectorProps> = ({
 		setSelectedUrl(url);
 	};
 
-	// MÔ PHỎNG: Xử lý tải file lên
+	// Xử lý tải file lên
 	const handleFileUpload = (e: ChangeEvent<HTMLInputElement>) => {
 		const file = e.target.files?.[0];
 		if (file) {
@@ -59,35 +55,48 @@ const BackgroundSelector: FC<BackgroundSelectorProps> = ({
 		}
 	};
 
-	// MỚI: Xử lý Lưu cuối cùng
+	// Xử lý Lưu cuối cùng
 	const handleFinalSave = () => {
 		onChange(selectedUrl); // Truyền URL đã chọn về parent
 		onClose();
 	};
 
 	return (
-		<DialogContent className="bg-black/70 backdrop-blur-md border-white/20 text-white sm:max-w-[700px]">
-			<DialogHeader>
-				<DialogTitle className="text-white text-2xl">
-					Chọn Hình Nền
-				</DialogTitle>
-			</DialogHeader>
-			<ScrollArea className="h-96 py-4">
-				<div className="flex flex-col gap-6 pr-4">
+		<div
+			className={cn(
+				"absolute top-1/2 right-[100px] -translate-y-1/2 z-30 w-80 h-[450px] p-4 flex flex-col",
+				glassEffect
+			)}
+		>
+			{/* Header và nút đóng */}
+			<div className="flex justify-between items-center pb-3 border-b border-white/20">
+				<h3 className="text-lg font-semibold">Hình Nền</h3>
+				<Button
+					variant="ghost"
+					size="icon"
+					className="h-8 w-8 text-white hover:bg-white/20"
+					onClick={onClose}
+				>
+					<X className="h-4 w-4" />
+				</Button>
+			</div>
+
+			<ScrollArea className="flex-1">
+				<div className="flex flex-col gap-4 py-4 pr-3">
 					{/* Phần 1: Tải lên */}
-					<h3 className="text-lg font-semibold border-b border-white/20 pb-2">
-						Tải ảnh lên từ máy tính
-					</h3>
 					<div className="space-y-2">
-						<Label htmlFor="file-upload">
-							Chọn file ảnh (Mô phỏng)
+						<Label
+							htmlFor="file-upload"
+							className="text-gray-300 flex items-center gap-2"
+						>
+							<Upload className="w-4 h-4" /> Tải ảnh lên
 						</Label>
 						<Input
 							id="file-upload"
 							type="file"
 							accept="image/*"
 							onChange={handleFileUpload}
-							className="bg-white/10 border-white/30 cursor-pointer"
+							className="bg-white/10 border-white/30 cursor-pointer text-sm"
 							disabled={isFileLoading}
 						/>
 						{isFileLoading && (
@@ -99,9 +108,9 @@ const BackgroundSelector: FC<BackgroundSelectorProps> = ({
 
 					{/* Phần 2: Hình nền có sẵn */}
 					<h3 className="text-lg font-semibold border-b border-white/20 pb-2">
-						Hình nền có sẵn
+						Chọn ảnh có sẵn
 					</h3>
-					<div className="grid grid-cols-3 gap-3">
+					<div className="grid grid-cols-2 gap-3">
 						{backgrounds.map((url, index) => (
 							<button
 								key={index}
@@ -122,19 +131,17 @@ const BackgroundSelector: FC<BackgroundSelectorProps> = ({
 					</div>
 				</div>
 			</ScrollArea>
-			<DialogFooter>
-				{/* MỚI: Nút Lưu */}
+
+			{/* Footer - Nút Lưu */}
+			<div className="pt-3 border-t border-white/20 flex justify-end">
 				<Button
 					onClick={handleFinalSave}
-					className="bg-blue-600 hover:bg-blue-700"
+					className="bg-blue-600 hover:bg-blue-700 w-full"
 				>
 					<Save className="w-4 h-4 mr-2" /> Lưu
 				</Button>
-				<DialogClose asChild>
-					<Button variant="ghost">Hủy</Button>
-				</DialogClose>
-			</DialogFooter>
-		</DialogContent>
+			</div>
+		</div>
 	);
 };
 

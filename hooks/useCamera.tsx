@@ -22,6 +22,8 @@ interface CameraContextType {
 	camError: string | null;
 	isCamActive: boolean; // Trạng thái stream đã sẵn sàng
 	toggleCamera: (active: boolean) => void; // Hàm điều khiển từ bên ngoài (Toolbar)
+	isWidgetVisible: boolean;
+	setIsWidgetVisible: (visible: boolean) => void;
 }
 
 // Khởi tạo Context với giá trị mặc định là null (sẽ được cung cấp bởi Provider)
@@ -50,6 +52,7 @@ export const CameraProvider = ({
 	const [isCamActive, setIsCamActive] = useState(false); // Trạng thái stream đã sẵn sàng
 	const [isAttemptingToStart, setIsAttemptingToStart] = useState(false); // Tránh gọi API liên tục
 	const [camError, setCamError] = useState<string | null>(null);
+	const [isWidgetVisible, setIsWidgetVisible] = useState(false);
 
 	// --- HÀM TẮT CAMERA ---
 	const stopCamera = useCallback(() => {
@@ -127,8 +130,10 @@ export const CameraProvider = ({
 			camError,
 			isCamActive: !!cameraStream, // true nếu stream đang chạy
 			toggleCamera,
+			isWidgetVisible,
+			setIsWidgetVisible,
 		}),
-		[camError, cameraStream, toggleCamera]
+		[camError, cameraStream, toggleCamera, isWidgetVisible]
 	);
 
 	return (

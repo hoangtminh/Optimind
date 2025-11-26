@@ -10,47 +10,38 @@ import {
 	TooltipTrigger,
 } from "@/components/ui/tooltip";
 // MỚI: Import Dialog components
-import {
-	Dialog,
-	DialogContent,
-	DialogHeader,
-	DialogTitle,
-	DialogTrigger,
-	DialogFooter,
-	DialogClose,
-} from "@/components/ui/dialog";
+import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import {
 	Video,
 	VideoOff,
 	Music,
 	Waves,
-	Upload, // MỚI
-	Check, // MỚI
 	Image as ImageIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useCamera } from "@/hooks/useCamera";
+import { useMusicContext } from "@/hooks/useMusic";
 import BackgroundSelector from "./background-selector";
+import MusicPlayer from "./music-selector";
+
+// MỚI: Import các Widget Popup (Giả định đã có)
 
 // Hàm tiện ích
 const glassEffect =
-	"bg-black/30 backdrop-blur-md border border-white/20 rounded-lg shadow-lg";
+	"bg-black/30 backdrop-blur-md border border-white/20 rounded-2xl shadow-lg";
 
-// Danh sách ảnh nền
+// Danh sách ảnh nền (chỉ để lấy currentBg, logic chính trong BackgroundSelector)
 const backgrounds = [
 	"https://images.unsplash.com/photo-1470770841072-f978cf4d019e?q=80&w=2070&auto=format&fit=crop",
-	"https://images.unsplash.com/photo-1542662565-7e4b66bae529?q=80&w=2070&auto=format&fit=crop",
-	"https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=2070&auto=format&fit=crop",
-	"https://i.pinimg.com/1200x/02/12/9c/02129c9f9ee35d9ddae567afd49d27b8.jpg",
 ];
 
 // Định nghĩa Props
 interface ControlToolbarProps {
 	onChangeBackground: (url: string) => void;
-	isUiVisible: boolean; // MỚI: Thêm prop
+	isUiVisible: boolean;
 }
 
-// MỚI: Định nghĩa kiểu cho một Nút
+// Định nghĩa kiểu cho một Nút
 type ToolbarButtonType = {
 	id: string;
 	label: string;
@@ -59,7 +50,7 @@ type ToolbarButtonType = {
 	onClick: () => void;
 };
 
-// MỚI: Component con cho Nút (để tái sử dụng Tooltip)
+// Component con cho Nút (để tái sử dụng Tooltip)
 const ToolbarButton: FC<ToolbarButtonType> = ({
 	label,
 	icon,
@@ -73,8 +64,8 @@ const ToolbarButton: FC<ToolbarButtonType> = ({
 				variant="ghost"
 				size="icon"
 				className={cn(
-					"h-11 w-11 rounded-full hover:bg-white/20",
-					className // Áp dụng class tùy chỉnh (vd: màu chữ)
+					"h-12 w-12 rounded-full hover:bg-white/20",
+					className
 				)}
 			>
 				{icon}
@@ -91,44 +82,63 @@ const ControlToolbar: FC<ControlToolbarProps> = ({
 	onChangeBackground,
 	isUiVisible,
 }) => {
-	const { isCamActive, toggleCamera } = useCamera();
-	const changeBackground = () => {
-		const newBg =
-			backgrounds[Math.floor(Math.random() * backgrounds.length)];
-		onChangeBackground(newBg);
-	};
-	// MỚI: Hàm xử lý chọn ảnh từ selector
+	const { isWidgetVisible, setIsWidgetVisible } = useCamera(); // Lấy context camera
+	const { isPlaying, isPlayerVisible, togglePlayerVisibility } =
+		useMusicContext();
+
+	// State quản lý Background Selector (vẫn cục bộ)
+	const [showBackgroundSelector, setShowBackgroundSelector] = useState(false);
+
+	// Lấy URL nền hiện tại (Giả lập)
+	const [currentBg, setCurrentBg] = useState(backgrounds[0]);
+
+	// Xử lý chung cho Background
 	const handleBackgroundChange = (url: string) => {
-		onChangeBackground(url);
-		setIsSelectorOpen(false); // Đóng dialog sau khi chọn
+		onChangeBackground(url); // Cập nhật background trong Layout
+		setCurrentBg(url); // Cập nhật state cục bộ
 	};
 
-	// MỚI: State cho Dialog
-	const [isSelectorOpen, setIsSelectorOpen] = useState(false);
+	// MỚI: Hàm xử lý toggle chung (Đã sửa lỗi tham chiếu)
+	const handleToggleWidget = (
+		widgetId: "music" | "background" | "camera"
+	) => {
+		if (widgetId === "music") {
+			togglePlayerVisibility(!isPlayerVisible); // Sử dụng Context
+			setShowBackgroundSelector(false); // Đóng cái khác
+		} else if (widgetId === "background") {
+			setShowBackgroundSelector((prev) => !prev);
+			togglePlayerVisibility(false); // Đóng cái khác
+		} else if (widgetId === "camera") {
+			setIsWidgetVisible(!isWidgetVisible); // MỚI: Chỉ ẩn/hiện widget
+			setShowBackgroundSelector(false);
+			togglePlayerVisibility(false);
+		}
+	};
 
-	// Lấy URL nền hiện tại để hiển thị trong Selector
-	// NOTE: Giả định URL này được quản lý ở Layout và ControlToolbar không cần biết
-	// Nhưng vì nó là state cần thiết cho selector, ta dùng một giá trị mặc định.
-	const currentBg = backgrounds[0];
 	// Tạo mảng dữ liệu cho các nút
 	const toolbarButtons: ToolbarButtonType[] = [
 		{
 			id: "camera",
-			label: isCamActive ? "Tắt Camera" : "Bật Camera",
-			icon: isCamActive ? (
+			// Hiển thị trạng thái widget (có đang hiển thị trên màn hình không)
+			label: isWidgetVisible ? "Ẩn Camera" : "Hiện Camera",
+			icon: isWidgetVisible ? (
 				<VideoOff className="h-6 w-6" />
 			) : (
 				<Video className="h-6 w-6" />
 			),
-			className: isCamActive ? "text-blue-300" : "text-white",
-			onClick: () => toggleCamera(!isCamActive),
+			// Màu sắc chỉ báo cam đang active (stream đang chạy)
+			className: isWidgetVisible ? "text-blue-300" : "text-white",
+			onClick: () => handleToggleWidget("camera"),
 		},
 		{
 			id: "music",
 			label: "Nghe nhạc",
 			icon: <Music className="h-6 w-6" />,
-			className: "text-white",
-			onClick: () => console.log("Music clicked"), // Placeholder
+			className:
+				isPlaying || isPlayerVisible
+					? "text-yellow-400 bg-white/20"
+					: "text-white",
+			onClick: () => handleToggleWidget("music"),
 		},
 		{
 			id: "waves",
@@ -141,8 +151,10 @@ const ControlToolbar: FC<ControlToolbarProps> = ({
 			id: "background",
 			label: "Đổi hình nền",
 			icon: <ImageIcon className="h-6 w-6" />,
-			className: "text-white",
-			onClick: () => setIsSelectorOpen(true), // MỚI: Mở Dialog
+			className: showBackgroundSelector
+				? "text-blue-300 bg-white/20"
+				: "text-white",
+			onClick: () => handleToggleWidget("background"),
 		},
 	];
 
@@ -150,16 +162,15 @@ const ControlToolbar: FC<ControlToolbarProps> = ({
 		<TooltipProvider>
 			<div
 				className={cn(
-					"absolute right-2 top-19 flex flex-col gap-2 p-2 z-30",
+					"absolute right-4 top-1/2 -translate-y-1/2 flex flex-col gap-3 p-3 z-30",
 					glassEffect,
-					// MỚI: Thêm hiệu ứng ẩn/hiện
 					"transition-all duration-300 ease-in-out",
 					isUiVisible
-						? "opacity-100 translate-y-0"
-						: "opacity-0 translate-y-full"
+						? "opacity-100 translate-x-0"
+						: "opacity-0 translate-x-full"
 				)}
 			>
-				{/* MỚI: Dùng .map() để render các nút */}
+				{/* Dùng .map() để render các nút */}
 				{toolbarButtons.map((button) => (
 					<ToolbarButton
 						key={button.id}
@@ -170,19 +181,19 @@ const ControlToolbar: FC<ControlToolbarProps> = ({
 						onClick={button.onClick}
 					/>
 				))}
-				{/* MỚI: Dialog cho Background Selector */}
-				<Dialog open={isSelectorOpen} onOpenChange={setIsSelectorOpen}>
-					<DialogTrigger asChild>
-						{/* Nút trigger bị ẩn, chỉ mở bằng onClick bên trên */}
-						<Button variant="ghost" className="hidden" />
-					</DialogTrigger>
-					<BackgroundSelector
-						currentBackground={currentBg}
-						onChange={handleBackgroundChange}
-						onClose={() => setIsSelectorOpen(false)}
-					/>
-				</Dialog>
 			</div>
+
+			{/* === WIDGET POPUP (ĐỔI HÌNH NỀN) === */}
+			{showBackgroundSelector && (
+				<BackgroundSelector
+					currentBackground={currentBg}
+					onChange={handleBackgroundChange}
+					onClose={() => setShowBackgroundSelector(false)}
+				/>
+			)}
+
+			{/* === WIDGET POPUP (NGHE NHẠC) === */}
+			<MusicPlayer />
 		</TooltipProvider>
 	);
 };
