@@ -44,7 +44,7 @@ import {
 	RotateCcw,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useMusicContext } from "@/hooks/useMusic";
+import { Track, useMusicContext } from "@/hooks/useMusic";
 
 // Hàm tiện ích
 const glassEffect =
@@ -115,7 +115,7 @@ const MusicPlayer: FC<MusicPlayerProps> = () => {
 			type: youtubeId ? "YouTube" : "Custom",
 			artist: youtubeId ? "YouTube" : "Custom URL",
 			url: url,
-		};
+		} as Track;
 
 		addCustomTrack(newTrack);
 		setCustomUrlInput("");
@@ -209,13 +209,15 @@ const MusicPlayer: FC<MusicPlayerProps> = () => {
 				</Button>
 			</div>
 
-			<iframe
-				ref={iframeRef}
-				src={getYouTubeEmbedUrl()}
-				allow="autoplay; encrypted-media; pointer-lock"
-				title="YouTube Player"
-				sandbox="allow-scripts allow-same-origin"
-			/>
+			{getYouTubeEmbedUrl() && (
+				<iframe
+					ref={iframeRef}
+					src={getYouTubeEmbedUrl()}
+					allow="autoplay; encrypted-media; pointer-lock"
+					title="YouTube Player"
+					sandbox="allow-scripts allow-same-origin"
+				/>
+			)}
 
 			{/* Điều khiển Phát/Tạm dừng/Replay */}
 			<div className="flex items-center gap-3 py-3 border-b border-white/20">
@@ -304,7 +306,7 @@ const MusicPlayer: FC<MusicPlayerProps> = () => {
 			{/* Danh sách nhạc (scrollable) */}
 			<h4 className="text-sm font-semibold mt-2 mb-2">Chọn bản nhạc</h4>
 			<ScrollArea className="flex-1 overflow-hidden">
-				<div className="space-y-1 p-1">
+				<div className="space-y-1 p-1 pr-3">
 					{tracks.map((track) => (
 						<div
 							key={track.id}
@@ -333,13 +335,9 @@ const MusicPlayer: FC<MusicPlayerProps> = () => {
 							{/* Nút 3 chấm (Edit/Delete) */}
 							<DropdownMenu>
 								<DropdownMenuTrigger asChild>
-									<Button
-										variant="ghost"
-										size="icon"
-										className="h-8 w-8 text-gray-400 opacity-0 group-hover:opacity-100 hover:bg-white/20"
-									>
+									<div className="hover:bg-white/20 p-1.5 rounded-lg">
 										<MoreVertical className="h-4 w-4" />
-									</Button>
+									</div>
 								</DropdownMenuTrigger>
 								<DropdownMenuContent className="bg-black/70 backdrop-blur-md border-white/20 text-white">
 									<DropdownMenuItem
