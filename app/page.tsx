@@ -45,6 +45,8 @@ import { createBrowserClient } from "@supabase/ssr";
 import { User } from "@supabase/supabase-js";
 import { useRouter } from "next/navigation";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { logout } from "@/supabase/actions/auth";
+import { toast } from "sonner";
 
 // --- Hàm tiện ích ---
 const whiteBox = "bg-white rounded-2xl shadow-xl";
@@ -160,8 +162,10 @@ export default function LandingPage() {
 
 	// MỚI: Hàm Đăng xuất
 	const handleLogout = async () => {
-		await supabase.auth.signOut();
-		setUser(null);
+		const { error, message } = await logout();
+		if (error) {
+			toast.error(message);
+		}
 		router.refresh();
 	};
 
@@ -257,7 +261,7 @@ export default function LandingPage() {
 											: "text-white hover:bg-white/20"
 									)}
 								>
-									<Link href="/login">
+									<Link href="/auth/login">
 										<LogIn className="mr-2 h-4 w-4" />
 										Đăng nhập
 									</Link>

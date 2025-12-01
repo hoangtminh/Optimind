@@ -31,6 +31,8 @@ import {
 import { cn } from "@/lib/utils";
 import { createBrowserClient } from "@supabase/ssr";
 import { useRouter } from "next/navigation";
+import { logout } from "@/supabase/actions/auth";
+import { toast } from "sonner";
 
 // Hàm tiện ích
 const glassEffect =
@@ -58,8 +60,10 @@ const UserHeader = ({
 
 	// sign out from the current session only
 	const onLogout = async () => {
-		await supabase.auth.signOut({ scope: "local" });
-		router.refresh();
+		const { error, message } = await logout();
+		if (error) {
+			toast.error(message);
+		}
 	};
 
 	return (
