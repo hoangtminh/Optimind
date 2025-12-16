@@ -1,25 +1,21 @@
 // Tên file: app/study/page.tsx
 "use client";
 
-import { useState, useEffect, FC, useRef, useCallback } from "react";
+import { useState } from "react";
 import { cn } from "@/lib/utils";
 
 import PomodoroTimer from "@/components/study/timer";
 import TaskListWidget from "@/components/study/task-list";
 import FocusChartWidget from "@/components/study/focus-chart";
 
-// --- Supabase Config ---
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
-
 // --- Component Chính: Trang Học Tập ---
-const StudyPage: FC = () => {
+const StudyPage = () => {
 	// === State Chung ===
 	const [showTasks, setShowTasks] = useState<boolean>(true); // Quản lý hiển thị Task
 	const [isRunning, setIsRunning] = useState<boolean>(false);
 
 	return (
-		<main className="h-screen w-screen text-white p-6 transition-all duration-500 overflow-hidden">
+		<main className="h-screen w-screen text-white px-6 transition-all duration-500 overflow-hidden">
 			<div className="relative w-full h-full">
 				{/* === Nội dung chính (Các Widget) === */}
 				<div

@@ -28,7 +28,7 @@ import MusicPlayer from "./music-selector";
 
 // Hàm tiện ích
 const glassEffect =
-	"bg-black/30 backdrop-blur-md border border-white/20 rounded-2xl shadow-lg";
+	"bg-black/30 backdrop-blur-md border border-white/20 rounded-lg shadow-lg";
 
 // Danh sách ảnh nền (chỉ để lấy currentBg, logic chính trong BackgroundSelector)
 const backgrounds = [
@@ -64,7 +64,7 @@ const ToolbarButton: FC<ToolbarButtonType> = ({
 				variant="ghost"
 				size="icon"
 				className={cn(
-					"h-12 w-12 rounded-full hover:bg-white/20",
+					"h-11 w-11 rounded-full hover:bg-white/20",
 					className
 				)}
 			>
@@ -162,12 +162,10 @@ const ControlToolbar: FC<ControlToolbarProps> = ({
 		<TooltipProvider>
 			<div
 				className={cn(
-					"absolute right-4 top-1/2 -translate-y-1/2 flex flex-col gap-3 p-3 z-30",
+					"absolute right-2 top-1/2 -translate-y-1/2 flex flex-col gap-3 p-2 z-30",
 					glassEffect,
 					"transition-all duration-300 ease-in-out",
-					isUiVisible
-						? "opacity-100 translate-x-0"
-						: "opacity-0 translate-x-full"
+					isUiVisible ? "opacity-100" : "opacity-0 -translate-y-1/4"
 				)}
 			>
 				{/* Dùng .map() để render các nút */}

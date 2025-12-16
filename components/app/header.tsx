@@ -1,7 +1,6 @@
 // Tên file: app/components/UserHeader.tsx
 "use client";
 
-import React, { FC } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -29,10 +28,9 @@ import {
 	LogOut, // MỚI: Icon
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { createBrowserClient } from "@supabase/ssr";
-import { useRouter } from "next/navigation";
 import { logout } from "@/supabase/actions/auth";
 import { toast } from "sonner";
+import { useCurrentUser } from "@/supabase/hooks/useCurrentUser";
 
 // Hàm tiện ích
 const glassEffect =
@@ -47,16 +45,12 @@ interface UserHeaderProps {
 	isUiVisible: boolean; // MỚI: Thêm prop
 }
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
-
 const UserHeader = ({
 	streak,
 	studyHoursToday,
 	isUiVisible,
 }: UserHeaderProps) => {
-	const supabase = createBrowserClient(supabaseUrl, supabaseAnonKey);
-	const router = useRouter();
+	const { user } = useCurrentUser();
 
 	// sign out from the current session only
 	const onLogout = async () => {
@@ -129,7 +123,10 @@ const UserHeader = ({
 				<DropdownMenu>
 					<DropdownMenuTrigger asChild>
 						<Avatar className="h-10 w-10 cursor-pointer border-2 border-white/30">
-							<AvatarImage src="/avatars/user.png" alt="User" />
+							<AvatarImage
+								src={user?.user_metadata?.avatar_url}
+								alt="User"
+							/>
 							<AvatarFallback>U</AvatarFallback>
 						</Avatar>
 					</DropdownMenuTrigger>
@@ -138,7 +135,10 @@ const UserHeader = ({
 						className={cn("", dropdownGlassEffect)} // Áp dụng style kính
 						align="end"
 					>
-						<DropdownMenuLabel>Tài khoản</DropdownMenuLabel>
+						<DropdownMenuLabel>
+							{user?.user_metadata.name ||
+								user?.email?.split("@")[0]}
+						</DropdownMenuLabel>
 						<DropdownMenuSeparator className="bg-white/20" />
 
 						<DropdownMenuItem asChild className="cursor-pointer">

@@ -1,7 +1,7 @@
 // Tên file: app/components/FocusChartWidget.tsx
 "use client";
 
-import React, { FC, useEffect, useState } from "react";
+import React, { FC, useEffect, useRef, useState } from "react";
 import { BarChart3 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -14,6 +14,8 @@ import {
 	ResponsiveContainer,
 } from "recharts";
 import { useCamera } from "@/hooks/useCamera";
+import { useFocus } from "@/hooks/useFocus";
+import useInterval from "@/hooks/useInterval";
 
 // MỚI: Export FocusDataPoint type
 export interface FocusDataPoint {
@@ -23,7 +25,7 @@ export interface FocusDataPoint {
 
 // Hàm tiện ích
 const glassEffect =
-	"bg-black/30 backdrop-blur-md border border-white/20 rounded-2xl shadow-lg";
+	"bg-black/40 backdrop-blur-md border border-white/20 rounded-2xl shadow-lg";
 
 // Định nghĩa Props
 interface FocusChartWidgetProps {
@@ -37,51 +39,60 @@ const FocusChartWidget: FC<FocusChartWidgetProps> = ({ isRunning }) => {
 	const [currentSecondsElapsed, setCurrentSecondsElapsed] =
 		useState<number>(0);
 
-	// Hiển thị điểm tập trung hiện tại (lấy điểm cuối cùng)
-	const currentFocus =
-		focusData.length > 0 ? focusData[focusData.length - 1].focus : 0;
+	const { focusState } = useFocus();
 
-	useEffect(() => {
-		let focusInterval: NodeJS.Timeout | null = null;
-		// Chỉ thu thập dữ liệu khi đang ở chế độ FOCUS và Timer đang chạy
-		if (isRunning) {
-			focusInterval = setInterval(() => {
-				setCurrentSecondsElapsed((prev) => prev + 1);
-
-				// 1. Tính toán mức độ tập trung
-				let currentFocusScore = 0;
-				// MÔ PHỎNG: Dùng isCamActive để mô phỏng data
-				if (isCamActive) {
-					currentFocusScore = Math.floor(Math.random() * 31) + 70;
-				} else {
-					currentFocusScore = 0;
-				}
-
-				// 2. Thêm dữ liệu vào array
-				setFocusData((prevData) => [
-					...prevData,
-					{ time: prevData.length + 1, focus: currentFocusScore },
-				]);
-			}, 1000); // Thu thập mỗi giây
+	const updateScore = () => {
+		setCurrentSecondsElapsed((prev) => prev + 1);
+		if (isCamActive) {
+			// 2. Thêm dữ liệu vào array
+			setFocusData((prevData) => [
+				...prevData,
+				{ time: prevData.length + 1, focus: focusState.score },
+			]);
+		} else {
+			setFocusData((prevData) => [
+				...prevData,
+				{ time: prevData.length + 1, focus: 0 },
+			]);
 		}
+	};
 
-		return () => {
-			if (focusInterval) clearInterval(focusInterval);
-		};
-	}, [isRunning, isCamActive]); // Giữ isCameraOn để kích hoạt lại nếu trạng thái thay đổi
+	useInterval({ callback: updateScore, delay: isRunning ? 1000 : null });
 
 	return (
 		<div
 			className={cn("w-full h-full px-4 pt-3 flex flex-col", glassEffect)}
 		>
-			<div className="flex justify-between items-center mb-1">
-				<p className="font-semibold text-gray-200">Độ tập trung</p>
-				<p
-					className="text-xl font-bold"
-					style={{ color: currentFocus > 70 ? "#4ADE80" : "#F87171" }}
-				>
-					{currentFocus}%
-				</p>
+			<div className="flex justify-between items-center text-lg mb-1">
+				<div className="flex gap-4">
+					<p className="font-semibold text-gray-200">Trạng thái:</p>
+					{isCamActive ? (
+						<p
+							className="font-bold"
+							style={{ color: focusState.color }}
+						>
+							{focusState.status}
+						</p>
+					) : (
+						<p className="text-red-600 font-bold">
+							Please turn on camera
+						</p>
+					)}
+				</div>
+
+				{isCamActive ? (
+					<p
+						className="text-xl font-bold"
+						style={{
+							color:
+								focusState.score > 70 ? "#4ADE80" : "#F87171",
+						}}
+					>
+						{focusState.score}%
+					</p>
+				) : (
+					<p className="text-red-600 font-bold">0</p>
+				)}
 			</div>
 
 			{/* Biểu đồ Line Chart */}

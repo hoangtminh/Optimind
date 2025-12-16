@@ -2,6 +2,7 @@
 
 import AppBars from "@/components/app/app-bars";
 import { CameraProvider } from "@/hooks/useCamera";
+import { FocusProvider } from "@/hooks/useFocus";
 import { MusicProvider } from "@/hooks/useMusic";
 import React from "react";
 
@@ -14,7 +15,9 @@ const AppLayout = ({
 		<div>
 			<MusicProvider>
 				<CameraProvider>
-					<AppBars>{children}</AppBars>
+					<FocusProvider>
+						<AppBars>{children}</AppBars>
+					</FocusProvider>
 				</CameraProvider>
 			</MusicProvider>
 		</div>

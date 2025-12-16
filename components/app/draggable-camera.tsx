@@ -6,22 +6,15 @@ import React, {
 	useRef,
 	useEffect,
 	MouseEvent,
-	TouchEvent,
 	useCallback,
 	FC,
 } from "react";
 import { Button } from "@/components/ui/button";
-import {
-	User,
-	X,
-	GripVertical,
-	ArrowDownLeft,
-	AlertTriangle,
-	VideoOff,
-	Video,
-} from "lucide-react";
+import { X, GripVertical, ArrowDownLeft, VideoOff, Video } from "lucide-react";
+
 import { cn } from "@/lib/utils";
 import { useCamera } from "@/hooks/useCamera";
+import CameraPrediction from "./camera-prediction";
 
 // Hàm tiện ích
 const glassEffect =
@@ -35,25 +28,14 @@ const ASPECT_RATIO = 256 / 200; // w-64 (256px) / h-[200px]
 
 const DraggableCamera: FC<DraggableCameraProps> = () => {
 	// --- STATE ---
-	// Kích thước vẫn dùng PX vì nó là kích thước vật lý
 	const [size, setSize] = useState({ width: (256 * 150) / 200, height: 150 });
-
-	// THAY ĐỔI: Vị trí giờ là TỶ LỆ % (0-100)
-	const [position, setPosition] = useState({ x: 85, y: 27 }); // 50% 50% (ở giữa)
-
-	// State cho hành động (Kéo/Resize)
+	const [position, setPosition] = useState({ x: 85, y: 27 });
 	const [isDragging, setIsDragging] = useState(false);
 	const [isResizing, setIsResizing] = useState(false);
 
 	// --- REFs ---
-	const {
-		videoRef,
-		isCamActive,
-		toggleCamera,
-		camError,
-		isWidgetVisible,
-		setIsWidgetVisible,
-	} = useCamera();
+	const { isCamActive, toggleCamera, isWidgetVisible, setIsWidgetVisible } =
+		useCamera();
 	const cameraRef = useRef<HTMLDivElement | null>(null);
 
 	// Ref lưu vị trí chuột ban đầu khi KÉO (tính bằng PX)
@@ -95,7 +77,6 @@ const DraggableCamera: FC<DraggableCameraProps> = () => {
 			y: dragStartRef.current.startTopPercent + deltaPercentY,
 		});
 	}, []);
-
 	const handleDragMouseUp = useCallback(() => {
 		setIsDragging(false);
 	}, []);
@@ -111,7 +92,6 @@ const DraggableCamera: FC<DraggableCameraProps> = () => {
 		};
 	}, [isDragging, handleDragMouseMove, handleDragMouseUp]);
 
-	// Xử lý khi nhấn chuột vào icon KÉO
 	const handleDragMouseDown = (e: MouseEvent<HTMLButtonElement>) => {
 		if (e.button !== 0) return;
 		e.preventDefault();
@@ -127,7 +107,6 @@ const DraggableCamera: FC<DraggableCameraProps> = () => {
 	};
 
 	// --- LOGIC PHÓNG TO (RESIZE) TỪ GÓC TRÁI DƯỚI ---
-
 	const handleResizeMouseMove = useCallback((e: globalThis.MouseEvent) => {
 		const {
 			startX,
@@ -201,7 +180,7 @@ const DraggableCamera: FC<DraggableCameraProps> = () => {
 		<div
 			ref={cameraRef}
 			className={cn(
-				"absolute z-40 rounded-xl overflow-hidden",
+				"absolute z-40 rounded-xl overflo",
 				isDragging ? "cursor-grabbing" : "cursor-auto",
 				"transition-opacity duration-300",
 				isWidgetVisible ? "opacity-100" : "opacity-0 hidden",
@@ -217,30 +196,7 @@ const DraggableCamera: FC<DraggableCameraProps> = () => {
 			}}
 		>
 			{/* THAY ĐỔI: Hiển thị Video hoặc Placeholder */}
-			{isCamActive && !camError ? (
-				<video
-					ref={videoRef}
-					autoPlay
-					playsInline
-					muted
-					className="w-full h-full object-cover rounded-xl"
-				/>
-			) : (
-				<div className="flex h-full w-full items-center justify-center bg-black/50 text-center p-4">
-					{camError ? (
-						<div className="text-red-400 space-y-2">
-							<AlertTriangle className="h-10 w-10 mx-auto" />
-							<p className="text-sm">Lỗi: {camError}</p>
-							<p className="text-xs text-gray-300">
-								Vui lòng cấp quyền truy cập camera.
-							</p>
-						</div>
-					) : (
-						<User className="h-16 w-16 text-gray-500" />
-					)}
-				</div>
-			)}
-
+			<CameraPrediction />
 			{/* Nhóm icon ở góc trên bên phải */}
 			<div className="absolute top-2 right-2 z-10 flex gap-1">
 				{/* NÚT BẬT/TẮT CAMERA (TRONG WIDGET) */}
@@ -297,11 +253,6 @@ const DraggableCamera: FC<DraggableCameraProps> = () => {
 			>
 				<ArrowDownLeft className="h-4 w-4" />
 			</Button>
-
-			{/* Nội dung Camera */}
-			<div className="flex h-full w-full items-center justify-center bg-black/30">
-				<User className="h-16 w-16 text-gray-500" />
-			</div>
 		</div>
 	);
 };

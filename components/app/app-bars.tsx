@@ -2,7 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import DraggableCamera from "@/components/app/camera";
+import DraggableCamera from "@/components/app/draggable-camera";
 import UserHeader from "@/components/app/header";
 import LogoHeader from "@/components/app/logo-header";
 import NavSidebar from "@/components/app/sidebar";

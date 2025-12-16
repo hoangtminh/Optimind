@@ -1,4 +1,3 @@
-// Tên file: app/hooks/useCamera.tsx
 "use client";
 
 import React, {
@@ -9,9 +8,7 @@ import React, {
 	RefObject,
 	createContext,
 	useContext,
-	ReactNode,
 	useMemo,
-	FC,
 } from "react";
 
 // --- 1. Định nghĩa Types và Context ---
@@ -20,13 +17,14 @@ interface CameraContextType {
 	videoRef: RefObject<HTMLVideoElement | null>;
 	cameraStream: MediaStream | null;
 	camError: string | null;
-	isCamActive: boolean; // Trạng thái stream đã sẵn sàng
-	toggleCamera: (active: boolean) => void; // Hàm điều khiển từ bên ngoài (Toolbar)
+	isCamActive: boolean;
+	toggleCamera: (active: boolean) => void;
 	isWidgetVisible: boolean;
 	setIsWidgetVisible: (visible: boolean) => void;
+	webcamId: string | undefined;
+	webcamList: MediaDeviceInfo[];
 }
 
-// Khởi tạo Context với giá trị mặc định là null (sẽ được cung cấp bởi Provider)
 const CameraContext = createContext<CameraContextType | null>(null);
 
 // --- 2. Custom Hook để sử dụng Context ---
@@ -42,17 +40,18 @@ export const useCamera = () => {
 };
 
 // --- 3. Provider Component (Quản lý State và Logic) ---
-export const CameraProvider = ({
+export const CameraProvider: React.FC<{ children: React.ReactNode }> = ({
 	children,
-}: Readonly<{
-	children: React.ReactNode;
-}>) => {
+}) => {
 	const videoRef = useRef<HTMLVideoElement | null>(null);
 	const [cameraStream, setCameraStream] = useState<MediaStream | null>(null);
-	const [isCamActive, setIsCamActive] = useState(false); // Trạng thái stream đã sẵn sàng
-	const [isAttemptingToStart, setIsAttemptingToStart] = useState(false); // Tránh gọi API liên tục
+	const [isCamActive, setIsCamActive] = useState(false);
+	const [isAttemptingToStart, setIsAttemptingToStart] = useState(false);
 	const [camError, setCamError] = useState<string | null>(null);
 	const [isWidgetVisible, setIsWidgetVisible] = useState(false);
+
+	const [webcamId, setWebcamId] = useState<string | undefined>();
+	const [webcamList, setWebcamList] = useState<MediaDeviceInfo[]>([]);
 
 	// --- HÀM TẮT CAMERA ---
 	const stopCamera = useCallback(() => {
@@ -74,9 +73,17 @@ export const CameraProvider = ({
 		setIsAttemptingToStart(true);
 		setCamError(null);
 
-		// Yêu cầu truy cập video (camera)
+		// Sử dụng các tham số lý tưởng cho camera (720p)
+		const constraints = {
+			// video: {
+			// 	width: 640,
+			// 	height: 480,
+			// },
+			video: true,
+		};
+
 		navigator.mediaDevices
-			.getUserMedia({ video: true })
+			.getUserMedia(constraints)
 			.then((stream) => {
 				setCameraStream(stream);
 				setIsCamActive(true);
@@ -92,12 +99,38 @@ export const CameraProvider = ({
 			});
 	}, [isAttemptingToStart, cameraStream]);
 
+	const loadCameraDeviceList = async () => {
+		try {
+			await navigator.mediaDevices.getUserMedia({
+				video: true,
+			});
+
+			const deviceList: MediaDeviceInfo[] =
+				await navigator.mediaDevices.enumerateDevices();
+
+			const webcamList: MediaDeviceInfo[] = deviceList.filter(
+				(device) => device.kind === "videoinput"
+			);
+
+			if (webcamList.length > 0) {
+				setWebcamId(webcamList[0].deviceId);
+				setWebcamList(webcamList);
+			} else {
+			}
+		} catch (error) {
+			if (error instanceof Error) {
+				console.log("Webcam error: ", error.message);
+			} else {
+				console.log("webcam error: ", error);
+			}
+		}
+	};
+
 	// --- Điều khiển Luồng Video ---
 	useEffect(() => {
 		if (cameraStream && videoRef.current) {
-			// Gán stream vào thẻ video khi stream sẵn sàng
 			videoRef.current.srcObject = cameraStream;
-			videoRef.current.muted = true; // đảm bảo muted
+			videoRef.current.muted = true;
 			videoRef.current.playsInline = true;
 		}
 	}, [cameraStream]);
@@ -105,7 +138,6 @@ export const CameraProvider = ({
 	// --- Interface Điều khiển từ bên ngoài (Toolbar) ---
 	const toggleCamera = useCallback(
 		(active: boolean) => {
-			console.log("Toggling camera. Active:", active);
 			if (active) {
 				startCamera();
 			} else {
@@ -122,16 +154,28 @@ export const CameraProvider = ({
 		};
 	}, [stopCamera]);
 
+	useEffect(() => {
+		loadCameraDeviceList();
+		if (navigator) {
+			navigator.mediaDevices.ondevicechange = (event: Event) => {
+				loadCameraDeviceList();
+			};
+		}
+		stopCamera();
+	}, []);
+
 	// Giá trị Context
 	const contextValue = useMemo(
 		() => ({
 			videoRef,
 			cameraStream,
 			camError,
-			isCamActive: !!cameraStream, // true nếu stream đang chạy
+			isCamActive: !!cameraStream,
 			toggleCamera,
 			isWidgetVisible,
 			setIsWidgetVisible,
+			webcamId,
+			webcamList,
 		}),
 		[camError, cameraStream, toggleCamera, isWidgetVisible]
 	);
