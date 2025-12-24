@@ -48,10 +48,6 @@ export const createChat = async (
 export const getJoinedChats = async (userId: string) => {
 	const supabase = createAdminClient();
 
-	// Select id, name and array of members from chat_room join chat_room_member
-	// id string
-	// name string
-	// chat_room_member: [{ member_id: string }]
 	const { data, error } = await supabase
 		.from("chat_room")
 		.select(`id, name, chat_room_member (member_id)`)

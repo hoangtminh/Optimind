@@ -107,6 +107,267 @@ export type Database = {
           },
         ]
       }
+      project: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_profile"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      session_task: {
+        Row: {
+          created_at: string
+          id: number
+          is_completed: boolean
+          session_id: string
+          task_id: string | null
+          title: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: number
+          is_completed?: boolean
+          session_id: string
+          task_id?: string | null
+          title: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: number
+          is_completed?: boolean
+          session_id?: string
+          task_id?: string | null
+          title?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "session_task_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "study_session"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "session_task_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "task"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "session_task_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_profile"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      status_column: {
+        Row: {
+          created_at: string
+          id: number
+          index: number
+          is_default: boolean
+          status: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: number
+          index: number
+          is_default?: boolean
+          status: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: number
+          index?: number
+          is_default?: boolean
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "status_column_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_profile"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      study_session: {
+        Row: {
+          average_focus: number
+          break_time: number
+          created_at: string
+          end_time: string
+          focus_time: number
+          id: string
+          is_completed: boolean
+          session_type: string
+          start_time: string
+          total_time: number
+          user_id: string
+        }
+        Insert: {
+          average_focus: number
+          break_time: number
+          created_at?: string
+          end_time: string
+          focus_time: number
+          id?: string
+          is_completed: boolean
+          session_type: string
+          start_time: string
+          total_time: number
+          user_id: string
+        }
+        Update: {
+          average_focus?: number
+          break_time?: number
+          created_at?: string
+          end_time?: string
+          focus_time?: number
+          id?: string
+          is_completed?: boolean
+          session_type?: string
+          start_time?: string
+          total_time?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "study_session_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_profile"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      sub_task: {
+        Row: {
+          created_at: string
+          id: string
+          is_completed: boolean
+          task_id: string
+          title: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_completed?: boolean
+          task_id: string
+          title: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_completed?: boolean
+          task_id?: string
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sub_task_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "task"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      task: {
+        Row: {
+          created_at: string
+          due_date: string | null
+          id: string
+          is_completed: boolean | null
+          note: string | null
+          priority: string | null
+          project_id: string
+          repeated: string | null
+          status: string
+          tag: string[] | null
+          title: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          due_date?: string | null
+          id?: string
+          is_completed?: boolean | null
+          note?: string | null
+          priority?: string | null
+          project_id: string
+          repeated?: string | null
+          status?: string
+          tag?: string[] | null
+          title: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          due_date?: string | null
+          id?: string
+          is_completed?: boolean | null
+          note?: string | null
+          priority?: string | null
+          project_id?: string
+          repeated?: string | null
+          status?: string
+          tag?: string[] | null
+          title?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "task_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "project"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "task_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_profile"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_profile: {
         Row: {
           created_at: string
