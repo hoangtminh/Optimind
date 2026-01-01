@@ -6,6 +6,10 @@ import {
 	initialFocusState,
 } from "@/lib/analyzer";
 import { OneEuroFilter } from "@/lib/filter-class";
+import { FocusEstimator } from "@/lib/focus-estimator";
+import { ModelLoadResult, NO_MODE } from "@/mediapipe/definitions";
+import FaceLandmarkDetection from "@/mediapipe/face-landmark";
+import initMediaPipVision from "@/mediapipe/mediapipe-vision";
 import { NormalizedLandmark } from "@mediapipe/tasks-vision";
 import {
 	createContext,
@@ -18,6 +22,7 @@ import {
 const FocusContext = createContext<FocusContextType | null>(null);
 
 interface FocusContextType {
+	initModels: () => void;
 	focusState: FocusStateData;
 	calibrate: (p: number, y: number) => void;
 	processLandmarks: (
@@ -28,6 +33,12 @@ interface FocusContextType {
 	isCalibrated: boolean;
 	basePitch: number;
 	baseYaw: number;
+	handleCalibrate: (landmarks: NormalizedLandmark[]) => void;
+	focusEstimator: {
+		focusScore: number;
+		score: number;
+		status: string;
+	};
 }
 
 export const useFocus = () => {
@@ -40,6 +51,9 @@ export const useFocus = () => {
 
 export const FocusProvider = ({ children }: { children: React.ReactNode }) => {
 	const [state, setState] = useState<FocusStateData>(initialFocusState);
+	const [modelLoadResult, setModelLoadResult] = useState<ModelLoadResult[]>();
+	const [currentMode, setCurrentMode] = useState<number>(NO_MODE);
+
 	const filterPitchRef = useRef(
 		new OneEuroFilter(
 			FOCUS_CONFIG.MIN_CUTOFF,
@@ -68,6 +82,31 @@ export const FocusProvider = ({ children }: { children: React.ReactNode }) => {
 	// Dùng useRef để giữ giá trị basePitch/baseYaw sau calibrate
 	const basePitchRef = useRef(initialFocusState.basePitch);
 	const baseYawRef = useRef(initialFocusState.baseYaw);
+
+	const focusEstimatorRef = useRef<FocusEstimator>(new FocusEstimator());
+
+	// Rule: Nếu mắt nhìn vào camera và không chớp mắt quá nhiều => Engaged
+	function evaluateEngagement(score: number): boolean {
+		return score >= 65; // Giảm từ 70 -> 65 (phù hợp với penalty mới nghiêm ngặt hơn)
+	}
+
+	const initModels = async () => {
+		const vision = await initMediaPipVision();
+
+		if (vision) {
+			const models = [FaceLandmarkDetection.initModel(vision)];
+
+			const results = await Promise.all(models);
+			const enabledModels = results.filter((result) => result.loadResult);
+			FaceLandmarkDetection.setDrawingMode(
+				FaceLandmarkDetection.CONNECTION_FACE_LANDMARKS_POINTS
+			);
+			if (enabledModels.length > 0) {
+				setCurrentMode(enabledModels[0].mode);
+			}
+			setModelLoadResult(enabledModels);
+		}
+	};
 
 	// --- 4.1. HÀM LỌC DỮ LIỆU THÔ (PROCESS RAW DATA) ---
 	const processRawData = useCallback(
@@ -170,10 +209,15 @@ export const FocusProvider = ({ children }: { children: React.ReactNode }) => {
 			isCalibrated: true,
 			status: "DANG TAP TRUNG",
 			color: "#00FF00",
+			focusScore: 100,
 		}));
 		console.log(
 			`[CALIB] Zero Point Set: Pitch=${p.toFixed(1)}, Yaw=${y.toFixed(1)}`
 		);
+	}, []);
+
+	const handleCalibrate = useCallback((landmarks: NormalizedLandmark[]) => {
+		focusEstimatorRef.current?.calibrate(landmarks);
 	}, []);
 
 	// --- 4.4. HÀM XỬ LÝ CHÍNH (PROCESS LANDMARKS) ---
@@ -214,6 +258,9 @@ export const FocusProvider = ({ children }: { children: React.ReactNode }) => {
 					rawYaw,
 				};
 
+				focusEstimatorRef.current?.estimate(landmarks);
+				console.log(focusEstimatorRef.current?.focusState);
+
 				setState(finalState);
 				return finalState;
 			} else {
@@ -235,6 +282,7 @@ export const FocusProvider = ({ children }: { children: React.ReactNode }) => {
 	}, []);
 
 	const contextValue = {
+		initModels,
 		focusState: state,
 		calibrate,
 		processLandmarks,
@@ -242,7 +290,10 @@ export const FocusProvider = ({ children }: { children: React.ReactNode }) => {
 		isCalibrated: state.isCalibrated,
 		basePitch: state.basePitch,
 		baseYaw: state.baseYaw,
+		handleCalibrate,
+		focusEstimator: focusEstimatorRef.current.focusState,
 	};
+
 	return (
 		<FocusContext.Provider value={contextValue}>
 			{children}

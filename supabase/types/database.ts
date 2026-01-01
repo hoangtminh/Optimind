@@ -68,6 +68,78 @@ export type Database = {
           },
         ]
       }
+      friend_request: {
+        Row: {
+          created_at: string
+          id: number
+          receiver_id: string
+          sender_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: number
+          receiver_id: string
+          sender_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: number
+          receiver_id?: string
+          sender_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "friend_request_receiver_id_fkey"
+            columns: ["receiver_id"]
+            isOneToOne: false
+            referencedRelation: "user_profile"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "friend_request_sender_id_fkey"
+            columns: ["sender_id"]
+            isOneToOne: false
+            referencedRelation: "user_profile"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      friendships: {
+        Row: {
+          created_at: string
+          id: number
+          user_id_1: string
+          user_id_2: string
+        }
+        Insert: {
+          created_at?: string
+          id?: number
+          user_id_1: string
+          user_id_2: string
+        }
+        Update: {
+          created_at?: string
+          id?: number
+          user_id_1?: string
+          user_id_2?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "friendships_user_id_1_fkey"
+            columns: ["user_id_1"]
+            isOneToOne: false
+            referencedRelation: "user_profile"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "friendships_user_id_2_fkey"
+            columns: ["user_id_2"]
+            isOneToOne: false
+            referencedRelation: "user_profile"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       messages: {
         Row: {
           author_id: string
@@ -139,6 +211,38 @@ export type Database = {
           },
         ]
       }
+      session_log: {
+        Row: {
+          created_at: string
+          focus_point: number[]
+          id: string
+          session_id: string
+          timestamp: string[]
+        }
+        Insert: {
+          created_at?: string
+          focus_point: number[]
+          id?: string
+          session_id: string
+          timestamp: string[]
+        }
+        Update: {
+          created_at?: string
+          focus_point?: number[]
+          id?: string
+          session_id?: string
+          timestamp?: string[]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "session_log_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "study_session"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       session_task: {
         Row: {
           created_at: string
@@ -194,27 +298,27 @@ export type Database = {
       status_column: {
         Row: {
           created_at: string
-          id: number
+          id: string
           index: number
           is_default: boolean
-          status: string
-          user_id: string
+          name: string
+          user_id: string | null
         }
         Insert: {
           created_at?: string
-          id?: number
+          id?: string
           index: number
           is_default?: boolean
-          status: string
-          user_id: string
+          name: string
+          user_id?: string | null
         }
         Update: {
           created_at?: string
-          id?: number
+          id?: string
           index?: number
           is_default?: boolean
-          status?: string
-          user_id?: string
+          name?: string
+          user_id?: string | null
         }
         Relationships: [
           {
@@ -231,10 +335,10 @@ export type Database = {
           average_focus: number
           break_time: number
           created_at: string
+          cycles: number
           end_time: string
           focus_time: number
           id: string
-          is_completed: boolean
           session_type: string
           start_time: string
           total_time: number
@@ -244,10 +348,10 @@ export type Database = {
           average_focus: number
           break_time: number
           created_at?: string
+          cycles: number
           end_time: string
           focus_time: number
           id?: string
-          is_completed: boolean
           session_type: string
           start_time: string
           total_time: number
@@ -257,10 +361,10 @@ export type Database = {
           average_focus?: number
           break_time?: number
           created_at?: string
+          cycles?: number
           end_time?: string
           focus_time?: number
           id?: string
-          is_completed?: boolean
           session_type?: string
           start_time?: string
           total_time?: number
@@ -321,6 +425,7 @@ export type Database = {
           status: string
           tag: string[] | null
           title: string
+          updated_at: string
           user_id: string
         }
         Insert: {
@@ -335,6 +440,7 @@ export type Database = {
           status?: string
           tag?: string[] | null
           title: string
+          updated_at?: string
           user_id: string
         }
         Update: {
@@ -349,6 +455,7 @@ export type Database = {
           status?: string
           tag?: string[] | null
           title?: string
+          updated_at?: string
           user_id?: string
         }
         Relationships: [
@@ -374,18 +481,21 @@ export type Database = {
           id: string
           image_url: string | null
           name: string
+          study_time: number
         }
         Insert: {
           created_at?: string
           id?: string
           image_url?: string | null
           name: string
+          study_time?: number
         }
         Update: {
           created_at?: string
           id?: string
           image_url?: string | null
           name?: string
+          study_time?: number
         }
         Relationships: []
       }

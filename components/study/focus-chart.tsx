@@ -16,12 +16,7 @@ import {
 import { useCamera } from "@/hooks/useCamera";
 import { useFocus } from "@/hooks/useFocus";
 import useInterval from "@/hooks/useInterval";
-
-// MỚI: Export FocusDataPoint type
-export interface FocusDataPoint {
-	time: number; // Giây (để thể hiện thời gian trôi qua)
-	focus: number; // %
-}
+import { FocusDataPoint } from "@/lib/type/session-type";
 
 // Hàm tiện ích
 const glassEffect =
@@ -30,29 +25,33 @@ const glassEffect =
 // Định nghĩa Props
 interface FocusChartWidgetProps {
 	isRunning: boolean;
+	focusData: FocusDataPoint[];
+	setFocusData: (prev: (prev: FocusDataPoint[]) => FocusDataPoint[]) => void;
 }
 
 // Component Biểu đồ
-const FocusChartWidget: FC<FocusChartWidgetProps> = ({ isRunning }) => {
+const FocusChartWidget: FC<FocusChartWidgetProps> = ({
+	isRunning,
+	focusData,
+	setFocusData,
+}) => {
 	const { isCamActive } = useCamera();
-	const [focusData, setFocusData] = useState<FocusDataPoint[]>([]);
-	const [currentSecondsElapsed, setCurrentSecondsElapsed] =
-		useState<number>(0);
-
-	const { focusState } = useFocus();
+	const { focusEstimator: focusState } = useFocus();
 
 	const updateScore = () => {
-		setCurrentSecondsElapsed((prev) => prev + 1);
 		if (isCamActive) {
 			// 2. Thêm dữ liệu vào array
 			setFocusData((prevData) => [
 				...prevData,
-				{ time: prevData.length + 1, focus: focusState.score },
+				{
+					time: new Date(Date.now()).toISOString(),
+					focus: focusState.score,
+				},
 			]);
 		} else {
 			setFocusData((prevData) => [
 				...prevData,
-				{ time: prevData.length + 1, focus: 0 },
+				{ time: new Date(Date.now()).toISOString(), focus: 0 },
 			]);
 		}
 	};
@@ -69,7 +68,7 @@ const FocusChartWidget: FC<FocusChartWidgetProps> = ({ isRunning }) => {
 					{isCamActive ? (
 						<p
 							className="font-bold"
-							style={{ color: focusState.color }}
+							// style={{ color: focusState.color }}
 						>
 							{focusState.status}
 						</p>
@@ -99,7 +98,11 @@ const FocusChartWidget: FC<FocusChartWidgetProps> = ({ isRunning }) => {
 			<div className="flex-1">
 				<ResponsiveContainer width="100%" height="90%">
 					<LineChart
-						data={focusData}
+						data={
+							focusData.length > 120
+								? focusData.slice(0, 120)
+								: focusData
+						}
 						margin={{ top: 10, right: 0, left: -20, bottom: 0 }}
 					>
 						<CartesianGrid
@@ -112,8 +115,12 @@ const FocusChartWidget: FC<FocusChartWidgetProps> = ({ isRunning }) => {
 							fontSize={10}
 							tickLine={false}
 							axisLine={false}
-							tickFormatter={(val) => `${val}s`}
+							tickFormatter={(val) =>
+								`${new Date(val).toTimeString().slice(0, 8)}`
+							}
 							tickMargin={10}
+							minTickGap={30}
+							tickCount={120}
 						/>
 						<YAxis
 							stroke="#ffffff80"
@@ -130,7 +137,11 @@ const FocusChartWidget: FC<FocusChartWidgetProps> = ({ isRunning }) => {
 								borderRadius: "4px",
 								color: "#fff",
 							}}
-							labelFormatter={(val) => `Thời gian: ${val}s`}
+							labelFormatter={(val) =>
+								`Thời gian: ${new Date(val)
+									.toTimeString()
+									.slice(0, 8)}`
+							}
 							formatter={(value, name) => [`${value}%`]}
 						/>
 						<Line

@@ -334,10 +334,8 @@ const MusicPlayer: FC<MusicPlayerProps> = () => {
 
 							{/* Nút 3 chấm (Edit/Delete) */}
 							<DropdownMenu>
-								<DropdownMenuTrigger asChild>
-									<div className="hover:bg-white/20 p-1.5 rounded-lg">
-										<MoreVertical className="h-4 w-4" />
-									</div>
+								<DropdownMenuTrigger className="hover:bg-white/20 p-1.5 rounded-lg">
+									<MoreVertical className="h-4 w-4" />
 								</DropdownMenuTrigger>
 								<DropdownMenuContent className="bg-black/70 backdrop-blur-md border-white/20 text-white">
 									<DropdownMenuItem

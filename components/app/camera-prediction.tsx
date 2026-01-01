@@ -2,48 +2,27 @@
 import { User, AlertTriangle } from "lucide-react";
 
 import { useState, useRef, useEffect, useCallback, RefObject } from "react";
-import {
-	FACE_LANDMARK_DETECTION_MODE,
-	ModelLoadResult,
-	NO_MODE,
-} from "@/mediapipe/definitions";
 import Drawing3d from "@/lib/Drawing3d";
 import useInterval from "@/hooks/useInterval";
-import initMediaPipVision from "@/mediapipe/mediapipe-vision";
 import FaceLandmarkDetection from "@/mediapipe/face-landmark";
 import { useCamera } from "@/hooks/useCamera";
 import Webcam from "react-webcam";
 import { useFocus } from "@/hooks/useFocus";
+import { NormalizedLandmark } from "@mediapipe/tasks-vision";
 
 const CameraPrediction = () => {
 	const webcamRef = useRef<Webcam | null>(null);
 	const canvas3dRef = useRef<HTMLCanvasElement | null>(null);
 
-	const [mirrored, setMirrored] = useState<boolean>(false);
-	const [modelLoadResult, setModelLoadResult] = useState<ModelLoadResult[]>();
-	const [loading, setLoading] = useState<boolean>(false);
-	const [currentMode, setCurrentMode] = useState<number>(NO_MODE);
 	const { webcamId, isCamActive, camError } = useCamera();
-
-	const { focusState, calibrate, processLandmarks, resetSystem } = useFocus();
-
-	const initModels = async () => {
-		const vision = await initMediaPipVision();
-
-		if (vision) {
-			const models = [FaceLandmarkDetection.initModel(vision)];
-
-			const results = await Promise.all(models);
-			const enabledModels = results.filter((result) => result.loadResult);
-			FaceLandmarkDetection.setDrawingMode(
-				FaceLandmarkDetection.CONNECTION_FACE_LANDMARKS_POINTS
-			);
-			if (enabledModels.length > 0) {
-				setCurrentMode(enabledModels[0].mode);
-			}
-			setModelLoadResult(enabledModels);
-		}
-	};
+	const {
+		initModels,
+		focusState,
+		calibrate,
+		processLandmarks,
+		resetSystem,
+		handleCalibrate,
+	} = useFocus();
 
 	const resizeCanvas = (
 		canvasRef: RefObject<HTMLCanvasElement | null>,
@@ -61,10 +40,7 @@ const CameraPrediction = () => {
 
 	const runPrediction = () => {
 		if (webcamRef.current && webcamRef.current.video) {
-			if (
-				currentMode === FACE_LANDMARK_DETECTION_MODE &&
-				!FaceLandmarkDetection.isModelUpdating()
-			) {
+			if (!FaceLandmarkDetection.isModelUpdating()) {
 				const faceLandmarkPrediction = FaceLandmarkDetection.detectFace(
 					webcamRef.current.video
 				);
@@ -85,18 +61,32 @@ const CameraPrediction = () => {
 						// 	videoWidth,
 						// 	videoHeight
 						// );
-						console.log("Drawed");
 					}
 				}
 			}
 		}
 	};
 
+	const onCalibrate = useCallback(() => {
+		if (webcamRef.current && webcamRef.current.video) {
+			const faceLandmarkPrediction = FaceLandmarkDetection.detectFace(
+				webcamRef.current?.video
+			);
+			if (faceLandmarkPrediction) {
+				const canvas = canvas3dRef.current;
+				const video = webcamRef.current?.video;
+
+				const landmarks = faceLandmarkPrediction.faceLandmarks[0];
+
+				handleCalibrate(landmarks);
+			}
+		}
+	}, []);
+
 	const canvas3dRefCallback = useCallback((element: any) => {
 		canvas3dRef.current = element;
 		if (element !== null && !Drawing3d.isRendererInitialized()) {
 			Drawing3d.initRenderer(element);
-			console.log("init three renderer");
 		}
 	}, []);
 
@@ -106,27 +96,16 @@ const CameraPrediction = () => {
 		}
 	}, []);
 
-	// Trong CameraPrediction.tsx
-
 	useEffect(() => {
 		// 1. Xử lý khởi tạo mô hình
-		setLoading(true);
 		initModels();
-
 		// 2. Xử lý kích thước và Three.js khi video sẵn sàng
 		const video = webcamRef.current?.video;
 		if (video && canvas3dRef.current) {
-			console.log("re-render");
 			Drawing3d.initScene(window.innerWidth, window.innerHeight);
 			resizeCanvas(canvas3dRef, webcamRef);
 		}
 	}, [isCamActive]);
-
-	useEffect(() => {
-		if (modelLoadResult) {
-			setLoading(false);
-		}
-	}, [modelLoadResult]);
 
 	useInterval({
 		callback: runPrediction,
@@ -138,10 +117,12 @@ const CameraPrediction = () => {
 			<>
 				<Webcam
 					ref={webcamRefCallback}
-					mirrored={mirrored}
 					className="h-full w-full object-cover"
 					videoConstraints={{
 						deviceId: webcamId,
+						width: { ideal: 1920 },
+						height: { ideal: 1080 },
+						frameRate: { ideal: 60 },
 					}}
 				/>
 				<canvas
@@ -152,9 +133,10 @@ const CameraPrediction = () => {
 				<div className="absolute top-4 left-4 p-3 bg-gray-900/80 text-white rounded-lg shadow-xl min-w-[250px]">
 					{/* Nút Calibrate */}
 					<button
-						onClick={() =>
-							calibrate(focusState.rawPitch, focusState.rawYaw)
-						}
+						onClick={() => {
+							calibrate(focusState.rawPitch, focusState.rawYaw);
+							onCalibrate();
+						}}
 						disabled={
 							focusState.isCalibrated ||
 							focusState.status === "NO FACE DETECTED"

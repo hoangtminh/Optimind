@@ -32,6 +32,7 @@ export interface FocusStateData {
 	rawYaw: number; // Yaw thô
 	eyeClosedStart: number | null; // Timestamp (giây)
 	nose?: Vector3; // Có thể bỏ qua nếu không dùng để vẽ trong hook
+	focusScore: number;
 }
 
 export const initialFocusState: FocusStateData = {
@@ -48,6 +49,7 @@ export const initialFocusState: FocusStateData = {
 	rawPitch: 0,
 	rawYaw: 0,
 	eyeClosedStart: null,
+	focusScore: 100,
 };
 
 export const euclideanDistance = (

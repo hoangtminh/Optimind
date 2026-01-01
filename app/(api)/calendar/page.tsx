@@ -1,7 +1,6 @@
-// Tên file: app/plan/page.tsx
 "use client";
 
-import { useState, useEffect, FC, ChangeEvent } from "react";
+import { useState, useEffect, FC, ChangeEvent, useMemo } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,33 +15,21 @@ import {
 	DialogTrigger,
 	DialogFooter,
 	DialogClose,
-} from "@/components/ui/dialog"; // MỚI
+} from "@/components/ui/dialog";
 import {
 	Popover,
 	PopoverContent,
 	PopoverTrigger,
-} from "@/components/ui/popover"; // MỚI
+} from "@/components/ui/popover";
 import {
 	Select,
 	SelectContent,
 	SelectItem,
 	SelectTrigger,
 	SelectValue,
-} from "@/components/ui/select"; // MỚI
-import { ScrollArea } from "@/components/ui/scroll-area"; // MỚI
+} from "@/components/ui/select";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import {
-	LayoutDashboard,
-	CheckSquare,
-	Users,
-	Trophy,
-	BarChart2,
-	Settings,
-	Bell,
-	Video,
-	Music,
-	Waves,
-	Image as ImageIcon,
-	Plus,
 	Search,
 	Clock,
 	Tag as TagIcon,
@@ -50,12 +37,13 @@ import {
 	Pencil,
 	Trash2,
 	Check,
-	Calendar as CalendarIcon, // MỚI
+	Calendar as CalendarIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { format, parse } from "date-fns"; // MỚI
+import { format, parse } from "date-fns";
+import { Plus } from "lucide-react";
 
-// --- MỚI: Định nghĩa Type ---
+// --- Định nghĩa Type ---
 interface TaskTag {
 	name: string;
 	color: string;
@@ -73,7 +61,7 @@ interface Task {
 
 // --- Dữ liệu giả (Mock Data) ---
 const today = new Date();
-const todayString = today.toISOString().split("T")[0]; // "2025-11-16"
+const todayString = format(today, "yyyy-MM-dd");
 
 const mockTags: Record<string, TaskTag> = {
 	project: { name: "Project", color: "bg-blue-500" },
@@ -118,8 +106,16 @@ const mockTasksData: Task[] = [
 		description: "Tích hợp Supabase SSR cho trang Đăng nhập.",
 		completed: false,
 	},
+	{
+		id: "5",
+		title: "Chuẩn bị bài thuyết trình",
+		date: format(new Date().setDate(today.getDate() + 3), "yyyy-MM-dd"), // 3 ngày sau
+		time: "17:00 - 19:00",
+		tag: mockTags.study,
+		description: "Tổng hợp slides và nội dung trình bày.",
+		completed: false,
+	},
 ];
-// --- Kết thúc Mock Data ---
 
 // Dữ liệu rỗng cho form
 const defaultTaskValues: Omit<Task, "id" | "completed"> = {
@@ -129,6 +125,39 @@ const defaultTaskValues: Omit<Task, "id" | "completed"> = {
 	tag: mockTags.study,
 	description: "",
 };
+
+// --- Helper Component cho Cột 3 (Tất cả Tasks) ---
+interface AllTasksListCardProps {
+	task: Task;
+	onTaskClick: (task: Task) => void;
+}
+
+const AllTasksListCard: FC<AllTasksListCardProps> = ({ task, onTaskClick }) => (
+	<button
+		onClick={() => onTaskClick(task)}
+		className="w-full text-left p-3 rounded-lg flex flex-col gap-1 transition-colors hover:bg-white/20 bg-black/30 border border-transparent hover:border-white/20"
+	>
+		<div className="flex justify-between items-center">
+			<p className="font-semibold text-white truncate max-w-[80%]">
+				{task.title}
+			</p>
+			<span
+				className={cn(
+					"text-xs font-medium px-2 py-0.5 rounded-full",
+					task.tag.color,
+					"bg-opacity-70 text-white"
+				)}
+			>
+				{task.tag.name}
+			</span>
+		</div>
+		<div className="text-xs text-white/70 flex items-center gap-2">
+			<CalendarIcon size={14} />
+			{format(parse(task.date, "yyyy-MM-dd", new Date()), "dd/MM/yyyy")}
+			<span className="ml-2">• {task.time}</span>
+		</div>
+	</button>
+);
 
 const TaskCalendar: FC = () => {
 	// === State quản lý giao diện ===
@@ -148,6 +177,26 @@ const TaskCalendar: FC = () => {
 	const [currentTask, setCurrentTask] = useState<Task | null>(null); // null = Thêm mới
 	const [formData, setFormData] = useState(defaultTaskValues);
 
+	// --- Data Processing ---
+
+	// 1. Dữ liệu Task theo Ngày (dùng cho calendar marker)
+	const tasksByDate = useMemo(() => {
+		return tasks.reduce((acc, task) => {
+			if (!acc[task.date]) {
+				acc[task.date] = [];
+			}
+			acc[task.date].push(task);
+			return acc;
+		}, {} as Record<string, Task[]>);
+	}, [tasks]);
+
+	// 2. Tạo danh sách Date objects cho Calendar modifiers
+	const tasksDays = useMemo(() => {
+		return Object.keys(tasksByDate).map((dateStr) =>
+			parse(dateStr, "yyyy-MM-dd", new Date())
+		);
+	}, [tasksByDate]);
+
 	// Lọc task dựa trên ngày được chọn
 	const selectedDateString = date ? format(date, "yyyy-MM-dd") : "";
 	const tasksForSelectedDay = tasks.filter(
@@ -156,7 +205,7 @@ const TaskCalendar: FC = () => {
 
 	// Hàm tiện ích cho giao diện kính mờ (glassmorphism)
 	const glassEffect =
-		"bg-white/10 backdrop-blur-md border border-white/20 rounded-xl shadow-lg";
+		"bg-black/50 backdrop-blur-md border border-white/20 rounded-xl shadow-lg";
 
 	// Hàm định dạng ngày
 	const formattedDate = date
@@ -254,16 +303,9 @@ const TaskCalendar: FC = () => {
 
 	return (
 		<main className="h-screen w-screen text-white p-6 transition-all duration-500">
-			<div
-				className="absolute inset-0 w-full h-full"
-				style={{
-					backgroundImage: `url(${backgroundUrl})`,
-					backgroundSize: "cover",
-					backgroundPosition: "center",
-				}}
-			/>
+			<div className="absolute inset-0 w-full h-full" />
 			<div className="relative w-full h-full">
-				{/* === Nội dung chính - Quản lý Kế hoạch === */}
+				{/* === Main Content - Quản lý Kế hoạch === */}
 				<div
 					className={cn(
 						"absolute top-20 bottom-6 left-24 right-24", // Định vị giữa các sidebar
@@ -275,35 +317,44 @@ const TaskCalendar: FC = () => {
 					<div className="flex-[0.25] p-4 flex flex-col gap-4 overflow-y-auto">
 						<Button
 							className="bg-white text-black hover:bg-gray-200 w-full"
-							onClick={handleOpenAddDialog} // MỚI: Mở Dialog
+							onClick={handleOpenAddDialog} // MỞ Dialog
 						>
 							<Plus size={18} className="mr-2" /> Thêm công việc
 						</Button>
 						<div className="mt-2">
 							<h3 className="font-semibold mb-2">Lịch</h3>
-							{/* Component Lịch từ shadcn */}
+							{/* Component Lịch (ĐÃ CẬP NHẬT MODIFIERS) */}
 							<Calendar
 								mode="single"
 								selected={date}
-								onSelect={handleSelectDate} // THAY ĐỔI
-								className={
-									cn(
-										"bg-transparent",
-										"p-0 m-0",
-										"[&_button[aria-selected]]:bg-white/30 text-white",
-										"[&_caption_button]:bg-white/10"
-									)
-									// "p-0 m-0", // Ghi đè style của shadcn
-									// "[&_button]:bg-transparent [&_button]:text-white",
-									// "[&_button:hover]:bg-white/20",
-									// "[&_th]:text-white/70",
-								}
+								onSelect={handleSelectDate}
+								// Đánh dấu ngày có task
+								modifiers={{
+									tasks: tasksDays,
+								}}
+								modifiersClassNames={{
+									tasks: "relative text-lg font-bold text-green-400 after:content-[''] after:absolute after:w-1.5 after:h-1.5 after:bg-green-400 after:rounded-full after:bottom-1 after:left-1/2 after:-translate-x-1/2",
+									// Tùy chỉnh màu lịch chung
+									root: "bg-transparent",
+									caption_label: "text-white font-semibold",
+									nav_button_previous:
+										"text-white/70 hover:bg-white/10",
+									nav_button_next:
+										"text-white/70 hover:bg-white/10",
+									day: "text-white hover:bg-white/10 rounded-lg",
+									day_selected:
+										"bg-white/30 text-white hover:bg-white/40",
+									day_today:
+										"text-blue-400 border border-blue-400",
+									head_cell: "text-white/70",
+								}}
+								className="bg-transparent"
 							/>
 						</div>
 						<div className="mt-4">
 							<h3 className="font-semibold mb-3">Tags</h3>
 							<div className="flex flex-col gap-3">
-								{/* (Logic filter có thể thêm sau) */}
+								{/* (Logic filter giữ nguyên) */}
 								<div className="flex items-center space-x-2">
 									<Checkbox
 										id="tag-all"
@@ -338,7 +389,7 @@ const TaskCalendar: FC = () => {
 						</div>
 					</div>
 
-					{/* --- Cột 2: Danh sách Công việc --- */}
+					{/* --- Cột 2: Danh sách Công việc theo ngày đã chọn --- */}
 					<div className="flex-[0.45] p-4 flex flex-col">
 						{/* Thanh tìm kiếm */}
 						<div className="relative mb-4">
@@ -377,7 +428,7 @@ const TaskCalendar: FC = () => {
 												checked={task.completed}
 												onCheckedChange={() =>
 													handleToggleTask(task.id)
-												} // MỚI
+												}
 												className="[&_svg]:text-white"
 											/>
 											<div className="flex-1">
@@ -406,108 +457,53 @@ const TaskCalendar: FC = () => {
 										</button>
 									))
 								) : (
-									<div className="h-full flex items-center justify-center text-white/50">
-										<p>Không có công việc nào.</p>
+									<div className="h-full flex items-center justify-center text-white/50 pt-10">
+										<p>
+											Không có công việc nào trong ngày
+											này.
+										</p>
 									</div>
 								)}
 							</div>
 						</ScrollArea>
 					</div>
 
-					{/* --- Cột 3: Chi tiết Công việc --- */}
-					<div className="flex-[0.30] p-4 overflow-y-auto">
-						{selectedTask ? (
-							<div className="space-y-5">
-								<h2 className="text-xl font-bold mb-4 flex justify-between items-center">
-									Chi tiết
-									<Button
-										variant="ghost"
-										size="icon"
-										className="text-white/70 hover:text-white hover:bg-white/20 -mr-2"
-										onClick={() => setSelectedTask(null)}
-									>
-										<X size={20} />
-									</Button>
-								</h2>
-								<h3 className="text-2xl font-semibold">
-									{selectedTask.title}
-								</h3>
-
-								<div className="flex items-center gap-2 text-white/80">
-									<Clock size={16} />
-									<span>
-										{selectedTask.time} ({selectedTask.date}
-										)
-									</span>
-								</div>
-
-								<div className="flex items-center gap-2">
-									<TagIcon
-										size={16}
-										className="text-white/80"
-									/>
-									<span
-										className={cn(
-											"text-sm font-medium px-3 py-1 rounded-full",
-											selectedTask.tag.color,
-											"bg-opacity-70"
-										)}
-									>
-										{selectedTask.tag.name}
-									</span>
-								</div>
-
-								<div>
-									<h4 className="font-semibold mb-2">
-										Mô tả
-									</h4>
-									<p className="text-sm text-white/90 bg-white/10 p-3 rounded-md">
-										{selectedTask.description ||
-											"Không có mô tả."}
-									</p>
-								</div>
-
-								{/* Các nút hành động */}
-								<div className="flex gap-3 pt-4 border-t border-white/20">
-									<Button
-										className="flex-1 bg-green-600 hover:bg-green-700"
-										onClick={() =>
-											handleToggleTask(selectedTask.id)
-										} // MỚI
-									>
-										<Check size={18} className="mr-2" />
-										{selectedTask.completed
-											? "Đánh dấu Chưa làm"
-											: "Hoàn thành"}
-									</Button>
-									<Button
-										variant="outline"
-										className="bg-transparent hover:bg-white/20 text-white"
-										onClick={() =>
-											handleOpenEditDialog(selectedTask)
-										} // MỚI
-									>
-										<Pencil size={16} />
-									</Button>
-									<Button
-										variant="destructive"
-										className="bg-red-600/80 hover:bg-red-600"
-										onClick={() =>
-											handleDeleteTask(selectedTask.id)
-										} // MỚI
-									>
-										<Trash2 size={16} />
-									</Button>
-								</div>
+					{/* --- Cột 3: TẤT CẢ CÔNG VIỆC (ĐÃ CẬP NHẬT) --- */}
+					<div className="flex-[0.30] p-4 flex flex-col">
+						<h2 className="text-xl font-bold mb-3">
+							Tất cả Công việc ({tasks.length})
+						</h2>
+						<ScrollArea className="flex-1 -mr-4 pr-4">
+							<div className="space-y-3">
+								{tasks.length > 0 ? (
+									tasks.map((task) => (
+										<AllTasksListCard
+											key={task.id}
+											task={task}
+											onTaskClick={(clickedTask) => {
+												// Chuyển lịch sang ngày của task
+												handleSelectDate(
+													parse(
+														clickedTask.date,
+														"yyyy-MM-dd",
+														new Date()
+													)
+												);
+												// Chọn task trong danh sách giữa
+												setSelectedTask(clickedTask);
+											}}
+										/>
+									))
+								) : (
+									<div className="h-full flex items-center justify-center text-white/50 pt-10">
+										<p>Không có Task nào trong hệ thống.</p>
+									</div>
+								)}
 							</div>
-						) : (
-							<div className="h-full flex items-center justify-center text-white/50">
-								<p>Chọn một công việc để xem chi tiết</p>
-							</div>
-						)}
+						</ScrollArea>
 					</div>
 
-					{/* === MỚI: Dialog Thêm/Sửa Task === */}
+					{/* === Dialog Thêm/Sửa Task (GIỮ NGUYÊN) === */}
 					<Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
 						<DialogContent className="bg-black/70 backdrop-blur-md border-white/20 text-white">
 							<DialogHeader>
