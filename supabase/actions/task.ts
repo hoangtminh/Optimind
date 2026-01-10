@@ -20,8 +20,6 @@ export const createTask = async (
 		return { error: true, message: "User not authenticated" };
 	}
 
-	console.log(projectId);
-
 	const supabase = await createClient();
 	const { data: task, error: taskError } = await supabase
 		.from("task")

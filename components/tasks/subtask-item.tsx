@@ -23,7 +23,7 @@ export const SubtaskItem: FC<SubtaskItemProps> = ({ task, subtask }) => {
 		>
 			<Checkbox
 				checked={subtask.isCompleted}
-				onCheckedChange={() => handleToggleSubtask(task.id, subtask.id)}
+				onCheckedChange={() => handleToggleSubtask()}
 				className="h-3.5 w-3.5 border-white/30"
 			/>
 			<span
@@ -37,7 +37,7 @@ export const SubtaskItem: FC<SubtaskItemProps> = ({ task, subtask }) => {
 				{subtask.title}
 			</span>
 			<button
-				onClick={() => handleDeleteSubtask(task.id, subtask.id)}
+				onClick={() => handleDeleteSubtask()}
 				className="opacity-0 group-hover/sub:opacity-100 text-gray-500 hover:text-red-400"
 			>
 				<X size={12} />
