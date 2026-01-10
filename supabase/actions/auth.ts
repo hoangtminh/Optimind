@@ -56,21 +56,14 @@ export async function register(formData: z.infer<typeof registerSchema>) {
 export const googleLogin = async () => {
 	const supabase = await createClient();
 
-	const getURL = () => {
-		let url =
-			process?.env?.NEXT_PUBLIC_VERCEL_URL ?? // Automatically set by Vercel.
-			"http://localhost:3000/";
-		// Make sure to include `https://` when not localhost.
-		url = url.startsWith("http") ? url : `https://${url}`;
-		// Make sure to include a trailing `/`.
-		url = url.endsWith("/") ? url : `${url}/`;
-		return url;
-	};
+	const url =
+		process?.env?.NEXT_PUBLIC_VERCEL_URL ?? // Automatically set by Vercel.
+		"http://localhost:3000/";
 
 	const { data, error } = await supabase.auth.signInWithOAuth({
 		provider: "google",
 		options: {
-			redirectTo: `${getURL()}/auth/callback`,
+			redirectTo: `${url}auth/callback`,
 		},
 	});
 
