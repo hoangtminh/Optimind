@@ -1,12 +1,13 @@
-import React from "react";
+"use client";
+
 import {
 	Card,
 	CardContent,
 	CardDescription,
 	CardHeader,
 	CardTitle,
-} from "../ui/card";
-import LeaveChat from "./leave-chat";
+} from "../../ui/card";
+import LeaveChat from "../leave-chat";
 import { useRouter } from "next/navigation";
 
 const ChatCard = ({
@@ -21,7 +22,7 @@ const ChatCard = ({
 	const router = useRouter();
 	return (
 		<Card
-			className="mb-2 py-2 cursor-pointer hover:bg-gray-100"
+			className="w-full mb-2 py-2 cursor-pointer hover:bg-gray-100"
 			onClick={() => router.push(`/chat/${id}`)}
 		>
 			<CardHeader className="pl-4 pr-8 gap-0">

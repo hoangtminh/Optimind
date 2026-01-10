@@ -2,7 +2,7 @@
 
 import React from "react";
 import z from "zod";
-import { Controller, Form, useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import {
@@ -10,24 +10,18 @@ import {
 	DialogContent,
 	DialogHeader,
 	DialogTitle,
-	DialogTrigger,
-	DialogFooter,
-	DialogClose,
 } from "@/components/ui/dialog";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Label } from "@/components/ui/label";
-import { Button } from "../ui/button";
-import { GroupIcon } from "lucide-react";
-import { Input } from "../ui/input";
-import { ScrollArea } from "../ui/scroll-area";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
 	Field,
 	FieldContent,
 	FieldError,
 	FieldGroup,
 	FieldLabel,
-} from "../ui/field";
-import { LoadingSwap } from "../ui/loading-swap";
+} from "@/components/ui/field";
+import { LoadingSwap } from "@/components/ui/loading-swap";
 import { createChatSchema } from "@/supabase/schemas/chat-schema";
 import { createChat } from "@/supabase/actions/chat";
 import { toast } from "sonner";

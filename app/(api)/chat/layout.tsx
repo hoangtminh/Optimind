@@ -2,7 +2,7 @@
 
 import { cn } from "@/lib/utils";
 import ChatList from "@/components/chat/chat-list";
-import { getJoinedChats } from "@/supabase/actions/chat";
+import { getJoinedChats } from "@/supabase/lib/getChat";
 import { getCurrentUser } from "@/supabase/lib/getCurrentUser";
 import { redirect } from "next/navigation";
 

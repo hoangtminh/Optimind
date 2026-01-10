@@ -19,18 +19,21 @@ export type Database = {
           created_at: string
           id: string
           is_public: boolean
+          last_active: string
           name: string
         }
         Insert: {
           created_at?: string
           id?: string
           is_public: boolean
+          last_active?: string
           name: string
         }
         Update: {
           created_at?: string
           id?: string
           is_public?: boolean
+          last_active?: string
           name?: string
         }
         Relationships: []
@@ -71,19 +74,19 @@ export type Database = {
       friend_request: {
         Row: {
           created_at: string
-          id: number
+          id: string
           receiver_id: string
           sender_id: string
         }
         Insert: {
           created_at?: string
-          id?: number
+          id?: string
           receiver_id: string
           sender_id: string
         }
         Update: {
           created_at?: string
-          id?: number
+          id?: string
           receiver_id?: string
           sender_id?: string
         }
@@ -478,6 +481,7 @@ export type Database = {
       user_profile: {
         Row: {
           created_at: string
+          email: string | null
           id: string
           image_url: string | null
           name: string
@@ -485,6 +489,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          email?: string | null
           id?: string
           image_url?: string | null
           name: string
@@ -492,6 +497,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          email?: string | null
           id?: string
           image_url?: string | null
           name?: string
@@ -504,7 +510,11 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      is_chat_room_member: {
+        Args: { p_chat_room_id: string; p_user_id: string }
+        Returns: boolean
+      }
+      sync_auth_emails_to_profiles: { Args: never; Returns: undefined }
     }
     Enums: {
       [_ in never]: never

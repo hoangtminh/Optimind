@@ -24,7 +24,7 @@ const ChatClient = ({
 	const [isInfoPanelOpen, setIsInfoPanelOpen] = useState<boolean>(false);
 
 	return (
-		<div className={cn("flex w-full max-w-230 overflow-hidden")}>
+		<div className={cn("flex flex-7 w-full max-w-230 overflow-hidden")}>
 			<MessagingPart
 				chat={chat}
 				user={user}

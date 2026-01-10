@@ -2,7 +2,7 @@
 
 import { getCurrentUser } from "@/supabase/lib/getCurrentUser";
 import { createChatSchema, Message } from "@/supabase/schemas/chat-schema";
-import { createAdminClient } from "@/utils/supabase/server";
+import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 import z from "zod";
 
@@ -20,50 +20,37 @@ export const createChat = async (
 		return { error: true, message: "User not authenticated" };
 	}
 
-	const supabase = createAdminClient();
+	const supabase = await createClient();
 	const { data: chat, error: chatError } = await supabase
 		.from("chat_room")
 		.insert({
 			name: data.name,
 			is_public: data.isPublic,
-		})
-		.select("id")
-		.single();
+		});
 
-	if (chatError || chat === null) {
+	if (chatError) {
 		return {
 			error: true,
 			message: chatError.message || "Failed to create chat room",
 		};
 	}
-	const { error: membershipError } = await supabase
+	const { data: newChat } = await supabase
 		.from("chat_room_member")
-		.insert({ chat_room_id: chat.id, member_id: user.id });
-	if (membershipError) {
-		return { error: true, message: "Failed to add user to chat" };
+		.select("chat_room_id")
+		.eq("member_id", user.id)
+		.order("created_at", { ascending: false })
+		.limit(1)
+		.single();
+
+	if (!newChat) {
+		return {
+			error: true,
+			message:
+				"Failed to retrieve new chat! Please refresh and try again",
+		};
 	}
-	redirect("/chat/" + chat.id);
-};
 
-export const getJoinedChats = async (userId: string) => {
-	const supabase = createAdminClient();
-
-	const { data, error } = await supabase
-		.from("chat_room")
-		.select(`id, name, chat_room_member (member_id)`)
-		.order("name", { ascending: true });
-
-	if (error) return [];
-
-	return data
-		.filter((chat) =>
-			chat.chat_room_member.some((u) => u.member_id === userId)
-		)
-		.map((chat) => ({
-			id: chat.id,
-			name: chat.name,
-			memberCount: chat.chat_room_member.length,
-		}));
+	redirect("/chat/" + newChat.chat_room_id);
 };
 
 export const sendMessage = async (data: {
@@ -82,7 +69,7 @@ export const sendMessage = async (data: {
 		return { error: true, message: "Please enter new message" };
 	}
 
-	const supabase = createAdminClient();
+	const supabase = await createClient();
 
 	const { data: memebership, error: membershipError } = await supabase
 		.from("chat_room_member")
@@ -110,7 +97,6 @@ export const sendMessage = async (data: {
 		)
 		.single();
 	if (error) {
-		console.log(error);
 		return {
 			error: true,
 			message: error.message || "Failed to send message",
@@ -132,7 +118,7 @@ export const addUserToChat = async ({
 		return { error: true, message: "User not authenticated" };
 	}
 
-	const supabase = createAdminClient();
+	const supabase = await createClient();
 
 	const { data: chatMembership, error: chatMembershipError } = await supabase
 		.from("chat_room_member")
@@ -197,7 +183,7 @@ export const deleteUserFromChat = async ({
 		return { error: true, message: "User not authenticated" };
 	}
 
-	const supabase = createAdminClient();
+	const supabase = await createClient();
 
 	const { data: chatMembership, error: chatMembershipError } = await supabase
 		.from("chat_room_member")
@@ -232,9 +218,11 @@ export const deleteUserFromChat = async ({
 		.eq("member_id", userId)
 		.single();
 
-	console.log(existingMembership, error);
 	if (!existingMembership) {
-		return { error: true, message: "User is not in the chat" };
+		return {
+			error: true,
+			message: error?.message || "User is not in the chat",
+		};
 	}
 
 	const { error: deleteError } = await supabase

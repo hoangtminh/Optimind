@@ -1,16 +1,14 @@
 "use client";
 
 import { Message } from "@/supabase/schemas/chat-schema";
-import ChatInput from "@/components/chat/chat-input";
-import ChatMessage from "@/components/chat/chat-message";
-import InviteUserModal from "@/components/chat/invite-user-modal";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import ChatMessage from "@/components/chat/messaging-section/chat-message";
 import { Button } from "@/components/ui/button";
 import { useInfiniteScrollChat } from "@/supabase/hooks/useInfiniteScrollChat";
 import { useRealtimeChat } from "@/supabase/hooks/useRealtimeChat";
 import { Info } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
+import ChatInput from "./messaging-section/chat-input";
 
 const MessagingPart = ({
 	chat,
@@ -118,6 +116,8 @@ const MessagingPart = ({
 									? triggerQueryRef
 									: null
 							}
+							prev={visibleMessages[index + 1]}
+							next={visibleMessages[index - 1]}
 						/>
 					))}
 				</div>

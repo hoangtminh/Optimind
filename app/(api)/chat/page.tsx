@@ -1,6 +1,6 @@
 "use client";
 
-import CreateChat from "@/components/chat/create-chat";
+import CreateChat from "@/components/chat/chat-tab/create-chat";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 

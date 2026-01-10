@@ -1,27 +1,48 @@
-import { createAdminClient } from "@/utils/supabase/server";
+"use server";
+import { createAdminClient, createClient } from "@/utils/supabase/server";
 import { getCurrentUser } from "./getCurrentUser";
 
 export const getChat = async (id: string) => {
 	const user = await getCurrentUser();
 	if (user == null) return null;
 
-	const supabase = createAdminClient();
+	const supabase = await createClient();
 	const { data: chat, error } = await supabase
 		.from("chat_room")
-		.select("id, name, chat_room_member!inner ()")
+		.select("id, name")
 		.eq("id", id)
-		.eq("chat_room_member.member_id", user.id)
 		.single();
 
 	if (error) return null;
 	return chat;
 };
 
+export const getJoinedChats = async (userId: string) => {
+	const supabase = await createClient();
+
+	const { data, error } = await supabase
+		.from("chat_room")
+		.select(`id, name, last_active, chat_room_member (member_id)`)
+		.order("last_active", { ascending: false });
+
+	if (error) return [];
+
+	return data
+		.filter((chat) =>
+			chat.chat_room_member.some((u) => u.member_id === userId)
+		)
+		.map((chat) => ({
+			id: chat.id,
+			name: chat.name,
+			memberCount: chat.chat_room_member.length,
+		}));
+};
+
 export const getUsers = async () => {
 	const user = await getCurrentUser();
 	if (user == null) return null;
 
-	const supabase = createAdminClient();
+	const supabase = await createClient();
 
 	const { data, error } = await supabase
 		.from("user_profile")
@@ -33,7 +54,7 @@ export const getUsers = async () => {
 };
 
 export const getMessages = async (chatId: string) => {
-	const supabase = createAdminClient();
+	const supabase = await createClient();
 
 	const { data, error } = await supabase
 		.from("messages")
@@ -48,7 +69,7 @@ export const getMessages = async (chatId: string) => {
 };
 
 export const getChatMembers = async (chatId: string) => {
-	const supabase = createAdminClient();
+	const supabase = await createClient();
 	const { data, error } = await supabase
 		.from("chat_room_member")
 		.select("member_id, member:user_profile (name, image_url)")

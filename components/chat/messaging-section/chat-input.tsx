@@ -4,12 +4,12 @@ import {
 	InputGroupAddon,
 	InputGroupButton,
 	InputGroupTextarea,
-} from "../ui/input-group";
+} from "@/components/ui/input-group";
 import { Send } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { sendMessage } from "@/supabase/actions/chat";
-import { Button } from "../ui/button";
+import { Button } from "@/components/ui/button";
 import { Message } from "@/supabase/schemas/chat-schema";
 
 type Props = {
