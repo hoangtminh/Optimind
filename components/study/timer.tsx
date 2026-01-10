@@ -107,7 +107,7 @@ const PomodoroTimer: FC<PomodoroTimerProps> = ({
 			}, 1000);
 		} else if (timer === 0) {
 			setIsRunning(false);
-			audioRef.current?.play(); // Phát âm thanh
+			audioRef?.current?.play(); // Phát âm thanh
 
 			if (timerMode === "pomodoro") {
 				if (currentMode === "focus") {

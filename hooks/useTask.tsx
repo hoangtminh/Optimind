@@ -57,6 +57,9 @@ interface TaskContextType {
 
 	setIsModalOpen: (bool: boolean) => void;
 	setIsDetailSheetOpen: (bool: boolean) => void;
+
+	handleToggleSubtask: () => void;
+	handleDeleteSubtask: () => void;
 }
 
 const TaskContext = createContext<TaskContextType | undefined>(undefined);
@@ -204,7 +207,6 @@ export const TaskProvider: FC<{ children: ReactNode }> = ({ children }) => {
 	const getTasksByProjectId = useCallback(async (projectId: string) => {
 		const data = await getTasksByProject(projectId);
 		setAllTasks(data ? data : []);
-		console.log(data);
 		return data;
 	}, []);
 
@@ -269,7 +271,6 @@ export const TaskProvider: FC<{ children: ReactNode }> = ({ children }) => {
 
 	const handleUpdateTask = useCallback(
 		async (taskId: string, updatedTask: Task) => {
-			console.log(updatedTask);
 			const { title, note, repeated, priority, tag, due_date } =
 				updatedTask;
 
@@ -357,6 +358,9 @@ export const TaskProvider: FC<{ children: ReactNode }> = ({ children }) => {
 		setTags((prev) => prev.filter((t) => t.id !== tagId));
 	};
 
+	const handleToggleSubtask = () => {};
+	const handleDeleteSubtask = () => {};
+
 	// === 7. Export Context Value ===
 	const contextValue = useMemo(
 		() => ({
@@ -390,6 +394,9 @@ export const TaskProvider: FC<{ children: ReactNode }> = ({ children }) => {
 
 			setIsModalOpen,
 			setIsDetailSheetOpen,
+
+			handleToggleSubtask,
+			handleDeleteSubtask,
 		}),
 		[
 			columns,
@@ -422,6 +429,8 @@ export const TaskProvider: FC<{ children: ReactNode }> = ({ children }) => {
 
 			setIsModalOpen,
 			setIsDetailSheetOpen,
+			handleToggleSubtask,
+			handleDeleteSubtask,
 		]
 	);
 
