@@ -26,7 +26,7 @@ export interface Task {
 	priority: string | null;
 }
 
-export interface Tasks {
+export interface GroupTasks {
 	[columnId: string]: Task[];
 }
 

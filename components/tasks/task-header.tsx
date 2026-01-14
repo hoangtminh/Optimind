@@ -3,9 +3,11 @@ import { Button } from "@/components/ui/button";
 import { useTask } from "@/hooks/useTask";
 import { Plus } from "lucide-react";
 import ProjectSelector from "./project-selector";
+import { useProject } from "@/hooks/useProject";
 
-const TaskHeader = ({ selectedProject }: { selectedProject: string }) => {
+const TaskHeader = () => {
 	const { setIsModalOpen } = useTask();
+	const { selectedProjectId } = useProject();
 
 	return (
 		<div className="flex justify-between items-center px-4 py-3 border-b border-white/20 shrink-0">
@@ -13,7 +15,7 @@ const TaskHeader = ({ selectedProject }: { selectedProject: string }) => {
 				<h1 className="text-2xl font-bold text-white">Tasks Board</h1>
 				<ProjectSelector />
 			</div>
-			{selectedProject && (
+			{selectedProjectId && (
 				<Button
 					className="bg-white text-black cursor-pointer hover:bg-gray-200"
 					onClick={() => setIsModalOpen(true)}

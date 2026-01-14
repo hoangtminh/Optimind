@@ -25,16 +25,10 @@ const DeleteTaskAlert = ({
 	taskTitle: string;
 }) => {
 	const router = useRouter();
-	const { setIsDetailSheetOpen } = useTask();
-	const handleDeleteTask = async (taskId: string) => {
-		const { error, message } = await deleteTask(taskId);
-		if (error) {
-			toast.error(message);
-		} else {
-			toast.success("Deleted task");
-			setIsDetailSheetOpen(false);
-			router.refresh();
-		}
+	const { setIsDetailSheetOpen, handleDeleteTask } = useTask();
+	const onDeleteTask = async (taskId: string) => {
+		await handleDeleteTask(taskId);
+		setIsDetailSheetOpen(false);
 	};
 
 	return (
@@ -59,7 +53,7 @@ const DeleteTaskAlert = ({
 						<Button
 							variant={"destructive"}
 							className="bg-red-500 hover:bg-red-600"
-							onClick={() => handleDeleteTask(taskId)}
+							onClick={() => onDeleteTask(taskId)}
 						>
 							Delete
 						</Button>

@@ -18,18 +18,19 @@ import z from "zod";
 import { createTaskSchema } from "@/supabase/schemas/task-schema";
 import {
 	createTask,
+	deleteTask,
 	updateTask,
 	updateTaskStatus,
 } from "@/supabase/actions/task";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import { getTasksByProject } from "@/supabase/lib/getTask";
+import { getTasksByProject, getAllTask } from "@/supabase/lib/getTask";
 import { useProject } from "./useProject";
 
 interface TaskContextType {
 	columns: Column[];
 	allTasks: Task[]; // Lưu trữ toàn bộ task
-	tasks: Task[]; // Lưu trữ task đã lọc theo Project (hoặc view hiện tại)
+	projectTasks: Task[]; // Tasks cho project hiện tại
 	tags: Tag[];
 	groupTasks: Record<string, Task[]>;
 	activeTask: Task | null;
@@ -39,13 +40,19 @@ interface TaskContextType {
 	isDetailSheetOpen: boolean;
 	selectedTask: Task | null;
 
+	setAllTasks: (tasks: Task[]) => void;
 	setSelectedTask: (task: Task) => void;
+	getAllTasks: () => Promise<Task[] | null>;
+	getTasksByProjectId: (projectId: string) => Promise<Task[] | null>;
 
 	onDragStart: (event: DragStartEvent) => void;
 	onDragEnd: (event: DragEndEvent) => void;
 	onDragOver: (event: DragOverEvent) => void;
 
-	handleAddTask: (data: z.infer<typeof createTaskSchema>) => Promise<void>;
+	handleAddTask: (
+		data: z.infer<typeof createTaskSchema>,
+		projectId: string
+	) => Promise<void>;
 	handleUpdateTask: (taskId: string, updatedTask: Task) => Promise<void>;
 	handleDeleteTask: (taskId: string) => Promise<void>;
 	handleAddColumn: () => void;
@@ -77,11 +84,9 @@ export const TaskProvider: FC<{ children: ReactNode }> = ({ children }) => {
 	const [loading, setLoading] = useState(false);
 	const [columns, setColumns] = useState<Column[]>(mockColumns);
 	const [allTasks, setAllTasks] = useState<Task[]>([]);
+	const [projectTasks, setProjectTasks] = useState<Task[]>([]);
 	const [groupTasks, setGroupTasks] = useState<Record<string, Task[]>>({});
 	const [tags, setTags] = useState<Tag[]>([]);
-
-	// Giả định logic lọc task (ở đây mặc định tasks = allTasks nếu không dùng Project riêng)
-	const tasks = useMemo(() => allTasks, [allTasks]);
 
 	// === 2. States Quản lý UI & DND ===
 	const [activeTask, setActiveTask] = useState<Task | null>(null);
@@ -149,9 +154,9 @@ export const TaskProvider: FC<{ children: ReactNode }> = ({ children }) => {
 						overColumnId
 					);
 					if (error) {
-						toast.error(message);
+						toast.error(message as string);
 					} else {
-						toast.success(message);
+						toast.success("Update success full");
 						makeGroupTasks();
 					}
 				}
@@ -206,6 +211,12 @@ export const TaskProvider: FC<{ children: ReactNode }> = ({ children }) => {
 	// === 4. Handlers cho CRUD Task ===
 	const getTasksByProjectId = useCallback(async (projectId: string) => {
 		const data = await getTasksByProject(projectId);
+		setProjectTasks(data ? data : []);
+		return data;
+	}, []);
+
+	const getAllTasks = useCallback(async () => {
+		const data = await getAllTask();
 		setAllTasks(data ? data : []);
 		return data;
 	}, []);
@@ -253,17 +264,31 @@ export const TaskProvider: FC<{ children: ReactNode }> = ({ children }) => {
 	}, [selectedProjectId]);
 
 	const handleAddTask = useCallback(
-		async (formData: z.infer<typeof createTaskSchema>) => {
-			const { message, error } = await createTask(
-				formData,
-				selectedProjectId
-			);
+		async (
+			formData: z.infer<typeof createTaskSchema>,
+			projectId: string
+		) => {
+			const { message, error } = await createTask(formData, projectId);
 			if (error) {
-				toast.error(message);
+				toast.error(message as string);
 			} else {
-				toast.success(message);
-				makeGroupTasks();
-				router.refresh();
+				setAllTasks((prev) => [message as Task, ...prev]);
+				setProjectTasks((prev) => [message as Task, ...prev]);
+				const is_overdue =
+					(message as Task).due_date !== null &&
+					new Date((message as Task).due_date as string).getTime() >
+						Date.now();
+
+				setGroupTasks((prev) => ({
+					...prev,
+					[is_overdue ? (message as Task).status : "overdue"]: [
+						message as Task,
+						...(prev[
+							is_overdue ? (message as Task).status : "overdue"
+						] || []),
+					],
+				}));
+				toast.success("Task created");
 			}
 		},
 		[selectedProjectId, newColumnId]
@@ -288,7 +313,6 @@ export const TaskProvider: FC<{ children: ReactNode }> = ({ children }) => {
 			} else {
 				toast.success(message);
 				setIsDetailSheetOpen(false);
-
 				router.refresh();
 			}
 		},
@@ -297,18 +321,19 @@ export const TaskProvider: FC<{ children: ReactNode }> = ({ children }) => {
 
 	const handleDeleteTask = useCallback(
 		async (taskId: string) => {
-			// const columnId = findColumnForTask(taskId);
-			// if (columnId) {
-			// 	setAllTasks((prevTasks) => ({
-			// 		...prevTasks,
-			// 		[columnId]: prevTasks[columnId].filter(
-			// 			(t) => t.id !== taskId
-			// 		),
-			// 	}));
-			// }
-			// handleCloseDetailSheet();
+			const columnId = findColumnForTask(taskId);
+			const { error, message } = await deleteTask(taskId);
+			if (error) {
+				toast.error(message);
+			} else {
+				setAllTasks((prevTasks) =>
+					prevTasks.filter((t: Task) => t.id !== taskId)
+				);
+				makeGroupTasks();
+			}
+			setIsDetailSheetOpen(false);
 		},
-		[findColumnForTask]
+		[allTasks, groupTasks, findColumnForTask]
 	);
 
 	// === 5. Handlers cho Column & Tag ===
@@ -366,7 +391,8 @@ export const TaskProvider: FC<{ children: ReactNode }> = ({ children }) => {
 		() => ({
 			columns,
 			allTasks,
-			tasks,
+			setAllTasks,
+			projectTasks,
 			groupTasks,
 			tags,
 			activeTask,
@@ -376,6 +402,8 @@ export const TaskProvider: FC<{ children: ReactNode }> = ({ children }) => {
 			isDetailSheetOpen,
 			selectedTask,
 			setSelectedTask,
+			getAllTasks,
+			getTasksByProjectId,
 
 			onDragStart,
 			onDragEnd,
@@ -401,8 +429,9 @@ export const TaskProvider: FC<{ children: ReactNode }> = ({ children }) => {
 		[
 			columns,
 			allTasks,
+			setAllTasks,
+			projectTasks,
 			groupTasks,
-			tasks,
 			tags,
 			activeTask,
 			activeColumn,
@@ -411,6 +440,8 @@ export const TaskProvider: FC<{ children: ReactNode }> = ({ children }) => {
 			isDetailSheetOpen,
 			selectedTask,
 			setSelectedTask,
+			getAllTasks,
+			getTasksByProjectId,
 
 			onDragStart,
 			onDragEnd,

@@ -41,7 +41,6 @@ const TaskDetailSheet = () => {
 		columns,
 		handleUpdateTask,
 	} = useTask();
-	if (!task) return;
 
 	// Local state for editing
 	const [editData, setEditData] = useState<Task | null>(null);

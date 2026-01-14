@@ -119,4 +119,23 @@
 	body {
 		@apply bg-background text-foreground;
 	}
+	/* Add this to your global CSS file */
+	::-webkit-scrollbar {
+		width: 8px; /* Customize the scrollbar width */
+	}
+	::-webkit-scrollbar-track {
+		background: transparent; /* Customize the scrollbar track */
+	}
+	::-webkit-scrollbar-thumb {
+		background: rgba(
+			230,
+			230,
+			230,
+			0.7
+		); /* Customize the scrollbar thumb */
+		border-radius: 10px;
+	}
+	::-webkit-scrollbar-thumb:hover {
+		background: #ddd; /* Customize the scrollbar thumb on hover */
+	}
 }

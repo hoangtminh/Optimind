@@ -14,7 +14,7 @@ const glassEffect =
 
 // --- Main Page Component ---
 export default function TaskBoardPage() {
-	const { selectedProjectId } = useProject();
+	const { selectedProjectId, projects } = useProject();
 
 	return (
 		<main className="h-screen w-screen text-white transition-all duration-500 overflow-hidden">
@@ -27,7 +27,7 @@ export default function TaskBoardPage() {
 					)}
 				>
 					{/* Header: Title and Add Button */}
-					<TaskHeader selectedProject={selectedProjectId} />
+					<TaskHeader />
 
 					{/* Main Kanban Area */}
 					{selectedProjectId ? (
@@ -40,6 +40,11 @@ export default function TaskBoardPage() {
 							<div className="text-2xl text-muted/70">
 								or create a new project
 							</div>
+							{/* {projects.map((prj) => (
+								<div>
+									<div>{prj.name}</div>
+								</div>
+							))} */}
 						</div>
 					)}
 				</div>

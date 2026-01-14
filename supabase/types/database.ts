@@ -221,6 +221,7 @@ export type Database = {
           id: string
           session_id: string
           timestamp: string[]
+          user_id: string
         }
         Insert: {
           created_at?: string
@@ -228,6 +229,7 @@ export type Database = {
           id?: string
           session_id: string
           timestamp: string[]
+          user_id: string
         }
         Update: {
           created_at?: string
@@ -235,6 +237,7 @@ export type Database = {
           id?: string
           session_id?: string
           timestamp?: string[]
+          user_id?: string
         }
         Relationships: [
           {
@@ -242,6 +245,13 @@ export type Database = {
             columns: ["session_id"]
             isOneToOne: false
             referencedRelation: "study_session"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "session_log_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_profile"
             referencedColumns: ["id"]
           },
         ]
@@ -414,6 +424,27 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      tag: {
+        Row: {
+          color: string
+          created_at: string
+          id: string
+          name: string
+        }
+        Insert: {
+          color: string
+          created_at?: string
+          id?: string
+          name: string
+        }
+        Update: {
+          color?: string
+          created_at?: string
+          id?: string
+          name?: string
+        }
+        Relationships: []
       }
       task: {
         Row: {

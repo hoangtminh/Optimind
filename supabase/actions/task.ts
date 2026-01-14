@@ -33,7 +33,7 @@ export const createTask = async (
 			tag: data.tag || [],
 			repeated: "none",
 		})
-		.select("id")
+		.select("*")
 		.single();
 
 	if (task === null) {
@@ -42,7 +42,7 @@ export const createTask = async (
 			message: taskError?.message || "Failed to create task",
 		};
 	}
-	return { error: false, message: "Created task successfully" };
+	return { error: false, message: task };
 };
 
 export const updateTaskStatus = async (taskId: string, newStatus: string) => {
@@ -73,7 +73,7 @@ export const updateTaskStatus = async (taskId: string, newStatus: string) => {
 		};
 	}
 
-	return { error: false, data, message: "Updated status successfully" };
+	return { error: false, data, message: data };
 };
 
 export const updateTask = async (

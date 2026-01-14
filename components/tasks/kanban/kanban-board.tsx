@@ -71,13 +71,13 @@ const KanbanBoard: FC = () => {
 					</SortableContext>
 
 					{/* Add New Column Button */}
-					<Button
+					{/* <Button
 						variant="outline"
 						className="h-full w-80 shrink-0 bg-white/10 border-white/20 hover:bg-white/20 text-white self-start"
 						onClick={handleAddColumn}
 					>
 						<Plus size={18} className="mr-2" /> Thêm cột mới
-					</Button>
+					</Button> */}
 				</div>
 				<ScrollBar orientation="horizontal" />
 			</ScrollArea>

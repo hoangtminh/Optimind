@@ -11,9 +11,10 @@ export const getAllTask = async () => {
 	const { data: task, error } = await supabase
 		.from("task")
 		.select(
-			"id, title, note, due_date, is_completed, tag, repeated, status, project_id"
+			"id, title, note, due_date, is_completed, tag, repeated, status, priority, project_id"
 		)
-		.eq("user_id", user.id);
+		.eq("user_id", user.id)
+		.order("created_at", { ascending: false });
 
 	if (error) return null;
 
@@ -31,7 +32,8 @@ export const getTasksByProject = async (projectId: string) => {
 			"id, title, note, due_date, is_completed, tag, repeated, status, priority"
 		)
 		.eq("user_id", user.id)
-		.eq("project_id", projectId);
+		.eq("project_id", projectId)
+		.order("created_at", { ascending: false });
 
 	if (error) return null;
 

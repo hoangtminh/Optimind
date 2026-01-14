@@ -27,7 +27,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { CalendarDays, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
-import React, { FC, FormEvent } from "react";
+import React, { FC, FormEvent, useEffect, useState } from "react";
 import { useTask } from "@/hooks/useTask";
 import { Priority } from "@/lib/type/tasks-type";
 import z from "zod";
@@ -43,7 +43,8 @@ type FormData = z.infer<typeof createTaskSchema>;
 const AddTaskModal: FC = () => {
 	const { isModalOpen, setIsModalOpen, handleAddTask, columns, newColumnId } =
 		useTask();
-	const { selectedProjectId } = useProject();
+	const { selectedProjectId, projects } = useProject();
+	const [selectedProject, setSelectedProject] = useState(selectedProjectId);
 
 	const currentColumnTitle = columns.find((c) => c.id === newColumnId)?.title;
 
@@ -61,9 +62,7 @@ const AddTaskModal: FC = () => {
 	});
 
 	const handleSubmit = async (data: FormData) => {
-		handleAddTask(data);
-		console.log("submitted");
-		console.log(selectedProjectId, data);
+		handleAddTask(data, selectedProject);
 		onClose();
 	};
 
@@ -71,6 +70,10 @@ const AddTaskModal: FC = () => {
 		setIsModalOpen(false);
 		form.reset();
 	};
+
+	useEffect(() => {
+		setSelectedProject(selectedProjectId);
+	}, [selectedProjectId]);
 
 	return (
 		<Dialog open={isModalOpen} onOpenChange={onClose}>
@@ -139,95 +142,128 @@ const AddTaskModal: FC = () => {
 						/>
 					</FieldGroup>
 					<FieldGroup>
-						<div className="flex gap-4 items-center">
-							{/* Priority */}
-							<Controller
-								name="priority"
-								control={form.control}
-								render={({ field, fieldState }) => (
-									<Field>
-										<FieldLabel htmlFor={field.name}>
-											Độ quan trọng
-										</FieldLabel>
-										<Select
-											onValueChange={field.onChange} // Cập nhật giá trị vào form
-											defaultValue={field.value} // Hiển thị giá trị mặc định
-										>
-											<SelectTrigger
-												id={field.name}
-												className="bg-white/10 border-white/30"
+						<div className="flex gap-4 items-start">
+							<div className="flex flex-1 flex-col gap-2">
+								{/* Priority */}
+								<Controller
+									name="priority"
+									control={form.control}
+									render={({ field, fieldState }) => (
+										<Field>
+											<FieldLabel htmlFor={field.name}>
+												Độ quan trọng
+											</FieldLabel>
+											<Select
+												onValueChange={field.onChange} // Cập nhật giá trị vào form
+												defaultValue={field.value} // Hiển thị giá trị mặc định
 											>
-												<SelectValue placeholder="Chọn độ ưu tiên" />
-											</SelectTrigger>
-											<SelectContent className="bg-black/70 backdrop-blur-md border-white/20 text-white">
-												<SelectItem value="high">
-													Cao
-												</SelectItem>
-												<SelectItem value="medium">
-													Trung bình
-												</SelectItem>
-												<SelectItem value="low">
-													Thấp
-												</SelectItem>
-											</SelectContent>
-										</Select>
-									</Field>
-								)}
-							/>
-							{/* Due Date */}
-							<Controller
-								name="due_date"
-								control={form.control}
-								render={({ field, fieldState }) => (
-									<Field data-invalid={fieldState.invalid}>
-										<FieldLabel htmlFor={field.name}>
-											Hạn chót
-										</FieldLabel>
-										<Popover>
-											<PopoverTrigger asChild>
-												<Button
-													variant={"outline"}
-													className={cn(
-														"w-full justify-start text-left font-normal bg-white/10 border-white/30",
-														!field.value &&
-															"text-gray-300"
-													)}
+												<SelectTrigger
+													id={field.name}
+													className="bg-white/10 border-white/30"
 												>
-													<CalendarDays className="mr-2 h-4 w-4" />
-													{field.value ? (
-														format(
-															new Date(
-																field.value
-															),
-															"PPP"
-														)
-													) : (
-														<span>Chọn ngày</span>
-													)}
-												</Button>
-											</PopoverTrigger>
-											<PopoverContent
-												className="w-auto p-0 bg-black/70 backdrop-blur-md border-white/20 text-white"
-												align="start"
+													<SelectValue placeholder="Chọn độ ưu tiên" />
+												</SelectTrigger>
+												<SelectContent className="bg-black/70 backdrop-blur-md border-white/20 text-white">
+													<SelectItem value="high">
+														Cao
+													</SelectItem>
+													<SelectItem value="medium">
+														Trung bình
+													</SelectItem>
+													<SelectItem value="low">
+														Thấp
+													</SelectItem>
+												</SelectContent>
+											</Select>
+										</Field>
+									)}
+								/>
+
+								<Label htmlFor="projectId">Chọn Project</Label>
+								<Select
+									onValueChange={(e) => setSelectedProject(e)} // Cập nhật giá trị vào form
+									defaultValue={selectedProjectId} // Hiển thị giá trị mặc định
+								>
+									<SelectTrigger
+										id="projectId"
+										className="bg-white/10 border-white/30"
+									>
+										<SelectValue placeholder="Chọn Project" />
+									</SelectTrigger>
+									<SelectContent className="bg-black/70 backdrop-blur-md border-white/20 text-white">
+										{projects.map((prj) => (
+											<SelectItem
+												key={prj.id}
+												value={prj.id}
 											>
-												<Calendar
-													className="text-white"
-													mode="single"
-													selected={
-														field.value
-															? new Date(
+												{prj.name}
+											</SelectItem>
+										))}
+									</SelectContent>
+								</Select>
+							</div>
+							<div className="flex-2">
+								{/* Due Date */}
+								<Controller
+									name="due_date"
+									control={form.control}
+									render={({ field, fieldState }) => (
+										<Field
+											data-invalid={fieldState.invalid}
+										>
+											<FieldLabel htmlFor={field.name}>
+												Hạn chót
+											</FieldLabel>
+											<Popover>
+												<PopoverTrigger asChild>
+													<Button
+														variant={"outline"}
+														className={cn(
+															"w-full justify-start text-left font-normal bg-white/10 border-white/30",
+															!field.value &&
+																"text-gray-300"
+														)}
+													>
+														<CalendarDays className="mr-2 h-4 w-4" />
+														{field.value ? (
+															format(
+																new Date(
 																	field.value
-															  )
-															: undefined
-													}
-													onSelect={field.onChange}
-													autoFocus
-												/>
-											</PopoverContent>
-										</Popover>
-									</Field>
-								)}
-							/>
+																),
+																"PPP"
+															)
+														) : (
+															<span>
+																Chọn ngày
+															</span>
+														)}
+													</Button>
+												</PopoverTrigger>
+												<PopoverContent
+													className="w-auto p-0 bg-black/70 backdrop-blur-md border-white/20 text-white"
+													align="start"
+												>
+													<Calendar
+														className="text-white"
+														mode="single"
+														selected={
+															field.value
+																? new Date(
+																		field.value
+																  )
+																: undefined
+														}
+														onSelect={
+															field.onChange
+														}
+														autoFocus
+													/>
+												</PopoverContent>
+											</Popover>
+										</Field>
+									)}
+								/>
+							</div>
 						</div>
 					</FieldGroup>
 					{/* Tags */}
@@ -261,7 +297,7 @@ const AddTaskModal: FC = () => {
 							<LoadingSwap
 								isLoading={form.formState.isSubmitting}
 							>
-								Tạo project
+								Tạo task
 							</LoadingSwap>
 						</Button>
 						<DialogClose asChild>
