@@ -53,7 +53,7 @@ const MessagingPart = ({
 		<div
 			className={cn(
 				"flex flex-col w-full h-full transition-all duration-700",
-				isInfoPanelOpen ? "w-150" : ""
+				isInfoPanelOpen ? "col-span-2" : "col-span-1"
 			)}
 		>
 			{/* Header của Chat */}
@@ -81,7 +81,7 @@ const MessagingPart = ({
 
 			{/* Messages part*/}
 			<div
-				className="grow overflow-y-auto h-full flex flex-col-reverse"
+				className="grow overflow-y-auto h-100 flex flex-col-reverse"
 				style={{
 					scrollbarWidth: "thin",
 					scrollbarColor: "var(--border) transparent",

@@ -24,7 +24,10 @@ const ChatMessage = ({
 		timeStyle: "short",
 	});
 
-	const showAuthor = author_id !== prev?.author_id || prev == null;
+	const showAuthor =
+		author_id !== prev?.author_id ||
+		prev == null ||
+		author_id !== next?.author_id;
 	const dateDiffPrev = prev
 		? new Date(prev?.created_at).getTime() -
 				new Date(created_at).getTime() >
@@ -44,7 +47,7 @@ const ChatMessage = ({
 				status === "error" && "bg-destructive/20 text-destructive"
 			)}
 		>
-			<div className="flex flex-row gap-3">
+			<div className="grid grid-cols-[auto_auto] gap-3 overflow-hidden">
 				{showAuthor || dateDiffPrev ? (
 					<div className="flex items-end">
 						{author.image_url != null ? (
@@ -56,7 +59,7 @@ const ChatMessage = ({
 								className="rounded-full"
 							/>
 						) : (
-							<div className="size-8 rounded-full flex items-center justify-center border bg-muted text-muted-foreground overflow-hidden">
+							<div className="w-10 h-10 rounded-full flex items-center justify-center border bg-muted text-muted-foreground overflow-hidden">
 								<User2Icon className="size-6 mt-2" />
 							</div>
 						)}
@@ -64,20 +67,27 @@ const ChatMessage = ({
 				) : (
 					<div className="w-10 h-10"></div>
 				)}
-				<div className="grow space-y-0.5">
+				<div className="flex flex-col justify-center overflow-hidden wrap-break-word">
 					<div className="flex items-baseline gap-2">
-						{dateDiffNext && (
-							<span className="text-sm font-semibold">
-								{author.name}
-							</span>
-						)}
-						<span className="text-xs text-muted/60">
-							{DATE_FORMATTER.format(new Date(created_at))}
-						</span>
+						{
+							// showAuthor ||
+							dateDiffNext && (
+								<>
+									<span className="text-sm font-semibold">
+										{author.name}
+									</span>
+									<span className="text-xs text-muted/60">
+										{DATE_FORMATTER.format(
+											new Date(created_at)
+										)}
+									</span>
+								</>
+							)
+						}
 					</div>
-					<p className="text-sm wrap-break-word whitespace-pre">
-						{text}
-					</p>
+					<div className="h-fit max-w-full w-fit text-sm leading-relaxed whitespace-pre-wrap wrap-break-word bg-black/30 px-3 py-1 rounded-md">
+						{text.toString()}
+					</div>
 				</div>
 			</div>
 		</div>

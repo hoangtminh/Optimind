@@ -217,7 +217,7 @@ export type Database = {
       session_log: {
         Row: {
           created_at: string
-          focus_point: number
+          focus: number
           id: string
           session_id: string
           timestamp: string
@@ -225,7 +225,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
-          focus_point: number
+          focus: number
           id?: string
           session_id: string
           timestamp: string
@@ -233,7 +233,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
-          focus_point?: number
+          focus?: number
           id?: string
           session_id?: string
           timestamp?: string

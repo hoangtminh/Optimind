@@ -108,10 +108,10 @@ export const sendMessage = async (data: {
 
 export const addUserToChat = async ({
 	chatId,
-	userId,
+	userEmail,
 }: {
 	chatId: string;
-	userId: string;
+	userEmail: string;
 }) => {
 	const currentUser = await getCurrentUser();
 	if (currentUser == null) {
@@ -119,6 +119,16 @@ export const addUserToChat = async ({
 	}
 
 	const supabase = await createClient();
+
+	const { data: userProfile } = await supabase
+		.from("user_profile")
+		.select("id")
+		.eq("email", userEmail)
+		.single();
+
+	if (!userProfile) {
+		return { error: true, message: "User not found" };
+	}
 
 	const { data: chatMembership, error: chatMembershipError } = await supabase
 		.from("chat_room_member")
@@ -136,21 +146,11 @@ export const addUserToChat = async ({
 		};
 	}
 
-	const { data: userProfile } = await supabase
-		.from("user_profile")
-		.select("id")
-		.eq("id", userId)
-		.single();
-
-	if (!userProfile) {
-		return { error: true, message: "User not found" };
-	}
-
 	const { data: existingMembership } = await supabase
 		.from("chat_room_member")
 		.select("member_id")
 		.eq("chat_room_id", chatId)
-		.eq("member_id", userId)
+		.eq("member_id", userProfile.id)
 		.single();
 
 	if (existingMembership) {
@@ -159,7 +159,7 @@ export const addUserToChat = async ({
 
 	const { error: insertError } = await supabase
 		.from("chat_room_member")
-		.insert({ chat_room_id: chatId, member_id: userId });
+		.insert({ chat_room_id: chatId, member_id: userProfile.id });
 
 	if (insertError) {
 		return {

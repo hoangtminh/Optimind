@@ -18,30 +18,34 @@ import { Field, FieldError, FieldGroup, FieldLabel } from "../ui/field";
 import { Input } from "../ui/input";
 import { LoadingSwap } from "../ui/loading-swap";
 import { addUserToChat } from "@/supabase/actions/chat";
+import { cn } from "@/lib/utils";
 
 interface InviteUserModal {
 	chatId: string;
 }
 
 const formSchema = z.object({
-	userId: z.string().min(1).trim(),
+	userEmail: z.string().min(1).trim(),
 });
 
 type FormData = z.infer<typeof formSchema>;
 
 const InviteUserModal = ({ chatId }: { chatId: string }) => {
+	const glassEffect =
+		"bg-black/30 backdrop-blur-md border border-white/20 rounded-2xl shadow-lg";
+
 	const [open, setOpen] = useState(false);
 	const router = useRouter();
 
 	const form = useForm<FormData>({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
-			userId: "",
+			userEmail: "",
 		},
 	});
 
 	const onSubmit = async (data: FormData) => {
-		const res = await addUserToChat({ chatId, userId: data.userId });
+		const res = await addUserToChat({ chatId, userEmail: data.userEmail });
 
 		if (res.error) {
 			toast.error(res.message);
@@ -63,27 +67,27 @@ const InviteUserModal = ({ chatId }: { chatId: string }) => {
 					Invite User
 				</Button>
 			</DialogTrigger>
-			<DialogContent className="sm:max-w-md">
+			<DialogContent className={cn("w-100 text-white", glassEffect)}>
 				<DialogHeader>
 					<DialogTitle>Invite User to Chat</DialogTitle>
 					<DialogDescription>
-						Enter the user ID of the person you want to invite to
+						Enter the user email of the person you want to invite to
 						this chat
 					</DialogDescription>
 				</DialogHeader>
 				<form onSubmit={form.handleSubmit(onSubmit)}>
 					<FieldGroup>
 						<Controller
-							name="userId"
+							name="userEmail"
 							control={form.control}
 							render={({ field, fieldState }) => (
 								<Field data-invalid={fieldState.invalid}>
-									<FieldLabel htmlFor="user-id">
-										User ID
+									<FieldLabel htmlFor="user-email">
+										User Email
 									</FieldLabel>
 									<Input
 										{...field}
-										id="user-id"
+										id="user-email"
 										aria-invalid={fieldState.invalid}
 									/>
 									{fieldState.invalid && (
@@ -99,18 +103,19 @@ const InviteUserModal = ({ chatId }: { chatId: string }) => {
 							<Button
 								type="submit"
 								disabled={form.formState.isSubmitting}
-								className="grow"
+								className="bg-blue-600 hover:bg-blue-700"
 							>
 								<LoadingSwap
 									isLoading={form.formState.isSubmitting}
 								>
-									Invite User
+									Add User
 								</LoadingSwap>
 							</Button>
 							<Button
 								variant={"outline"}
 								type="button"
 								onClick={() => setOpen(false)}
+								className="text-black"
 							>
 								Cancel
 							</Button>
