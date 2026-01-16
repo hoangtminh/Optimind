@@ -1,15 +1,19 @@
-export type StudySession = {
-	start_time: string | null;
-	end_time: string | null;
+export interface FocusDataPoint {
+	id: string;
+	timestamp: string; // Phút
+	focus_point: number; // %
+	created_at: string;
+}
+
+export interface StudySession {
+	id: string;
+	average_focus: number;
+	start_time: string;
+	end_time: string;
 	total_time: number;
+	session_type: string;
 	focus_time: number;
 	break_time: number;
 	cycles: number;
-	average_focus: number;
-	session_type: string;
-};
-
-export interface FocusDataPoint {
-	time: string; // Giây (để thể hiện thời gian trôi qua)
-	focus: number; // %
+	created_at: string;
 }

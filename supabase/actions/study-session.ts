@@ -47,6 +47,7 @@ export const createSession = async (
 	const { data: focusLogData, error: focusLogError } = await supabase
 		.from("session_log")
 		.insert({
+			user_id: user.id,
 			session_id: session.id,
 			focus_point: focusData.map((p) => p.focus),
 			timestamp: focusData.map((p) => p.time),
