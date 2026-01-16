@@ -46,7 +46,9 @@ const SessionDetails = ({
 				<div className="grid grid-cols-2 gap-3">
 					<StatCard
 						title="Tổng thời gian học"
-						value={`${selectedSession.total_time} phút`}
+						value={`${(selectedSession.total_time / 60).toFixed(
+							1
+						)} phút`}
 						icon={<Clock size={20} className="text-white/90" />}
 					/>
 					<StatCard

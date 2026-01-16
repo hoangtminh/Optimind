@@ -8,9 +8,12 @@ import FaceLandmarkDetection from "@/mediapipe/face-landmark";
 import { useCamera } from "@/hooks/useCamera";
 import Webcam from "react-webcam";
 import { useFocus } from "@/hooks/useFocus";
-import { NormalizedLandmark } from "@mediapipe/tasks-vision";
 
-const CameraPrediction = () => {
+const CameraPrediction = ({
+	toggleCalibrate,
+}: {
+	toggleCalibrate: boolean;
+}) => {
 	const webcamRef = useRef<Webcam | null>(null);
 	const canvas3dRef = useRef<HTMLCanvasElement | null>(null);
 
@@ -130,31 +133,36 @@ const CameraPrediction = () => {
 					ref={canvas3dRefCallback}
 					className="absolute top-0 left-0 h-full w-full object-contain"
 				></canvas>
-				<div className="absolute top-4 left-4 p-3 bg-gray-900/80 text-white rounded-lg shadow-xl min-w-[250px]">
-					{/* Nút Calibrate */}
-					<button
-						onClick={() => {
-							calibrate(focusState.rawPitch, focusState.rawYaw);
-							onCalibrate();
-						}}
-						disabled={
-							focusState.isCalibrated ||
-							focusState.status === "NO FACE DETECTED"
-						}
-						className="mt-2 w-full px-2 py-1 bg-blue-600 rounded text-xs hover:bg-blue-700 disabled:bg-gray-500"
-					>
-						{focusState.isCalibrated
-							? "ĐÃ HIỆU CHUẨN"
-							: "CALIBRATE"}
-					</button>
-					{/* Nút Reset */}
-					<button
-						onClick={resetSystem}
-						className="mt-1 w-full px-2 py-1 bg-gray-700 rounded text-xs hover:bg-gray-600"
-					>
-						RESET SYSTEM
-					</button>
-				</div>
+				{toggleCalibrate && (
+					<div className="flex absolute bottom-3 right-2 gap-1 text-white rounded-lg shadow-xl">
+						{/* Nút Calibrate */}
+						<button
+							onClick={() => {
+								calibrate(
+									focusState.rawPitch,
+									focusState.rawYaw
+								);
+								onCalibrate();
+							}}
+							disabled={
+								focusState.isCalibrated ||
+								focusState.status === "NO FACE DETECTED"
+							}
+							className="mt-1 px-2 py-1 bg-blue-600 rounded text-xs hover:bg-blue-700 disabled:bg-gray-500"
+						>
+							{focusState.isCalibrated
+								? "CALIBRATED"
+								: "CALIBRATE"}
+						</button>
+						{/* Nút Reset */}
+						<button
+							onClick={resetSystem}
+							className="mt-1 px-2 py-1 bg-gray-700 rounded text-xs hover:bg-gray-600"
+						>
+							RESET
+						</button>
+					</div>
+				)}
 			</>
 		);
 	return (

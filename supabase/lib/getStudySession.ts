@@ -42,7 +42,7 @@ export const getLogOfSession = async (sessionId: string) => {
 
 	const { data: logs, error } = await supabase
 		.from("session_log")
-		.select("id, focus_point, timestamp, created_at")
+		.select("id, focus, timestamp, created_at")
 		.eq("session_id", sessionId)
 		.order("created_at", { ascending: true });
 

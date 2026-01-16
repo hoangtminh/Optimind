@@ -3,10 +3,14 @@
 import { createStudySessionSchema } from "../schemas/study-session-schema";
 import { getCurrentUser } from "../lib/getCurrentUser";
 import { createAdminClient, createClient } from "@/utils/supabase/server";
-import { FocusDataPoint, StudySession } from "@/lib/type/session-type";
+import {
+	CreateStudySession,
+	FocusDataPoint,
+	StudySession,
+} from "@/lib/type/session-type";
 
 export const createSession = async (
-	sessionData: StudySession,
+	sessionData: CreateStudySession,
 	focusData: FocusDataPoint[]
 ) => {
 	const { success, data } = createStudySessionSchema.safeParse(sessionData);
@@ -46,14 +50,14 @@ export const createSession = async (
 
 	const { data: focusLogData, error: focusLogError } = await supabase
 		.from("session_log")
-		.insert({
-			user_id: user.id,
-			session_id: session.id,
-			focus_point: focusData.map((p) => p.focus),
-			timestamp: focusData.map((p) => p.time),
-		})
-		.select("id")
-		.single();
+		.insert(
+			focusData.map((p) => ({
+				user_id: user.id,
+				session_id: session.id,
+				...p,
+			}))
+		)
+		.select("id");
 
 	if (focusLogData == null) {
 		await supabase.from("study_session").delete().eq("id", session.id);

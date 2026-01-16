@@ -7,9 +7,10 @@ import { cn } from "@/lib/utils";
 import PomodoroTimer from "@/components/study/timer";
 import TaskListWidget from "@/components/study/task-list";
 import FocusChartWidget from "@/components/study/focus-chart";
-import { FocusDataPoint, StudySession } from "@/lib/type/session-type";
+import { CreateStudySession, FocusDataPoint } from "@/lib/type/session-type";
 import { createSession } from "@/supabase/actions/study-session";
 import { toast } from "sonner";
+import LeaveModal from "@/components/app/leaving-modal";
 
 // --- Component Chính: Trang Học Tập ---
 const StudyPage = () => {
@@ -20,9 +21,9 @@ const StudyPage = () => {
 	const [focusData, setFocusData] = useState<FocusDataPoint[]>([]);
 
 	const [session, setSession] = useState<
-		Omit<StudySession, "end_time" | "total_time" | "average_focus">
+		Omit<CreateStudySession, "end_time" | "total_time" | "average_focus">
 	>({
-		start_time: null,
+		start_time: "",
 		focus_time: 0,
 		break_time: 0,
 		cycles: 0,
@@ -30,8 +31,12 @@ const StudyPage = () => {
 	});
 
 	const startSession = (
-		obj: Omit<StudySession, "end_time" | "total_time" | "average_focus">
+		obj: Omit<
+			CreateStudySession,
+			"end_time" | "total_time" | "average_focus"
+		>
 	) => {
+		setIsDirty(true);
 		setSession((prev) => ({ ...prev, ...obj }));
 	};
 
@@ -63,7 +68,7 @@ const StudyPage = () => {
 			if (secondElapsed > 0) endSession();
 			setSession((prev) => ({
 				...prev,
-				start_time: null,
+				start_time: "",
 				end_time: null,
 				total_time: 0,
 				focus_time: 0,
@@ -73,6 +78,51 @@ const StudyPage = () => {
 			}));
 		};
 	}, []);
+
+	const [isDirty, setIsDirty] = useState(false);
+	const [showModal, setShowModal] = useState(false);
+	const [nextPath, setNextPath] = useState(null);
+
+	useEffect(() => {
+		const handleBeforeUnload = (e: any) => {
+			if (isDirty) {
+				e.preventDefault();
+				e.returnValue = "";
+			}
+		};
+		window.addEventListener("beforeunload", handleBeforeUnload);
+		return () =>
+			window.removeEventListener("beforeunload", handleBeforeUnload);
+	}, [isDirty]);
+
+	useEffect(() => {
+		const handleClick = (e: any) => {
+			if (!isDirty) return;
+
+			const target = e.target.closest("a");
+			if (
+				target &&
+				target.href &&
+				!target.href.startsWith(
+					window.location.origin + window.location.pathname
+				)
+			) {
+				e.preventDefault();
+				setNextPath(target.href);
+				setShowModal(true);
+			}
+		};
+
+		document.addEventListener("click", handleClick, true);
+		return () => document.removeEventListener("click", handleClick, true);
+	}, [isDirty]);
+
+	const confirmLeave = () => {
+		setIsDirty(false);
+		if (nextPath) {
+			window.location.href = nextPath;
+		}
+	};
 
 	return (
 		<main className="h-screen w-screen text-white px-6 transition-all duration-500 overflow-hidden">
@@ -112,6 +162,11 @@ const StudyPage = () => {
 					</div>
 				</div>
 			</div>
+			<LeaveModal
+				isOpen={showModal}
+				onConfirm={confirmLeave}
+				onCancel={() => setShowModal(false)}
+			/>
 		</main>
 	);
 };

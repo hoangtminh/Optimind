@@ -259,7 +259,6 @@ export const FocusProvider = ({ children }: { children: React.ReactNode }) => {
 				};
 
 				focusEstimatorRef.current?.estimate(landmarks);
-				console.log(focusEstimatorRef.current?.focusState);
 
 				setState(finalState);
 				return finalState;

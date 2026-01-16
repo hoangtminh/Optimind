@@ -100,10 +100,12 @@ const HistoryList = ({
 								</div>
 								<div className="text-right">
 									<p className="font-semibold text-lg">
-										{session.total_time} phút
+										{(session.total_time / 60).toFixed(1)}{" "}
+										phút
 									</p>
 									<p className="text-xs text-green-400">
-										{session.average_focus}% tập trung
+										{session.average_focus.toFixed(4)}% tập
+										trung
 									</p>
 								</div>
 							</div>

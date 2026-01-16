@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import TimerSetting from "./timer-setting";
-import { StudySession } from "@/lib/type/session-type";
+import { CreateStudySession } from "@/lib/type/session-type";
 
 // Hàm tiện ích
 const glassEffect =
@@ -43,13 +43,10 @@ interface PomodoroTimerProps {
 		focus_time,
 		break_time,
 		cycles,
-	}: {
-		start_time: string;
-		session_type: "pomodoro" | "countdown";
-		focus_time: number;
-		break_time: number;
-		cycles: number;
-	}) => void;
+	}: Omit<
+		CreateStudySession,
+		"end_time" | "total_time" | "average_focus"
+	>) => void;
 	endSession: () => Promise<boolean>;
 }
 

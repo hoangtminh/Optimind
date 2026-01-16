@@ -44,14 +44,17 @@ const FocusChartWidget: FC<FocusChartWidgetProps> = ({
 			setFocusData((prevData) => [
 				...prevData,
 				{
-					time: new Date(Date.now()).toISOString(),
+					timestamp: new Date(Date.now()).toISOString(),
 					focus: focusState.score,
 				},
 			]);
 		} else {
 			setFocusData((prevData) => [
 				...prevData,
-				{ time: new Date(Date.now()).toISOString(), focus: 0 },
+				{
+					timestamp: new Date(Date.now()).toISOString(),
+					focus: 0,
+				},
 			]);
 		}
 	};
@@ -87,7 +90,7 @@ const FocusChartWidget: FC<FocusChartWidgetProps> = ({
 								focusState.score > 70 ? "#4ADE80" : "#F87171",
 						}}
 					>
-						{focusState.score}%
+						{focusState.score.toFixed(4)}%
 					</p>
 				) : (
 					<p className="text-red-600 font-bold">0</p>
@@ -100,7 +103,10 @@ const FocusChartWidget: FC<FocusChartWidgetProps> = ({
 					<LineChart
 						data={
 							focusData.length > 120
-								? focusData.slice(0, 120)
+								? focusData.slice(
+										focusData.length - 1 - 120,
+										focusData.length - 1
+								  )
 								: focusData
 						}
 						margin={{ top: 10, right: 0, left: -20, bottom: 0 }}
@@ -110,7 +116,7 @@ const FocusChartWidget: FC<FocusChartWidgetProps> = ({
 							stroke="#ffffff1a"
 						/>
 						<XAxis
-							dataKey="time"
+							dataKey="timestamp"
 							stroke="#ffffff80"
 							fontSize={10}
 							tickLine={false}
@@ -123,6 +129,7 @@ const FocusChartWidget: FC<FocusChartWidgetProps> = ({
 							tickCount={120}
 						/>
 						<YAxis
+							dataKey="focus"
 							stroke="#ffffff80"
 							fontSize={10}
 							unit="%"

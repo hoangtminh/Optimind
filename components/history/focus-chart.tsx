@@ -12,6 +12,7 @@ import {
 	XAxis,
 	YAxis,
 } from "recharts";
+import { LoadingSwap } from "../ui/loading-swap";
 
 const FocusChart = ({
 	selectedSession,
@@ -31,17 +32,18 @@ const FocusChart = ({
 					? sessionLog.map((p) => ({
 							...p,
 							timestamp: String(
-								(new Date(p.timestamp).getTime() -
-									new Date(
-										selectedSession.start_time
-									).getTime()) /
+								(
+									(new Date(p.timestamp).getTime() -
+										new Date(
+											selectedSession.start_time
+										).getTime()) /
 									1000
+								).toFixed(0)
 							),
 					  }))
 					: []
 			);
 		};
-
 		fetchSessionLog();
 	}, [selectedSession]);
 
@@ -64,9 +66,10 @@ const FocusChart = ({
 						fontSize={12}
 						tickLine={false}
 						axisLine={false}
-						tickFormatter={(val) => `${val.slice(0, 10)}m`}
+						tickFormatter={(val) => `${val.slice(0, 10)}s`}
 					/>
 					<YAxis
+						dataKey="focus"
 						stroke="#ffffff80"
 						fontSize={12}
 						unit="%"
@@ -81,11 +84,11 @@ const FocusChart = ({
 							borderRadius: "8px",
 							color: "#fff",
 						}}
-						labelFormatter={(val) => `Phút ${val}`}
+						labelFormatter={(val) => `${val}`}
 					/>
 					<Line
 						type="monotone"
-						dataKey="focus_point"
+						dataKey="focus"
 						stroke="#3b82f6" // Màu xanh
 						strokeWidth={2}
 						activeDot={{ r: 8 }}

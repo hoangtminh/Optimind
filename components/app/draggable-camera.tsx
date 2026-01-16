@@ -10,7 +10,14 @@ import React, {
 	FC,
 } from "react";
 import { Button } from "@/components/ui/button";
-import { X, GripVertical, ArrowDownLeft, VideoOff, Video } from "lucide-react";
+import {
+	X,
+	GripVertical,
+	ArrowDownLeft,
+	VideoOff,
+	Video,
+	SlidersHorizontalIcon,
+} from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { useCamera } from "@/hooks/useCamera";
@@ -37,6 +44,7 @@ const DraggableCamera: FC<DraggableCameraProps> = () => {
 	const { isCamActive, toggleCamera, isWidgetVisible, setIsWidgetVisible } =
 		useCamera();
 	const cameraRef = useRef<HTMLDivElement | null>(null);
+	const [toggleCalibrate, setToggleCalibrate] = useState(true);
 
 	// Ref lưu vị trí chuột ban đầu khi KÉO (tính bằng PX)
 	const dragStartRef = useRef({
@@ -180,7 +188,7 @@ const DraggableCamera: FC<DraggableCameraProps> = () => {
 		<div
 			ref={cameraRef}
 			className={cn(
-				"absolute z-40 rounded-xl overflo",
+				"absolute z-40 rounded-xl overflow-hidden",
 				isDragging ? "cursor-grabbing" : "cursor-auto",
 				"transition-opacity duration-300",
 				isWidgetVisible ? "opacity-100" : "opacity-0 hidden",
@@ -196,10 +204,20 @@ const DraggableCamera: FC<DraggableCameraProps> = () => {
 			}}
 		>
 			{/* THAY ĐỔI: Hiển thị Video hoặc Placeholder */}
-			<CameraPrediction />
+			<CameraPrediction toggleCalibrate={toggleCalibrate} />
 			{/* Nhóm icon ở góc trên bên phải */}
 			<div className="absolute top-2 right-2 z-10 flex gap-1">
 				{/* NÚT BẬT/TẮT CAMERA (TRONG WIDGET) */}
+				{isCamActive && (
+					<Button
+						variant="ghost"
+						size="icon"
+						className="h-6 w-6 rounded-full cursor-grab bg-black/20 text-white hover:bg-white/20"
+						onClick={() => setToggleCalibrate((prev) => !prev)}
+					>
+						<SlidersHorizontalIcon className="h-5 w-5" />
+					</Button>
+				)}
 				<Button
 					variant="ghost"
 					size="icon"
@@ -222,7 +240,7 @@ const DraggableCamera: FC<DraggableCameraProps> = () => {
 				<Button
 					variant="ghost"
 					size="icon"
-					className="h-6 w-6 rounded-full cursor-grab bg-white/10 text-white hover:bg-white/20"
+					className="h-6 w-6 rounded-full cursor-grab bg-black/20 text-white hover:bg-white/20"
 					onMouseDown={handleDragMouseDown}
 					onClick={(e) => e.stopPropagation()}
 				>
@@ -237,7 +255,7 @@ const DraggableCamera: FC<DraggableCameraProps> = () => {
 					}}
 					variant="ghost"
 					size="icon"
-					className="h-6 w-6 rounded-full bg-white/10 text-white hover:bg-white/20 hover:text-red-400"
+					className="h-6 w-6 rounded-full bg-black/20 text-white hover:bg-white/20 hover:text-red-400"
 				>
 					<X className="h-5 w-5" />
 				</Button>
