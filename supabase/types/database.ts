@@ -217,26 +217,26 @@ export type Database = {
       session_log: {
         Row: {
           created_at: string
-          focus_point: number[]
+          focus_point: number
           id: string
           session_id: string
-          timestamp: string[]
+          timestamp: string
           user_id: string
         }
         Insert: {
           created_at?: string
-          focus_point: number[]
+          focus_point: number
           id?: string
           session_id: string
-          timestamp: string[]
+          timestamp: string
           user_id: string
         }
         Update: {
           created_at?: string
-          focus_point?: number[]
+          focus_point?: number
           id?: string
           session_id?: string
-          timestamp?: string[]
+          timestamp?: string
           user_id?: string
         }
         Relationships: [
@@ -511,26 +511,35 @@ export type Database = {
       }
       user_profile: {
         Row: {
+          coins: number
           created_at: string
           email: string | null
+          exp: number
           id: string
           image_url: string | null
+          level: number
           name: string
           study_time: number
         }
         Insert: {
+          coins?: number
           created_at?: string
           email?: string | null
+          exp?: number
           id?: string
           image_url?: string | null
+          level?: number
           name: string
           study_time?: number
         }
         Update: {
+          coins?: number
           created_at?: string
           email?: string | null
+          exp?: number
           id?: string
           image_url?: string | null
+          level?: number
           name?: string
           study_time?: number
         }
